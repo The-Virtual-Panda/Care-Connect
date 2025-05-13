@@ -1,5 +1,5 @@
-import {Component, computed, inject} from '@angular/core';
-import {LayoutService} from '@/layout/service/layout.service';
+import { Component, computed, inject } from '@angular/core';
+import { LayoutService } from '@/layout/service/layout.service';
 
 @Component({
     selector: '[app-footer]',
@@ -8,9 +8,9 @@ import {LayoutService} from '@/layout/service/layout.service';
         <div class="layout-footer">
             <div class="footer-logo-container">
                 <img src="/layout/images/logo-{{ isDarkTheme() ? 'white' : 'dark' }}.svg" alt="poseidon-layout"/>
-                <span class="footer-app-name">Poseidon</span>
+                <span class="footer-app-name">Care Connect</span>
             </div>
-            <span class="footer-copyright">&#169; Your Organization - 2025</span>
+            <span class="footer-copyright">&#169; The Virtual Panda - 2025</span>
         </div>
     `
 })

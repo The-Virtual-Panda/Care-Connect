@@ -1,7 +1,7 @@
-import {CommonModule} from '@angular/common';
-import {Component, ElementRef, HostListener, ViewChild} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
-import {LogoWidget} from './logowidget';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { LogoWidget } from './logowidget';
 
 @Component({
     selector: 'topbar-widget',
@@ -67,9 +67,12 @@ import {LogoWidget} from './logowidget';
                                 </li>
                             </ul>
                             <div class="flex flex-col items-center gap-4">
-                                <a routerLink="/landing/login" class="button py-2 w-full border dark:border-white/10">
-                                    Login </a>
-                                <a routerLink="/landing/register" class="button-primary w-full py-2"> Register </a>
+                                <a href="https://app.mycare-connect.com/" class="button py-2 w-full border dark:border-white/10" target="_blank" rel="noopener noreferrer">
+                                    Login
+                                </a>
+                                <a href="https://app.mycare-connect.com/" class="button-primary w-full py-2" target="_blank" rel="noopener noreferrer">
+                                    Register
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -90,9 +93,9 @@ export class TopbarWidget {
     @ViewChild('menuContent') menuContent?: ElementRef<HTMLDivElement>;
 
     navs = [
-        {name: 'about', label: 'About', to: '/landing/about'},
-        {name: 'pricing', label: 'Pricing', to: '/landing/pricing'},
-        {name: 'contact', label: 'Contact', to: '/landing/contact'}
+        { name: 'about', label: 'About', to: '/landing/about' },
+        { name: 'pricing', label: 'Pricing', to: '/landing/pricing' },
+        { name: 'contact', label: 'Contact', to: '/landing/contact' }
     ];
 
     constructor(

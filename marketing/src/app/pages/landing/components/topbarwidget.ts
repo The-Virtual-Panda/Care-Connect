@@ -40,8 +40,12 @@ import { LogoWidget } from './logowidget';
                             </li>
                         </ul>
                         <div class="flex-1 hidden md:flex items-center justify-end gap-4">
-                            <a routerLink="/landing/login" class="button py-2 px-4 min-w-20"> Login </a>
-                            <a routerLink="/landing/register" class="button-primary py-2 px-4 min-w-20"> Register </a>
+                            <a href="https://app.mycare-connect.com/" class="button py-2 px-4 min-w-20" target="_blank" rel="noopener noreferrer">
+                                Login
+                            </a>
+                            <a href="https://app.mycare-connect.com/" class="button-primary py-2 px-4 min-w-20" target="_blank" rel="noopener noreferrer">
+                                Register
+                            </a>
                         </div>
                         <button
                             (click)="toggleMobileMenu()"
@@ -50,6 +54,7 @@ import { LogoWidget } from './logowidget';
                             <i class="leading-none" [ngClass]="openMobileMenu ? 'pi pi-times ' : 'pi pi-bars '"></i>
                         </button>
                     </div>
+
                     <div class="md:hidden block transition-all duration-300 ease-out overflow-hidden"
                          [style.maxHeight]="openMobileMenu ? maxHeightStyle : '0'"
                          [ngClass]="openMobileMenu ? 'mt-8 opacity-100' : 'opacity-0'">

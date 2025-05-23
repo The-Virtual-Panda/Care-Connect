@@ -1,6 +1,6 @@
-import { PhoneNumber } from "@models/domain/phone-number";
-import { fireDb } from "firebase-config";
 import { DocumentReference, FirestoreDataConverter, QueryDocumentSnapshot, Timestamp, WithFieldValue } from "firebase-admin/firestore";
+import { fireDb } from "../../../firebase-config";
+import { PhoneNumber } from "../../domain/phone-number";
 
 export interface PhoneNumberDoc {
     number: string;
@@ -30,8 +30,9 @@ export function toPhoneNumberDoc(p: WithFieldValue<PhoneNumber>): PhoneNumberDoc
 /**
  * Convert Firestore → Domain
  */
-export function fromPhoneNumberDoc(doc: PhoneNumberDoc): PhoneNumber {
+export function fromPhoneNumberDoc(doc: PhoneNumberDoc, id: string): PhoneNumber {
     return {
+        id,
         number: doc.number,
         orgId: doc.orgId,
         label: doc.label,
@@ -43,5 +44,5 @@ export function fromPhoneNumberDoc(doc: PhoneNumberDoc): PhoneNumber {
 export const phoneNumberConverter: FirestoreDataConverter<PhoneNumber> = {
     toFirestore: (p: WithFieldValue<PhoneNumber>) => toPhoneNumberDoc(p),
     fromFirestore: (snap: QueryDocumentSnapshot) =>
-        fromPhoneNumberDoc(snap.data() as PhoneNumberDoc),
+        fromPhoneNumberDoc(snap.data() as PhoneNumberDoc, snap.id),
 };

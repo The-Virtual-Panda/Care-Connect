@@ -4,7 +4,7 @@ import {
     WithFieldValue,
     Timestamp,
 } from "firebase-admin/firestore";
-import type { Organization } from "@models/domain/organization";
+import { Organization } from "../../domain/organization";
 
 /** Firestore‐shaped version of your Organization */
 export interface OrganizationDoc {
@@ -29,8 +29,9 @@ export function toOrganizationDoc(
 /**
  * Convert Firestore → Domain
  */
-export function fromOrganizationDoc(doc: OrganizationDoc): Organization {
+export function fromOrganizationDoc(doc: OrganizationDoc, id: string): Organization {
     return {
+        id,
         name: doc.name,
         dateCreated: doc.dateCreated.toDate(),
         dateUpdated: doc.dateUpdated.toDate(),
@@ -41,5 +42,5 @@ export function fromOrganizationDoc(doc: OrganizationDoc): Organization {
 export const organizationConverter: FirestoreDataConverter<Organization> = {
     toFirestore: (p: WithFieldValue<Organization>) => toOrganizationDoc(p),
     fromFirestore: (snap: QueryDocumentSnapshot) =>
-        fromOrganizationDoc(snap.data() as OrganizationDoc),
+        fromOrganizationDoc(snap.data() as OrganizationDoc, snap.id),
 };

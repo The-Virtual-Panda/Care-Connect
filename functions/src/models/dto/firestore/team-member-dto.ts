@@ -1,11 +1,10 @@
-// models/firestore.ts
 import {
     FirestoreDataConverter,
     QueryDocumentSnapshot,
     WithFieldValue,
     Timestamp
 } from "firebase-admin/firestore";
-import type { TeamMember } from "@models/domain/team-member";
+import { TeamMember } from "../../domain/team-member";
 
 /** Firestore‐shaped version of your TeamMember */
 export interface TeamMemberDoc {
@@ -32,8 +31,9 @@ export function toTeamMemberDoc(
 /**
  * Convert Firestore → Domain
  */
-export function fromTeamMemberDoc(doc: TeamMemberDoc): TeamMember {
+export function fromTeamMemberDoc(doc: TeamMemberDoc, id: string): TeamMember {
     return {
+        id,
         name: doc.name,
         phoneNumber: doc.phoneNumber,
         dateCreated: doc.dateCreated.toDate(),
@@ -45,5 +45,5 @@ export function fromTeamMemberDoc(doc: TeamMemberDoc): TeamMember {
 export const teamMemberConverter: FirestoreDataConverter<TeamMember> = {
     toFirestore: (p: WithFieldValue<TeamMember>) => toTeamMemberDoc(p),
     fromFirestore: (snap: QueryDocumentSnapshot) =>
-        fromTeamMemberDoc(snap.data() as TeamMemberDoc),
+        fromTeamMemberDoc(snap.data() as TeamMemberDoc, snap.id),
 };

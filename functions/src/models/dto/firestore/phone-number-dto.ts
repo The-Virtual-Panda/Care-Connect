@@ -1,5 +1,5 @@
 import { PhoneNumber } from "@models/domain/phone-number";
-import { fireDb } from "@services/firebase-config";
+import { fireDb } from "firebase-config";
 import { DocumentReference, FirestoreDataConverter, QueryDocumentSnapshot, Timestamp, WithFieldValue } from "firebase-admin/firestore";
 
 export interface PhoneNumberDoc {

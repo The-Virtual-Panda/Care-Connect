@@ -6,10 +6,5 @@ dotenv.config();
 // console.log(process.env)
 
 export * from "./twillio";
-export * from "./tests";
-
-// export const helloWorld = onRequest((request, response) => {
-//     logger.info("Hello logs!", { structuredData: true });
-//     response.send("Hello from Firebase!");
-// });
+export * from "./tests/retrieval-tests";
 

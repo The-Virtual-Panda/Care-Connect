@@ -1,12 +1,14 @@
 import { DocumentReference, FirestoreDataConverter, QueryDocumentSnapshot, Timestamp, WithFieldValue } from "firebase-admin/firestore";
 import { fireDb } from "../../../firebase-config";
 import { PhoneNumber } from "../../domain/phone-number";
+import { FirestoreCollections } from "../../../services/firestore-service";
 
 export interface PhoneNumberDoc {
     number: string;
     orgId: string;
     orgRef: DocumentReference;
     label?: string;
+    usageType: number;
     dateCreated: Timestamp;
     dateUpdated: Timestamp;
 }
@@ -15,13 +17,14 @@ export interface PhoneNumberDoc {
  * Convert Domain → Firestore
  */
 export function toPhoneNumberDoc(p: WithFieldValue<PhoneNumber>): PhoneNumberDoc {
-    const orgRef = fireDb.collection('organizations').doc(p.orgId as string) as DocumentReference;
+    const orgRef = fireDb.collection(FirestoreCollections.organizations.root).doc(p.orgId as string) as DocumentReference;
 
     return {
         number: p.number as string,
         label: p.label as string | undefined,
         orgId: p.orgId as string,
         orgRef,
+        usageType: p.usageType as number,
         dateCreated: Timestamp.fromDate(p.dateCreated as Date),
         dateUpdated: Timestamp.fromDate(p.dateUpdated as Date),
     };
@@ -36,6 +39,7 @@ export function fromPhoneNumberDoc(doc: PhoneNumberDoc, id: string): PhoneNumber
         number: doc.number,
         orgId: doc.orgId,
         label: doc.label,
+        usageType: doc.usageType,
         dateCreated: doc.dateCreated.toDate(),
         dateUpdated: doc.dateUpdated.toDate(),
     };

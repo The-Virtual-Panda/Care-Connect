@@ -1,19 +1,22 @@
 import { logger } from "firebase-functions";
 import { fireDb } from "../firebase-config";
-import { organizationConverter } from "../models/dto/firestore/organization-dto";
-import { phoneNumberConverter } from "../models/dto/firestore/phone-number-dto";
+import { organizationConverter } from "../models/dto/firestore/organization-doc";
+import { phoneNumberConverter } from "../models/dto/firestore/phone-number-doc";
 import { Organization, OrganizationWithTeamMembers } from "../models/domain/organization";
 import { PhoneNumber } from "../models/domain/phone-number";
-import { teamMemberConverter } from "../models/dto/firestore/team-member-dto";
+import { teamMemberConverter } from "../models/dto/firestore/team-member-doc";
 import { TeamMember } from "../models/domain/team-member";
+import { ScheduledRule } from "../models/domain/scheduled-rule";
+import { scheduledRuleConverter } from "../models/dto/firestore/scheduled-rule-doc";
 
-const Collections = {
-    organization: {
+export const FirestoreCollections = {
+    organizations: {
         root: "organizations",
         teamMembers: "teamMembers",
     },
     phoneNumbers: {
         root: "phoneNumbers",
+        scheduledRules: "scheduledRules",
     },
 };
 
@@ -23,7 +26,7 @@ export class FirestoreService {
      * Returns the organization with its team members, or null if not found.
      */
     async getOrganizationWithTeamMembersById(organizationId: string): Promise<OrganizationWithTeamMembers | null> {
-        const orgRef = fireDb.collection(Collections.organization.root)
+        const orgRef = fireDb.collection(FirestoreCollections.organizations.root)
             .doc(organizationId)
             .withConverter(organizationConverter);
 
@@ -49,11 +52,13 @@ export class FirestoreService {
     }
 
     async getOrganizations(): Promise<Organization[]> {
-        const orgsSnap = await fireDb.collection(Collections.organization.root)
+        const orgsSnap = await fireDb.collection(FirestoreCollections.organizations.root)
             .withConverter(organizationConverter).get();
+
         const organizations: Organization[] = orgsSnap.docs.map(doc => ({
             ...doc.data()
         }));
+
         return organizations;
     }
 
@@ -62,7 +67,7 @@ export class FirestoreService {
      * Returns an array of objects with the phone number (document ID) and its data.
      */
     async getAllPhoneNumbers(): Promise<PhoneNumber[]> {
-        const phoneNumbersSnap = await fireDb.collection(Collections.phoneNumbers.root)
+        const phoneNumbersSnap = await fireDb.collection(FirestoreCollections.phoneNumbers.root)
             .withConverter(phoneNumberConverter).get();
         const phoneNumbers: PhoneNumber[] = phoneNumbersSnap.docs.map(doc => ({
             ...doc.data(),
@@ -75,7 +80,7 @@ export class FirestoreService {
      * Returns the phone number document data, or null if not found.
      */
     async getPhoneNumber(phoneNumberId: string): Promise<PhoneNumber | null> {
-        const phoneDoc = await fireDb.collection(Collections.phoneNumbers.root)
+        const phoneDoc = await fireDb.collection(FirestoreCollections.phoneNumbers.root)
             .withConverter(phoneNumberConverter)
             .doc(phoneNumberId)
             .get();
@@ -89,11 +94,33 @@ export class FirestoreService {
     }
 
     /**
+     * Fetch all scheduled rules for a specific phone number by its ID.
+     * Returns an array of rule documents, or an empty array if none found.
+     */
+    async getScheduledRulesForPhoneNumber(phoneNumberId: string): Promise<ScheduledRule[] | null> {
+        const rulesSnap = await fireDb
+            .collection(FirestoreCollections.phoneNumbers.root)
+            .doc(phoneNumberId)
+            .collection(FirestoreCollections.phoneNumbers.scheduledRules)
+            .withConverter(scheduledRuleConverter)
+            .get();
+
+        if (rulesSnap.empty) {
+            logger.warn(`No scheduled rules found for phone number: ${phoneNumberId}`);
+            return null;
+        }
+
+        return rulesSnap.docs.map(doc => ({
+            ...doc.data(),
+        }));
+    }
+
+    /**
      * Fetch a specific organization document by its ID.
      * Returns the organization document data, or null if not found.
      */
     async getOrganizationById(organizationId: string): Promise<Organization | null> {
-        const orgDoc = await fireDb.collection(Collections.organization.root)
+        const orgDoc = await fireDb.collection(FirestoreCollections.organizations.root)
             .withConverter(organizationConverter)
             .doc(organizationId)
             .get();
@@ -112,9 +139,9 @@ export class FirestoreService {
      */
     async getTeamMembersForOrganization(organizationId: string): Promise<TeamMember[]> {
         const teamMembersSnap = await fireDb
-            .collection(Collections.organization.root)
+            .collection(FirestoreCollections.organizations.root)
             .doc(organizationId)
-            .collection(Collections.organization.teamMembers)
+            .collection(FirestoreCollections.organizations.teamMembers)
             .withConverter(teamMemberConverter)
             .get();
 

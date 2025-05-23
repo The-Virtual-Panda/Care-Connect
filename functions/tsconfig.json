@@ -9,16 +9,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "baseUrl": "src",
-    "skipLibCheck": true,
-    "paths": {
-      "@services/*": [
-        "services/*"
-      ],
-      "@models/*": [
-        "models/*"
-      ]
-    },
+    "skipLibCheck": true
   },
   "compileOnSave": true,
   "include": [

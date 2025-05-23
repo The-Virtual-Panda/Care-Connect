@@ -1,8 +1,8 @@
-import { initializeApp } from "firebase-admin/app";
-// import { getFirestore } from "firebase-admin/firestore";
 import { forwardCall, voicemail, handleRecording } from "./twillio";
+import * as dotenv from "dotenv";
 
-initializeApp();
+// Load environment variables from .env file
+dotenv.config();
 
 export { forwardCall, voicemail, handleRecording };
 

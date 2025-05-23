@@ -9,14 +9,8 @@
 
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-// import { getFirestore } from "firebase-admin/firestore";
 
 import twilio from "twilio";
-
-import * as dotenv from "dotenv";
-
-// Load environment variables from .env file
-dotenv.config();
 
 // Twilio credentials
 const accountSid = process.env.TWILIO_ACCOUNT_SID as string;

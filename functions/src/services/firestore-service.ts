@@ -8,6 +8,8 @@ import { teamMemberConverter } from "../models/dto/firestore/team-member-doc";
 import { TeamMember } from "../models/domain/team-member";
 import { ScheduledRule } from "../models/domain/scheduled-rule";
 import { scheduledRuleConverter } from "../models/dto/firestore/scheduled-rule-doc";
+import { Shift } from "../models/domain/shift";
+import { shiftConverter } from "../models/dto/firestore/shift-doc";
 
 export const FirestoreCollections = {
     organizations: {
@@ -17,6 +19,7 @@ export const FirestoreCollections = {
     phoneNumbers: {
         root: "phoneNumbers",
         scheduledRules: "scheduledRules",
+        shifts: "shifts",
     },
 };
 
@@ -116,6 +119,28 @@ export class FirestoreService {
     }
 
     /**
+     * Fetch all shifts for a specific phone number by its ID.
+     * Returns an array of Shift objects, or an empty array if none found.
+     */
+    async getShiftsForPhoneNumber(phoneNumberId: string): Promise<Shift[] | null> {
+        const shiftsSnap = await fireDb
+            .collection(FirestoreCollections.phoneNumbers.root)
+            .doc(phoneNumberId)
+            .collection(FirestoreCollections.phoneNumbers.shifts)
+            .withConverter(shiftConverter)
+            .get();
+
+        if (shiftsSnap.empty) {
+            logger.warn(`No shifts found for phone number: ${phoneNumberId}`);
+            return null;
+        }
+
+        return shiftsSnap.docs.map(doc => ({
+            ...doc.data(),
+        }));
+    }
+
+    /**
      * Fetch a specific organization document by its ID.
      * Returns the organization document data, or null if not found.
      */
@@ -170,6 +195,22 @@ export class FirestoreService {
         }
 
         return foundOrg;
+    }
+
+    /**
+     * Inserts a single shift into the shifts sub-collection for a given phone number.
+     * Returns the created Shift document's ID.
+     */
+    async addShiftToPhoneNumber(phoneNumberId: string, shift: Shift): Promise<string> {
+        const shiftsRef = fireDb
+            .collection(FirestoreCollections.phoneNumbers.root)
+            .doc(phoneNumberId)
+            .collection(FirestoreCollections.phoneNumbers.shifts)
+            .withConverter(shiftConverter);
+
+        const docRef = await shiftsRef.add(shift);
+        logger.info(`Added shift ${docRef.id} to phone number ${phoneNumberId}`);
+        return docRef.id;
     }
 }
 

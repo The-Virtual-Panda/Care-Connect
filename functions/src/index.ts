@@ -6,5 +6,6 @@ dotenv.config();
 // console.log(process.env)
 
 export * from "./twillio";
-export * from "./tests/retrieval-tests";
+export * from "./local/retrieval-tests";
+export * from "./local/insertion-tests";
 

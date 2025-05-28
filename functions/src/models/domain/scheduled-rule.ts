@@ -7,8 +7,8 @@ export interface ScheduledRule {
     forwardTo: string;              // E.164 or Device ID
 
     /** Required date bounds: */
-    startDate: Date;                // “no earlier than…”
-    endDate?: Date;                // optional “until…”
+    startDateUtc: Date;                // “no earlier than…”
+    endDateUtc?: Date;                // optional “until…”
 
     /** Recurrence pattern: */
     freq: ReoccurrenceFrequency;

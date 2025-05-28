@@ -11,9 +11,6 @@ import { LayoutService } from '@/layout/service/layout.service';
         <main>
             <router-outlet></router-outlet>
         </main>
-        <button class="layout-config-button config-link" (click)="layoutService.toggleConfigSidebar()">
-            <i class="pi pi-cog"></i>
-        </button>
         <app-configurator location="landing" />
     `
 })

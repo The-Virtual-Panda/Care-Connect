@@ -6,6 +6,8 @@ export interface Organization {
     name: string;
     dateCreated: Date;
     dateUpdated: Date;
+    twilioAccountSid?: string;
+    twilioAuthToken?: string;
 }
 
 export interface OrganizationWithTeamMembers extends Organization {

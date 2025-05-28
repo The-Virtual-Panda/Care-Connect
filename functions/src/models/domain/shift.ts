@@ -5,11 +5,8 @@ export interface Shift {
     /** UUID or Firestore doc ID */
     id: string;
 
-    /** The user (or team) who’s on call during this block */
+    /** The Team Member Id who’s on call during this block */
     assigneeId: string;
-
-    /** E.164 phone number or internal device ID to forward to */
-    forwardTo: string;
 
     /** Inclusive start date/time of the shift (local‐tz) */
     start: Date;

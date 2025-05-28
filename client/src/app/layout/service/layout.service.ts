@@ -1,5 +1,5 @@
-import {computed, effect, Injectable, signal} from '@angular/core';
-import {Subject} from 'rxjs';
+import { computed, effect, Injectable, signal } from '@angular/core';
+import { Subject } from 'rxjs';
 
 export interface layoutConfig {
     preset: string;
@@ -36,7 +36,7 @@ export class LayoutService {
         primary: 'blue',
         surface: null,
         darkTheme: false,
-        menuMode: 'static',
+        menuMode: 'horizontal',
     };
 
     _state: LayoutState = {
@@ -230,7 +230,7 @@ export class LayoutService {
 
     onMenuToggle() {
         if (this.isOverlay()) {
-            this.layoutState.update((prev) => ({...prev, overlayMenuActive: !this.layoutState().overlayMenuActive}));
+            this.layoutState.update((prev) => ({ ...prev, overlayMenuActive: !this.layoutState().overlayMenuActive }));
 
             if (this.layoutState().overlayMenuActive) {
                 this.overlayOpen.next(null);
@@ -255,7 +255,7 @@ export class LayoutService {
     }
 
     onConfigUpdate() {
-        this._config = {...this.layoutConfig()};
+        this._config = { ...this.layoutConfig() };
         this.configUpdate.next(this.layoutConfig());
     }
 
@@ -272,15 +272,15 @@ export class LayoutService {
     }
 
     showConfigSidebar() {
-        this.updateLayoutState({configSidebarVisible: true});
+        this.updateLayoutState({ configSidebarVisible: true });
     }
 
     hideConfigSidebar() {
-        this.updateLayoutState({configSidebarVisible: false});
+        this.updateLayoutState({ configSidebarVisible: false });
     }
 
     toggleRightMenu() {
-        this.updateLayoutState({rightMenuVisible: !this.layoutState().rightMenuVisible});
+        this.updateLayoutState({ rightMenuVisible: !this.layoutState().rightMenuVisible });
     }
 
     isDesktop() {

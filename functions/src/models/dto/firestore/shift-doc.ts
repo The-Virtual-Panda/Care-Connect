@@ -9,7 +9,6 @@ import { Shift } from "../../domain/shift";
 /** Firestore‐shaped version of your Shift */
 export interface ShiftDoc {
     assigneeId: string;
-    forwardTo: string;
     start: Timestamp;
     end: Timestamp;
     enabled: boolean;
@@ -24,7 +23,6 @@ export function toShiftDoc(
 ): ShiftDoc {
     return {
         assigneeId: p.assigneeId as string,
-        forwardTo: p.forwardTo as string,
         start: Timestamp.fromDate(p.start as Date),
         end: Timestamp.fromDate(p.end as Date),
         enabled: p.enabled as boolean,
@@ -39,7 +37,6 @@ export function fromShiftDoc(doc: ShiftDoc, id: string): Shift {
     return {
         id,
         assigneeId: doc.assigneeId,
-        forwardTo: doc.forwardTo,
         start: doc.start.toDate(),
         end: doc.end.toDate(),
         enabled: doc.enabled,

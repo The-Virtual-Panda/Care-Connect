@@ -5,6 +5,8 @@ import { FirestoreCollections } from "../../../services/firestore-service";
 
 export interface PhoneNumberDoc {
     number: string;
+    fallbackForwardingNumber?: string;
+    useFallbackForwardingNumber?: boolean;
     orgId: string;
     orgRef: DocumentReference;
     label?: string;
@@ -21,6 +23,8 @@ export function toPhoneNumberDoc(p: WithFieldValue<PhoneNumber>): PhoneNumberDoc
 
     return {
         number: p.number as string,
+        fallbackForwardingNumber: p.fallbackForwardingNumber as string | undefined,
+        useFallbackForwardingNumber: p.useFallbackForwardingNumber as boolean | undefined,
         label: p.label as string | undefined,
         orgId: p.orgId as string,
         orgRef,
@@ -37,6 +41,8 @@ export function fromPhoneNumberDoc(doc: PhoneNumberDoc, id: string): PhoneNumber
     return {
         id,
         number: doc.number,
+        fallbackForwardingNumber: doc.fallbackForwardingNumber,
+        useFallbackForwardingNumber: doc.useFallbackForwardingNumber,
         orgId: doc.orgId,
         label: doc.label,
         usageType: doc.usageType,

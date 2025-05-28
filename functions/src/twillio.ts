@@ -1,33 +1,11 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
-import twilio from "twilio";
+import { FirestoreService } from "./services/firestore-service";
+import { TwilioService } from "./services/twilio-service";
 
-// Twilio credentials
-const accountSid = process.env.TWILIO_ACCOUNT_SID as string;
-const authToken = process.env.TWILIO_AUTH_TOKEN as string;
-
-if (!accountSid || !authToken) {
-    throw new Error("Twilio credentials are not set in environment variables.");
-}
-
-twilio(accountSid, authToken);
-
-// Phone numbers
-const forwardingNumber = "+12532298444";
-
-export const forwardCall = onRequest(async (request, response) => {
+export const handleCall = onRequest(async (request, response) => {
     try {
-        // Log incoming request details
         logger.info("Incoming request details:", {
             method: request.method,
             headers: request.headers,
@@ -35,77 +13,47 @@ export const forwardCall = onRequest(async (request, response) => {
             query: request.query,
         });
 
-        // Construct the full URL for validation
-        const functionName = "forwardCall";
-        const url = `https://${request.hostname}/${functionName}`;
-        logger.info("Constructed URL for validation:", { url });
-
-        // Validate the Twilio request
-        const twilioSignature = request.headers["x-twilio-signature"] as string;
+        const sig = request.headers["x-twilio-signature"] as string;
         const params = request.body;
+        const url = `https://${request.hostname}${request.path}`;
 
-        const isValidRequest = twilio.validateRequest(authToken, twilioSignature, url, params);
+        const firestoreService = new FirestoreService();
+        const twilioService = new TwilioService(firestoreService);
 
-        if (!isValidRequest) {
-            logger.warn("Invalid Twilio request received.", {
-                signature: twilioSignature,
-                url,
-                params,
-            });
-            response.status(403).send("Invalid request.");
-            return;
+        const accountSid = params.AccountSid as string;
+        const fromPhoneNumber = params.From as string;
+        const toPhoneNumber = (params.To as string).replace(/^\+/, "");
+        const now = new Date();
+
+        let twiml: string;
+        try {
+            twiml = await twilioService.handlePhoneCall(
+                accountSid, toPhoneNumber, fromPhoneNumber,
+                now,
+                {
+                    signature: sig,
+                    url,
+                    params
+                }
+            );
+        } catch (err: any) {
+            if (err.message === "Unknown Twilio sub-account or missing auth token.") {
+                response.status(404).send("Unknown Twilio sub-account.");
+                return;
+            }
+            if (err.message === "Invalid Twilio webhook signature.") {
+                logger.warn("Invalid Twilio signature", { accountSid, sig, url });
+                response.status(403).send("Invalid signature.");
+                return;
+            }
+            throw err;
         }
 
-        const { From } = request.body;
-
-        logger.info("Valid Twilio request received.", {
-            caller: From,
-            forwardingNumber,
-        });
-
-        const twiml = new twilio.twiml.VoiceResponse();
-
-        // Try to dial the on-call number for 20s, then fall back
-        twiml.dial(
-            { action: "/voicemail", timeout: 20 },
-            forwardingNumber
-        );
-        // If Dial fails to hit /voicemail (rare), redirect there
-        twiml.redirect("/voicemail");
-
         response.set("Content-Type", "text/xml");
-        response.status(200).send(twiml.toString());
-    } catch (error) {
-        logger.error("Internal Error forwarding call:", error);
-        response.status(500).send("Failed to forward the call.");
+        response.status(200).send(twiml);
+    } catch (err) {
+        logger.error("Error in handleCall:", err);
+        response.status(500).send("Server error.");
     }
 });
 
-export const voicemail = onRequest(async (request, response) => {
-    const { DialCallStatus } = request.body;
-    const twiml = new twilio.twiml.VoiceResponse();
-
-    if (DialCallStatus !== "completed") {
-        twiml.say(
-            "Sorry, nobody is available. Please leave a message after the tone. " +
-            "Press pound when finished."
-        );
-        twiml.record({
-            maxLength: 120,
-            finishOnKey: "#",
-            action: "/handleRecording",
-        });
-    } else {
-        twiml.hangup();
-    }
-
-    response.type("text/xml").send(twiml.toString());
-});
-
-export const handleRecording = onRequest(async (request, response) => {
-    // TODO: save or notify with recordingUrl
-    // const recordingUrl = request.body.RecordingUrl;
-    const twiml = new twilio.twiml.VoiceResponse();
-    twiml.say("Thanks, goodbye.");
-    response.type("text/xml").send(twiml.toString());
-});

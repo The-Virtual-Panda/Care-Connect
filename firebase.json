@@ -6,9 +6,15 @@
       "ignore": [
         "node_modules",
         ".git",
+        ".gitignore",
         "firebase-debug.log",
         "firebase-debug.*.log",
-        "*.local"
+        ".env.*",
+        ".env",
+        "**/test/**",
+        "**/seed-data/**",
+        "*.ts",
+        "tsconfig.json"
       ],
       "predeploy": [
         "npm --prefix \"$RESOURCE_DIR\" run build"
@@ -26,7 +32,7 @@
       "port": 9099
     },
     "ui": {
-      "enalbed": true
+      "enabled": true
     },
     "singleProjectMode": true
   }

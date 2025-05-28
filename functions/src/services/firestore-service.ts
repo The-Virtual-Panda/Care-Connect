@@ -65,6 +65,21 @@ export class FirestoreService {
         return organizations;
     }
 
+    async findOrgByTwilioAccountSid(accountSid: string): Promise<Organization | null> {
+        const orgsSnap = await fireDb.collection(FirestoreCollections.organizations.root)
+            .withConverter(organizationConverter)
+            .where("twilioAccountSid", "==", accountSid)
+            .get();
+
+        if (orgsSnap.empty) {
+            logger.warn(`No organization found for Twilio Account SID: ${accountSid}`);
+            return null;
+        }
+
+        const orgDoc = orgsSnap.docs[0];
+        return orgDoc.data() as Organization;
+    }
+
     /**
      * Fetch all phone numbers from the phoneNumbers collection.
      * Returns an array of objects with the phone number (document ID) and its data.
@@ -171,6 +186,26 @@ export class FirestoreService {
             .get();
 
         return teamMembersSnap.docs.map(doc => doc.data());
+    }
+
+    /**
+     * Fetch a specific team member by their ID.
+     * Returns the TeamMember document data, or null if not found.
+     */
+    async getTeamMemberById(organizationId: string, teamMemberId: string): Promise<TeamMember | null> {
+        const teamMemberDoc = await fireDb.collection(FirestoreCollections.organizations.root)
+            .doc(organizationId)
+            .collection(FirestoreCollections.organizations.teamMembers)
+            .withConverter(teamMemberConverter)
+            .doc(teamMemberId)
+            .get();
+
+        if (!teamMemberDoc.exists) {
+            logger.warn(`No team member document found for: ${teamMemberId}`);
+            return null;
+        }
+
+        return teamMemberDoc.data() as TeamMember;
     }
 
     /**

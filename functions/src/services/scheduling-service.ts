@@ -97,22 +97,16 @@ export function matchScheduledRule(date: Date, time: string, rules: ScheduledRul
  * @param date   A JavaScript Date (with time) to check against shifts.
  * @param shifts An array of Shift objects.
  */
-export function matchShiftRule(date: Date, shifts: Shift[]): Shift | undefined {
+export function matchShiftRule(date: Date, shifts: Shift[] | null): Shift | undefined {
+    if (!shifts || shifts.length === 0) return undefined;
+
     // Ensure deterministic behavior by checking shifts in chronological order
     const sorted = shifts
         .filter(s => s.enabled)
         .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-    const dateUtc = DateTime.fromJSDate(date, { zone: "utc" });
-
     const match = sorted.find(shift => {
-        // Assume shift.start and shift.end are JS Dates in their local time zone,
-        // and shift.timeZone is a string property on Shift (e.g., "America/New_York").
-        // If not, adjust as needed.
-        const shiftStartUtc = DateTime.fromJSDate(shift.start, { zone: shift.timeZone || "utc" }).toUTC();
-        const shiftEndUtc = DateTime.fromJSDate(shift.end, { zone: shift.timeZone || "utc" }).toUTC();
-
-        return dateUtc >= shiftStartUtc && dateUtc < shiftEndUtc;
+        return date >= shift.start && date < shift.end;
     });
 
     return match;

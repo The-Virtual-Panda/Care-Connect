@@ -11,6 +11,8 @@ export interface OrganizationDoc {
     name: string;
     dateCreated: Timestamp;
     dateUpdated: Timestamp;
+    twilioAccountSid?: string;
+    twilioAuthToken?: string;
 }
 
 /**
@@ -23,6 +25,8 @@ export function toOrganizationDoc(
         name: p.name as string,
         dateCreated: Timestamp.fromDate(p.dateCreated as Date),
         dateUpdated: Timestamp.fromDate(p.dateUpdated as Date),
+        twilioAccountSid: p.twilioAccountSid as string,
+        twilioAuthToken: p.twilioAuthToken as string,
     };
 }
 
@@ -35,6 +39,8 @@ export function fromOrganizationDoc(doc: OrganizationDoc, id: string): Organizat
         name: doc.name,
         dateCreated: doc.dateCreated.toDate(),
         dateUpdated: doc.dateUpdated.toDate(),
+        twilioAccountSid: doc.twilioAccountSid,
+        twilioAuthToken: doc.twilioAuthToken,
     };
 }
 

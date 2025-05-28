@@ -1,18 +1,19 @@
-import {Component, computed, ElementRef, inject, model, signal, ViewChild} from '@angular/core';
-import {RouterModule} from '@angular/router';
-import {CommonModule} from '@angular/common';
-import {StyleClassModule} from 'primeng/styleclass';
-import {LayoutService} from '@/layout/service/layout.service';
-import {AppBreadcrumb} from './app.breadcrumb';
-import {InputTextModule} from 'primeng/inputtext';
-import {ButtonModule} from 'primeng/button';
-import {IconFieldModule} from 'primeng/iconfield';
-import {InputIconModule} from 'primeng/inputicon';
-import {RippleModule} from 'primeng/ripple';
-import {BadgeModule} from 'primeng/badge';
-import {OverlayBadgeModule} from 'primeng/overlaybadge';
-import {AvatarModule} from 'primeng/avatar';
-import {FormsModule} from "@angular/forms";
+import { Component, computed, ElementRef, inject, model, signal, ViewChild } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { StyleClassModule } from 'primeng/styleclass';
+import { LayoutService } from '@/layout/service/layout.service';
+import { AppBreadcrumb } from './app.breadcrumb';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { RippleModule } from 'primeng/ripple';
+import { BadgeModule } from 'primeng/badge';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { AvatarModule } from 'primeng/avatar';
+import { FormsModule } from "@angular/forms";
+import { AuthService } from '@/services/auth.service';
 
 interface NotificationsBars {
     id: string;
@@ -39,18 +40,13 @@ interface NotificationsBars {
                 </a>
             </div>
 
-            <div class="topbar-right">
+            <div class="topbar-right" *ngIf="authService.isLoggedIn()">
                 <ul class="topbar-menu">
-                    <li class="right-sidebar-item">
-                        <a class="right-sidebar-button" (click)="toggleSearchBar()">
-                            <i class="pi pi-search"></i>
-                        </a>
-                    </li>
-                    <li class="right-sidebar-item">
+                    <!-- <li class="right-sidebar-item">
                         <button class="app-config-button" (click)="onConfigButtonClick()"><i class="pi pi-cog"></i>
                         </button>
-                    </li>
-                    <li class="right-sidebar-item static sm:relative">
+                    </li> -->
+                    <!-- <li class="right-sidebar-item static sm:relative">
                         <a class="right-sidebar-button relative z-50" pStyleClass="@next" enterFromClass="hidden"
                            enterActiveClass="animate-scalein" leaveActiveClass="animate-fadeout" leaveToClass="hidden"
                            [hideOnOutsideClick]="true">
@@ -138,7 +134,7 @@ interface NotificationsBars {
                                 }
                             </ul>
                         </div>
-                    </li>
+                    </li> -->
                     <li class="profile-item static sm:relative">
                         <a class="right-sidebar-button relative z-50" pStyleClass="@next" enterFromClass="hidden"
                            enterActiveClass="animate-scalein" leaveActiveClass="animate-fadeout" leaveToClass="hidden"
@@ -165,18 +161,6 @@ interface NotificationsBars {
                                 </li>
                                 <li>
                                     <a class="label-small dark:text-surface-400 flex gap-2 py-2 px-2.5 rounded-lg items-center hover:bg-emphasis transition-colors duration-150 cursor-pointer">
-                                        <i class="pi pi-calendar"></i>
-                                        <span>Calendar</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="label-small dark:text-surface-400 flex gap-2 py-2 px-2.5 rounded-lg items-center hover:bg-emphasis transition-colors duration-150 cursor-pointer">
-                                        <i class="pi pi-inbox"></i>
-                                        <span>Inbox</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="label-small dark:text-surface-400 flex gap-2 py-2 px-2.5 rounded-lg items-center hover:bg-emphasis transition-colors duration-150 cursor-pointer">
                                         <i class="pi pi-power-off"></i>
                                         <span>Log out</span>
                                     </a>
@@ -184,17 +168,19 @@ interface NotificationsBars {
                             </ul>
                         </div>
                     </li>
-                    <li class="right-sidebar-item">
+                    <!-- RIGHT MENU DRAWER -->
+                    <!-- <li class="right-sidebar-item">
                         <a tabindex="0" class="right-sidebar-button" (click)="showRightMenu()">
                             <i class="pi pi-align-right"></i>
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
         </div>`
 })
 export class AppTopbar {
     layoutService = inject(LayoutService);
+    authService = inject(AuthService);
 
     isDarkTheme = computed(() => this.layoutService.isDarkTheme());
 
@@ -303,9 +289,5 @@ export class AppTopbar {
 
     onConfigButtonClick() {
         this.layoutService.showConfigSidebar();
-    }
-
-    toggleSearchBar() {
-        this.layoutService.layoutState.update((value) => ({...value, searchBarActive: !value.searchBarActive}));
     }
 }

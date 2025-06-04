@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "emu": "firebase emulators:start",
+        "emu": "firebase emulators:start --import=./functions/seed-data",
         "emu:save": "firebase emulators:start --import=./functions/seed-data --export-on-exit=./functions/seed-data"
     }
 }

@@ -29,14 +29,16 @@
                     <span class="text-surface-400">or</span>
                     <span class="h-px w-full bg-primary-500/10"></span>
                 </div> -->
+                <app-alert />
                 <div class="flex flex-col gap-2">
                     <label for="email" class="font-medium text-surface-500 dark:text-white/64">Email Address</label>
-                    <input name="email" pInputText id="email" [(ngModel)]="email" class="w-full" />
+                    <input name="email" pInputText id="email" [(ngModel)]="email" class="w-full" required
+                        autocomplete="username" />
                 </div>
                 <div class="flex flex-col gap-2">
                     <label for="password" class="font-medium text-surface-500 dark:text-white/64">Password</label>
                     <input name="password" pInputText id="password" type="password" [(ngModel)]="password"
-                        class="w-full" />
+                        class="w-full" required autocomplete="current-password" />
                 </div>
                 <div class="flex items-center justify-end">
                     <!-- <div class="flex items-center gap-2">

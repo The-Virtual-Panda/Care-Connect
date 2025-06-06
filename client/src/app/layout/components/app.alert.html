@@ -1,0 +1,9 @@
+<ng-container *ngIf="visible">
+    <p-message [severity]="severity" [text]="!title ? detail : undefined" [closable]="closable" (onClose)="close()"
+        [style]="{width: '100%'}" [styleClass]="'w-full'">
+        <div class="flex flex-col">
+            <div class="font-semibold mb-1">{{ title }}</div>
+            <div>{{ detail }}</div>
+        </div>
+    </p-message>
+</ng-container>

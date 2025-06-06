@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, User } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, User, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -21,6 +21,16 @@ export class AuthService {
             return userCredential.user;
         } catch (error) {
             // Handle error (e.g., invalid credentials)
+            throw error;
+        }
+    }
+
+    async register(email: string, password: string): Promise<User | null> {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+            return userCredential.user;
+        } catch (error) {
+            // Handle error (e.g., email already in use)
             throw error;
         }
     }

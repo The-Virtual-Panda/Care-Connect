@@ -5,6 +5,7 @@ import { CheckboxModule } from "primeng/checkbox";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { AppAlert } from '@/layout/components/app.alert';
+import { AuthService } from '@/services/auth.service';
 
 @Component({
     selector: 'app-register',
@@ -28,7 +29,9 @@ export class Register {
     confirmPassword = '';
     checkbox = false;
 
-    register() {
+    constructor(private authService: AuthService) { }
+
+    async register() {
         if (!this.email || !this.password || !this.confirmPassword) {
             this.alert.showError('All fields are required.', 'Registration Error');
             return;
@@ -45,7 +48,11 @@ export class Register {
             return;
         }
 
-        // Proceed with registration logic here
-        this.alert.showSuccess('Registration successful!', 'Whoops!');
+        try {
+            await this.authService.register(this.email, this.password);
+            this.alert.showSuccess('Registration successful!', 'Success');
+        } catch (error: any) {
+            this.alert.showError(error?.message || 'Registration failed.', 'Registration Error');
+        }
     }
 }

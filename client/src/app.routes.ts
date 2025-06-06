@@ -33,7 +33,7 @@ export const appRoutes: Routes = [
             },
             {
                 path: 'register',
-                loadComponent: () => import('@/pages/auth/register').then((c) => c.Register)
+                loadComponent: () => import('@/pages/auth/register.component').then((c) => c.Register)
             },
             {
                 path: 'verification',

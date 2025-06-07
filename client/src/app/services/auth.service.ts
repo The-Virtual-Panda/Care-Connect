@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, User, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, User, createUserWithEmailAndPassword, onAuthStateChanged } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -9,10 +10,18 @@ export class AuthService {
     private auth: Auth = inject(Auth);
     private router = inject(Router);
 
-    constructor() { }
+    // Observable for auth state
+    private userSubject = new BehaviorSubject<User | null>(null);
+    user$: Observable<User | null> = this.userSubject.asObservable();
 
-    isLoggedIn() {
-        return this.auth.currentUser !== null;
+    constructor() {
+        onAuthStateChanged(this.auth, (user) => {
+            this.userSubject.next(user);
+        });
+    }
+
+    isLoggedIn(): boolean {
+        return this.userSubject.value !== null;
     }
 
     async login(email: string, password: string): Promise<User | null> {

@@ -1,4 +1,5 @@
 export const baseEnvironment = {
+    version: '1.0.0',
     firebase: {
         projectId: "care-connect-2f651",
         appId: "1:490467597353:web:0b938f74adfa7b75359038",

@@ -7,8 +7,9 @@ import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
 import { definePreset } from '@primeng/themes';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
+import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { environment } from './environments/environment';
 
 const MyPreset = definePreset(Aura, {
     semantic: {
@@ -82,18 +83,24 @@ export const appConfig: ApplicationConfig = {
         ),
         provideHttpClient(withFetch()),
         provideAnimationsAsync(),
+
         providePrimeNG({ theme: { preset: MyPreset, options: { darkModeSelector: '.app-dark' } } }),
-        provideFirebaseApp(() => initializeApp({
-            projectId: "care-connect-2f651",
-            appId: "1:490467597353:web:0b938f74adfa7b75359038",
-            storageBucket: "care-connect-2f651.firebasestorage.app",
-            apiKey: "AIzaSyCPBVMHtx5PZGFBqCyLaLIDRV3lm8lpr7A",
-            authDomain: "care-connect-2f651.firebaseapp.com",
-            messagingSenderId: "490467597353",
-            measurementId: "G-8BMFDQHCPH"
-        })), provideAuth(() => getAuth()),
-        provideAuth(() => getAuth()),
-        provideFirestore(() => getFirestore()),
+
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAuth(() => {
+            const auth = getAuth();
+            if (environment.useEmulators) {
+                connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+            }
+            return auth;
+        }),
+        provideFirestore(() => {
+            const firestore = getFirestore();
+            if (environment.useEmulators) {
+                connectFirestoreEmulator(firestore, "localhost", 8080);
+            }
+            return firestore;
+        }),
     ]
 };
 

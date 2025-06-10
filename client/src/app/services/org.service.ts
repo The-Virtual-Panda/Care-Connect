@@ -1,7 +1,8 @@
 import { Organization, organizationConverter } from '@/models/organization';
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, addDoc, getDocs, getDoc, updateDoc, deleteDoc, DocumentReference } from '@angular/fire/firestore';
+import { Firestore, collection, doc, addDoc, getDocs, getDoc, updateDoc, deleteDoc, DocumentReference, Timestamp } from '@angular/fire/firestore';
 import { from, Observable } from 'rxjs';
+import { FirestoreCollections } from './firestore-collections';
 
 @Injectable({
     providedIn: 'root'
@@ -10,7 +11,7 @@ export class OrgService {
     constructor(private firestore: Firestore) { }
 
     private orgsCollection() {
-        return collection(this.firestore, 'organizations').withConverter(organizationConverter);
+        return collection(this.firestore, FirestoreCollections.organizations.path).withConverter(organizationConverter);
     }
 
     getOrganizations(): Observable<Organization[]> {
@@ -23,7 +24,7 @@ export class OrgService {
     }
 
     getOrganizationById(orgId: string): Observable<Organization | null> {
-        const docRef = doc(this.firestore, `organizations/${orgId}`).withConverter(organizationConverter);
+        const docRef = doc(this.firestore, FirestoreCollections.organizations.doc(orgId)).withConverter(organizationConverter);
         return from(
             getDoc(docRef).then(snapshot =>
                 snapshot.exists() ? snapshot.data()! : null
@@ -37,20 +38,14 @@ export class OrgService {
     }
 
     updateOrganization(orgId: string, org: Partial<Organization>): Observable<void> {
-        const docRef = doc(this.firestore, `organizations/${orgId}`).withConverter(organizationConverter);
-        // If updating, you may want to convert partials manually if they include dates
-        const updateData = org as any;
-        if (updateData.dateCreated instanceof Date) {
-            updateData.dateCreated = (window as any).firebase.firestore.Timestamp.fromDate(updateData.dateCreated);
-        }
-        if (updateData.dateUpdated instanceof Date) {
-            updateData.dateUpdated = (window as any).firebase.firestore.Timestamp.fromDate(updateData.dateUpdated);
-        }
-        return from(updateDoc(docRef, updateData));
+        const docRef = doc(this.firestore, FirestoreCollections.organizations.doc(orgId))
+            .withConverter(organizationConverter);
+
+        return from(updateDoc(docRef, org as any));
     }
 
     deleteOrganization(orgId: string): Observable<void> {
-        const docRef = doc(this.firestore, `organizations/${orgId}`).withConverter(organizationConverter);
+        const docRef = doc(this.firestore, FirestoreCollections.organizations.doc(orgId)).withConverter(organizationConverter);
         return from(deleteDoc(docRef));
     }
 }

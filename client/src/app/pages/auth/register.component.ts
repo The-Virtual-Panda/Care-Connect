@@ -23,7 +23,7 @@ import { AuthService } from '@/services/auth.service';
 export class Register {
     @ViewChild(AppAlert) alert!: AppAlert;
 
-    username = '';
+    name = '';
     email = '';
     password = '';
     confirmPassword = '';

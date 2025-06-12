@@ -18,7 +18,7 @@ export interface TeamMemberDoc {
 }
 
 // Converter functions
-export function toTeamMember(doc: TeamMemberDoc, id: string): TeamMember {
+export function toTeamMember(id: string, doc: TeamMemberDoc): TeamMember {
     return {
         id,
         name: doc.name,
@@ -42,6 +42,6 @@ export const teamMemberConverter = {
     toFirestore: (member: TeamMember) => fromTeamMember(member),
     fromFirestore: (snapshot: QueryDocumentSnapshot<DocumentData>, options: SnapshotOptions) => {
         const data = snapshot.data(options) as TeamMemberDoc;
-        return toTeamMember(data, snapshot.id);
+        return toTeamMember(snapshot.id, data);
     }
 };

@@ -1,6 +1,6 @@
 import { teamMemberConverter, TeamMember } from '@/models/team-member';
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, addDoc, getDocs, updateDoc, deleteDoc, DocumentReference } from '@angular/fire/firestore';
+import { Firestore, collection, doc, addDoc, getDocs, getDoc, updateDoc, deleteDoc, DocumentReference } from '@angular/fire/firestore';
 import { from, Observable } from 'rxjs';
 
 @Injectable({
@@ -18,6 +18,15 @@ export class TeamService {
         return from(
             getDocs(colRef).then(snapshot =>
                 snapshot.docs.map(doc => doc.data())
+            )
+        );
+    }
+
+    getTeamMemberById(orgId: string, memberId: string): Observable<TeamMember | null> {
+        const docRef = doc(this.firestore, `organizations/${orgId}/teamMembers/${memberId}`).withConverter(teamMemberConverter);
+        return from(
+            getDoc(docRef).then(snapshot =>
+                snapshot.exists() ? snapshot.data()! : null
             )
         );
     }

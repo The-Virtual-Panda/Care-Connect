@@ -100,7 +100,7 @@ export const appConfig: ApplicationConfig = {
                 connectFirestoreEmulator(firestore, "localhost", 8080);
             }
             return firestore;
-        }),
+        })
     ]
 };
 

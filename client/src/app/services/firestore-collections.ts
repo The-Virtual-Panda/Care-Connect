@@ -11,9 +11,9 @@ export const FirestoreCollections = {
     organizations: {
         path: 'organizations',
         doc: (orgId: string) => `organizations/${orgId}`,
-        users: {
-            path: (orgId: string) => `organizations/${orgId}/users`,
-            doc: (orgId: string, uid: string) => `organizations/${orgId}/users/${uid}`,
+        members: {
+            path: (orgId: string) => `organizations/${orgId}/members`,
+            doc: (orgId: string, uid: string) => `organizations/${orgId}/members/${uid}`,
         },
     },
 

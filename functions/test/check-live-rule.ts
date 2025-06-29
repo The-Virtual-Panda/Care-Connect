@@ -49,11 +49,11 @@ async function checkLiveRule(dateString: string, dateToCheck: Date) {
 //     console.error("Error checking live rule:", err);
 // });
 
-async function checkJuneLiveRules() {
+async function checkJulyLiveRules() {
     const zone = "America/Los_Angeles";
     const times = ["06:59", "07:00"];
-    for (let day = 1; day <= 30; day++) {
-        const dateStr = `2025-06-${day.toString().padStart(2, "0")}`;
+    for (let day = 1; day <= 31; day++) {
+        const dateStr = `2025-07-${day.toString().padStart(2, "0")}`;
         for (const time of times) {
             const pstTime = `${dateStr}T${time}`;
             const checkDate = DateTime.fromISO(pstTime, { zone }).toUTC().toJSDate();
@@ -64,6 +64,6 @@ async function checkJuneLiveRules() {
     }
 }
 
-checkJuneLiveRules().catch(err => {
+checkJulyLiveRules().catch(err => {
     console.error("Error checking June live rules:", err);
 });

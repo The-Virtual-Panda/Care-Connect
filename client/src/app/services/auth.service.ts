@@ -27,16 +27,37 @@ export class AuthService {
         );
     }
 
-    async login(email: string, password: string): Promise<User | null> {
-        try {
-            const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-            // Store the user info in the subject
-            this.userSubject.next(userCredential.user);
-            return userCredential.user;
-        } catch (error) {
-            // Handle error (e.g., invalid credentials)
-            throw error;
-        }
+    login(email: string, password: string): Observable<User> {
+        return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
+            map(userCredential => {
+                this.userSubject.next(userCredential.user);
+                return userCredential.user;
+            }),
+            catchError((error: AuthError) => {
+                let errorMessage: string;
+
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                    case 'auth/invalid-credential':
+                        errorMessage = 'Invalid email or password. Please try again.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'This account has been disabled. Please contact support.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many failed login attempts. Please try again later.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Please enter a valid email address.';
+                        break;
+                    default:
+                        errorMessage = 'Login failed. Please try again.';
+                }
+
+                return throwError(() => new Error(errorMessage));
+            })
+        );
     }
 
     register(email: string, password: string): Observable<User> {

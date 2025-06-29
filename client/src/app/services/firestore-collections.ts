@@ -8,12 +8,22 @@ export const FirestoreCollections = {
         },
     },
 
+    // invites: {
+    //     path: 'invites',
+    //     doc: (id: string) => `invites/${id}`,
+    //     byEmail: (email: string) => `invites`,
+    // },
+
     organizations: {
         path: 'organizations',
         doc: (orgId: string) => `organizations/${orgId}`,
-        members: {
-            path: (orgId: string) => `organizations/${orgId}/members`,
-            doc: (orgId: string, uid: string) => `organizations/${orgId}/members/${uid}`,
+        users: {
+            path: (orgId: string) => `organizations/${orgId}/users`,
+            doc: (orgId: string, uid: string) => `organizations/${orgId}/users/${uid}`,
+        },
+        teamMembers: {
+            path: (orgId: string) => `organizations/${orgId}/teamMembers`,
+            doc: (orgId: string, uid: string) => `organizations/${orgId}/teamMembers/${uid}`,
         },
     },
 
@@ -26,8 +36,5 @@ export const FirestoreCollections = {
         }
     },
 
-    teamMembers: {
-        path: 'teamMembers',
-        doc: (id: string) => `teamMembers/${id}`,
-    },
+
 };

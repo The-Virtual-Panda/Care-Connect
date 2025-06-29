@@ -4,11 +4,11 @@ import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore
 import { from, forkJoin, Observable, switchMap } from 'rxjs';
 import { User } from '@/models/user';
 import { OrgRole } from '@/models/enums/org-role';
-import { OrgMember } from '@/models/org-member';
+import { OrgMembership } from '@/models/org-membership';
 import { FirestoreCollections } from './firestore-collections';
 import { AuthService } from './auth.service';
 import { InviteStatus } from '@/models/enums/invite-status';
-import { OrgMemberDoc } from '../models/org-member';
+import { OrgMembershipDoc } from '../models/org-membership';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -20,7 +20,7 @@ export class UserService {
         password: string,
         name: string,
         orgId: string,
-        role: OrgMember['role'] = OrgRole.Admin
+        role: OrgMembership['role'] = OrgRole.Admin
     ): Observable<void[]> {
         return this.authService
             .register(email, password)
@@ -35,7 +35,7 @@ export class UserService {
                     );
                     const orgUserRef = doc(
                         this.firestore,
-                        FirestoreCollections.organizations.members.doc(orgId, uid)
+                        FirestoreCollections.organizations.users.doc(orgId, uid)
                     );
 
                     const userData: User = {
@@ -48,7 +48,7 @@ export class UserService {
                         dateUpdated: new Date(),
                     };
 
-                    const membershipData: OrgMember = {
+                    const membershipData: OrgMembership = {
                         id: '', // This will be set by Firestore
                         orgId: orgId,
                         role: role,

@@ -2,7 +2,7 @@ import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from 
 import { InviteStatus } from "./enums/invite-status";
 import { OrgRole } from "./enums/org-role";
 
-export interface OrgMember {
+export interface OrgMembership {
     id: string;
     orgId: string;
     role: OrgRole;
@@ -10,36 +10,36 @@ export interface OrgMember {
     inviteStatus: InviteStatus;
 }
 
-export interface OrgMemberDoc {
+export interface OrgMembershipDoc {
     orgId: string;
     role: OrgRole;
-    joinedAt: Timestamp;
+    dateJoined: Timestamp;
     inviteStatus: InviteStatus;
 }
 
-export function toOrgMembership(id: string, doc: OrgMemberDoc): OrgMember {
+export function toOrgMembership(id: string, doc: OrgMembershipDoc): OrgMembership {
     return {
         id: id,
         orgId: doc.orgId,
         role: doc.role,
-        dateJoined: doc.joinedAt.toDate(),
+        dateJoined: doc.dateJoined.toDate(),
         inviteStatus: doc.inviteStatus,
     };
 }
 
-export function fromOrgMembership(m: OrgMember): OrgMemberDoc {
+export function fromOrgMembership(m: OrgMembership): OrgMembershipDoc {
     return {
         orgId: m.orgId,
         role: m.role,
-        joinedAt: Timestamp.fromDate(m.dateJoined),
+        dateJoined: Timestamp.fromDate(m.dateJoined),
         inviteStatus: m.inviteStatus,
     };
 }
 
 export const orgMembershipConverter = {
-    toFirestore: (m: OrgMember) => fromOrgMembership(m),
+    toFirestore: (m: OrgMembership) => fromOrgMembership(m),
     fromFirestore: (snapshot: QueryDocumentSnapshot<DocumentData>, options: SnapshotOptions) => {
-        const data = snapshot.data(options) as OrgMemberDoc;
+        const data = snapshot.data(options) as OrgMembershipDoc;
         return toOrgMembership(snapshot.id, data);
     }
 };

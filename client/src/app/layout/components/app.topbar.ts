@@ -31,7 +31,7 @@ interface NotificationsBars {
                 <a tabindex="0" #menubutton type="button" class="menu-button" (click)="onMenuButtonClick()">
                     <i class="pi pi-chevron-left"></i>
                 </a>
-                <img class="horizontal-logo" src="/layout/images/logo-white.svg" alt="logo"/>
+                <!-- <img class="horizontal-logo" src="/layout/images/logo-white.svg" alt="logo"/> -->
                 <span class="topbar-separator"></span>
                 <div app-breadcrumb></div>
                 <a routerLink="/">
@@ -139,15 +139,13 @@ interface NotificationsBars {
                         <a class="right-sidebar-button relative z-50" pStyleClass="@next" enterFromClass="hidden"
                            enterActiveClass="animate-scalein" leaveActiveClass="animate-fadeout" leaveToClass="hidden"
                            [hideOnOutsideClick]="true">
-                            <p-avatar styleClass="!w-10 !h-10">
-                                <img src="/layout/images/profile.jpg"/>
-                            </p-avatar>
+                            <p-avatar styleClass="!w-10 !h-10" icon="pi pi-user" />
                         </a>
                         <div
                             class="list-none p-2 m-0 rounded-2xl border border-surface overflow-hidden absolute bg-surface-0 dark:bg-surface-900 hidden origin-top w-52 mt-2 right-0 z-[999] top-auto shadow-[0px_56px_16px_0px_rgba(0,0,0,0.00),0px_36px_14px_0px_rgba(0,0,0,0.01),0px_20px_12px_0px_rgba(0,0,0,0.02),0px_9px_9px_0px_rgba(0,0,0,0.03),0px_2px_5px_0px_rgba(0,0,0,0.04)]"
                         >
                             <ul class="flex flex-col gap-1">
-                                <li>
+                                <!-- <li>
                                     <a class="label-small dark:text-surface-400 flex gap-2 py-2 px-2.5 rounded-lg items-center hover:bg-emphasis transition-colors duration-150 cursor-pointer">
                                         <i class="pi pi-user"></i>
                                         <span>Profile</span>
@@ -158,7 +156,7 @@ interface NotificationsBars {
                                         <i class="pi pi-cog"></i>
                                         <span>Settings</span>
                                     </a>
-                                </li>
+                                </li> -->
                                 <li>
                                     <a (click)="logout()" class="label-small dark:text-surface-400 flex gap-2 py-2 px-2.5 rounded-lg items-center hover:bg-emphasis transition-colors duration-150 cursor-pointer">
                                         <i class="pi pi-power-off"></i>

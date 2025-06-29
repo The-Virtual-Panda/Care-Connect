@@ -12,8 +12,8 @@ import { CommonModule } from '@angular/common';
     template: ` <div class="layout-sidebar" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
         <div class="sidebar-header">
             <a class="logo" [routerLink]="['/']">
-                <img class="logo-image" src="/layout/images/logo-{{ isDarkTheme() ? 'white' : 'dark' }}.svg" alt="logo" />
-                <span class="app-name text-4xl font-medium leading-normal">Poseidon</span></a
+                <!-- <img class="logo-image" src="/layout/images/logo-{{ isDarkTheme() ? 'white' : 'dark' }}.svg" alt="logo" /> -->
+                <span class="app-name text-4xl font-medium leading-normal">Care Connect</span></a
             >
             <button class="layout-sidebar-anchor z-2" type="button" (click)="anchor()"></button>
         </div>
@@ -36,7 +36,7 @@ export class AppSidebar {
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef
-    ) {}
+    ) { }
 
     onMouseEnter() {
         if (!this.layoutService.layoutState().anchored) {

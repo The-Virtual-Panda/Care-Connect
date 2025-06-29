@@ -1,14 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, User, createUserWithEmailAndPassword, onAuthStateChanged, AuthError } from '@angular/fire/auth';
-import { Router } from '@angular/router';
-import { BehaviorSubject, catchError, from, map, Observable, take, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, from, map, Observable, switchMap, take, throwError } from 'rxjs';
+import { UserService } from './user.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private auth: Auth = inject(Auth);
-    private router = inject(Router);
+    private userService = inject(UserService);
 
     // Observable for auth state
     private userSubject = new BehaviorSubject<User | null>(null);
@@ -60,11 +60,17 @@ export class AuthService {
         );
     }
 
-    register(email: string, password: string): Observable<User> {
+    registerSelf(email: string, password: string, name: string, orgName: string): Observable<{ userId: string, orgId: string }> {
         return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
-            map(userCredential => {
+            switchMap(userCredential => {
                 this.userSubject.next(userCredential.user);
-                return userCredential.user;
+                // Now call userService to create the user profile
+                return this.userService.createUserAndOrg(
+                    userCredential.user.uid,
+                    email,
+                    name,
+                    orgName
+                );
             }),
             catchError((error: AuthError) => {
                 let errorMessage: string;
@@ -82,6 +88,8 @@ export class AuthService {
                     default:
                         errorMessage = 'An unexpected error occurred.';
                 }
+
+                console.log('Registration error:', error);
 
                 return throwError(() => new Error(errorMessage));
             })

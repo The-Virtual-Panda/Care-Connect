@@ -4,6 +4,7 @@ import { OrgRole } from "./enums/org-role";
 
 export interface OrgMembership {
     id: string;
+    userId: string;
     orgId: string;
     role: OrgRole;
     dateJoined: Date;
@@ -11,6 +12,7 @@ export interface OrgMembership {
 }
 
 export interface OrgMembershipDoc {
+    userId: string;
     orgId: string;
     role: OrgRole;
     dateJoined: Timestamp;
@@ -20,6 +22,7 @@ export interface OrgMembershipDoc {
 export function toOrgMembership(id: string, doc: OrgMembershipDoc): OrgMembership {
     return {
         id: id,
+        userId: doc.userId,
         orgId: doc.orgId,
         role: doc.role,
         dateJoined: doc.dateJoined.toDate(),
@@ -29,6 +32,7 @@ export function toOrgMembership(id: string, doc: OrgMembershipDoc): OrgMembershi
 
 export function fromOrgMembership(m: OrgMembership): OrgMembershipDoc {
     return {
+        userId: m.userId,
         orgId: m.orgId,
         role: m.role,
         dateJoined: Timestamp.fromDate(m.dateJoined),

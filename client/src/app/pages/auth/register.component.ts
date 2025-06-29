@@ -3,7 +3,7 @@ import { ButtonModule } from "primeng/button";
 import { InputTextModule } from "primeng/inputtext";
 import { CheckboxModule } from "primeng/checkbox";
 import { FormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { AppAlert } from '@/layout/components/app.alert';
 import { AuthService } from '@/services/auth.service';
 
@@ -23,13 +23,14 @@ import { AuthService } from '@/services/auth.service';
 export class Register {
     @ViewChild(AppAlert) alert!: AppAlert;
 
+    orgName = '';
     name = '';
     email = '';
     password = '';
     confirmPassword = '';
     checkbox = false;
 
-    constructor(private authService: AuthService) { }
+    constructor(private authService: AuthService, private router: Router) { }
 
     async register() {
         if (!this.email || !this.password || !this.confirmPassword) {
@@ -48,11 +49,27 @@ export class Register {
             return;
         }
 
-        try {
-            await this.authService.register(this.email, this.password);
-            this.alert.showSuccess('Registration successful!', 'Success');
-        } catch (error: any) {
-            this.alert.showError(error?.message || 'Registration failed.', 'Registration Error');
-        }
+        // Subscribe to the observable
+        this.authService.registerSelf(this.email, this.password, this.name, this.orgName)
+            .subscribe({
+                next: (result) => {
+                    // Log the registration details (for debugging)
+                    console.log('Registration successful:', result);
+
+                    // Include some details in the success message
+                    this.alert.showSuccess(
+                        `Registration successful! Your account and organization have been created. You will be redirected in a few seconds.`,
+                        'Success'
+                    );
+
+                    // Set a timer to redirect after 3 seconds
+                    setTimeout(() => {
+                        this.router.navigate(['/']);
+                    }, 3000);
+                },
+                error: (error) => {
+                    this.alert.showError(error?.message || 'Registration failed.', 'Registration Error');
+                }
+            });
     }
 }

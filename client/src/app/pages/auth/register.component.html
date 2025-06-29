@@ -31,7 +31,12 @@
                     <span class="h-px w-full bg-primary-500/10"></span>
                 </div> -->
                 <div class="flex flex-col gap-2">
-                    <label for="name" class="font-medium text-surface-500 dark:text-white/64">Name</label>
+                    <label for="orgName" class="font-medium text-surface-500 dark:text-white/64">Organization
+                        Name</label>
+                    <input name="orgName" pInputText id="orgName" [(ngModel)]="orgName" class="w-full" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label for="name" class="font-medium text-surface-500 dark:text-white/64">Your Name</label>
                     <input name="name" pInputText id="name" [(ngModel)]="name" class="w-full" />
                 </div>
                 <div class="flex flex-col gap-2">

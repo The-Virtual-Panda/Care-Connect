@@ -1,88 +1,90 @@
 // src/app/services/user.service.ts
 import { Injectable } from '@angular/core';
 import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore';
-import { from, forkJoin, Observable, switchMap } from 'rxjs';
-import { User } from '@/models/user';
+import { from, forkJoin, Observable, switchMap, map } from 'rxjs';
+import { fromUser, User, userConverter } from '@/models/user';
 import { OrgRole } from '@/models/enums/org-role';
-import { OrgMembership } from '@/models/org-membership';
+import { fromOrgMembership, OrgMembership, orgMembershipConverter } from '@/models/org-membership';
 import { FirestoreCollections } from './firestore-collections';
-import { AuthService } from './auth.service';
 import { InviteStatus } from '@/models/enums/invite-status';
-import { OrgMembershipDoc } from '../models/org-membership';
+import { Organization, orgConverter } from '@/models/organization';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    constructor(private firestore: Firestore,
-        private authService: AuthService) { }
+    constructor(private firestore: Firestore) { }
 
-    registerSelf(
+    createUserAndOrg(
+        uid: string,
         email: string,
-        password: string,
         name: string,
-        orgId: string,
-        role: OrgMembership['role'] = OrgRole.Admin
-    ): Observable<void[]> {
-        return this.authService
-            .register(email, password)
-            .pipe(
-                switchMap(cred => {
-                    const uid = cred.uid;
+        orgName: string,
+    ): Observable<{ userId: string, orgId: string }> {
+        // Generate a new organization ID
 
-                    const userRef = doc(this.firestore, FirestoreCollections.users.doc(uid));
-                    const membershipRef = doc(
-                        this.firestore,
-                        FirestoreCollections.users.orgMemberships.doc(uid, orgId)
-                    );
-                    const orgUserRef = doc(
-                        this.firestore,
-                        FirestoreCollections.organizations.users.doc(orgId, uid)
-                    );
+        const orgCol = FirestoreCollections.organizations.collection(this.firestore);
+        const orgRef = doc(orgCol);
+        const orgId = orgRef.id;
 
-                    const userData: User = {
-                        uid: uid,
-                        email,
-                        name: name,
-                        defaultOrgId: orgId,
-                        lastLogin: null,
-                        dateCreated: new Date(),
-                        dateUpdated: new Date(),
-                    };
+        // Use withConverter to apply the converters
+        const userRef = FirestoreCollections.users.docRef(this.firestore, uid);
+        const membershipRef = FirestoreCollections.users.orgMemberships.docRef(
+            this.firestore,
+            uid,
+            orgId
+        );
+        const orgUserRef = FirestoreCollections.organizations.users.docRef(
+            this.firestore,
+            orgId,
+            uid
+        );
 
-                    const membershipData: OrgMembership = {
-                        id: '', // This will be set by Firestore
-                        orgId: orgId,
-                        role: role,
-                        dateJoined: new Date(),
-                        inviteStatus: InviteStatus.Active
-                    };
+        const now = new Date();
 
-                    return forkJoin([
-                        from(
-                            setDoc(userRef, {
-                                ...userData,
-                                dateCreated: serverTimestamp(),
-                                dateUpdated: serverTimestamp(),
-                                lastLogin: serverTimestamp(),
-                            })
-                        ),
-                        from(
-                            setDoc(membershipRef, {
-                                ...membershipData,
-                                dateJoined: serverTimestamp(),
-                            })
-                        ),
-                        from(
-                            setDoc(orgUserRef, {
-                                uid,
-                                email,
-                                role,
-                                joinedAt: serverTimestamp(),
-                                status: 'active',
-                            })
-                        ),
-                    ]);
-                })
-            );
+        // Create user object using the model interface
+        const userData: User = {
+            uid: uid,
+            email,
+            name: name,
+            defaultOrgId: orgId,
+            lastLogin: now,
+            dateCreated: now,
+            dateUpdated: now,
+        };
+
+        const orgData: Organization = {
+            id: orgId,
+            name: orgName,
+            dateCreated: now,
+            dateUpdated: now,
+            twilioAccountSid: null,
+            twilioAuthToken: null,
+        };
+
+        // Create membership object using the model interface
+        const membershipData: OrgMembership = {
+            id: orgId,
+            userId: uid,
+            orgId: orgId,
+            role: OrgRole.Admin,
+            inviteStatus: InviteStatus.Active,
+            dateJoined: now
+        };
+
+        return forkJoin([
+            // Create user document - pass the model directly
+            from(setDoc(userRef, userData)),
+
+            // Create organization document
+            from(setDoc(orgRef, orgData)),
+
+            // Create user's membership - pass the model directly
+            from(setDoc(membershipRef, membershipData)),
+
+            // Add user to organization's users collection
+            from(setDoc(orgUserRef, membershipData)),
+        ]).pipe(
+            map(() => ({ userId: uid, orgId: orgId }))
+        );
     }
 
 }

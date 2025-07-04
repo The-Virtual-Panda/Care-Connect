@@ -1,6 +1,6 @@
 import { TeamMember } from '@/models/team-member';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, inject, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -16,6 +16,12 @@ import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
+import { TeamService } from '@/services/team.service';
+import { AppAlert } from '@/layout/components/app.alert';
+import { ToolbarModule } from 'primeng/toolbar';
+import { Skeleton } from 'primeng/skeleton';
 
 @Component({
     selector: 'app-team',
@@ -35,42 +41,70 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
         ButtonModule,
         RatingModule,
         RippleModule,
-        IconFieldModule
+        IconFieldModule,
+        ToolbarModule,
+        Skeleton,
+        AppAlert
     ],
     templateUrl: './team.component.html',
     standalone: true,
+    providers: [MessageService]
 })
-export class TeamComponent {
+export class TeamComponent implements OnInit, OnDestroy {
 
-    teamMembers: TeamMember[] = [
-        {
-            id: '1',
-            name: 'John Doe',
-            phoneNumber: '+1234567890',
-            dateCreated: new Date('2023-01-01'),
-            dateUpdated: new Date('2023-01-02')
-        },
-        {
-            id: '2',
-            name: 'Jane Smith',
-            phoneNumber: '+0987654321',
-            dateCreated: new Date('2023-02-01'),
-            dateUpdated: new Date('2023-02-02')
+    teamService = inject(TeamService);
+    messageService = inject(MessageService);
+
+    @ViewChild(AppAlert) alert: AppAlert | undefined;
+
+    teamMembers: TeamMember[] = [];
+    selectedMembers: TeamMember[] = [];
+    isLoading: boolean = true;
+    searchQuery: string = '';
+
+    private subscription: Subscription | null = null;
+
+    ngOnInit(): void {
+        this.reload();
+    }
+
+    ngOnDestroy(): void {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
         }
-    ];
-    representatives: any[] | undefined;
-    isLoading: boolean = false;
-
-    getSeverity(arg0: any): string | null | undefined {
-        throw new Error('Method not implemented.');
     }
 
-    clear(_t14: Table<any>) {
-        throw new Error('Method not implemented.');
+    reload(): void {
+        this.isLoading = true;
+        this.alert?.close();
+
+        this.subscription = this.teamService.getTeamMembers().subscribe({
+            next: (members) => {
+                this.teamMembers = members;
+                this.isLoading = false;
+            },
+            error: (error) => {
+                this.alert?.showError(`Failed to load team members: ${error.message}`);
+                this.isLoading = false;
+            }
+        });
     }
 
-    onGlobalFilter(_t14: Table<any>, $event: Event) {
-        throw new Error('Method not implemented.');
+    reset() {
+        this.selectedMembers = [];
+        this.reload();
     }
 
+    clear(table: Table<any>) {
+        table.clear();
+        this.searchQuery = '';
+    }
+
+    onGlobalFilter(table: Table<any>, event: Event) {
+        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
+
+    deleteSelectedMembers() {
+        throw new Error('Method not implemented.');
+    }
 }

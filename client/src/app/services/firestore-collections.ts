@@ -1,76 +1,86 @@
-import { OrgMembership, orgMembershipConverter } from "@/models/org-membership";
-import { Organization, orgConverter } from "@/models/organization";
-import { teamMemberConverter } from "@/models/team-member";
-import { User, userConverter } from "@/models/user";
-import { collection, CollectionReference, doc, DocumentReference, Firestore } from "@angular/fire/firestore";
-import { FirestoreDataConverter } from "@angular/fire/firestore";
+import { Injectable, inject } from '@angular/core';
+import {
+    collection,
+    CollectionReference,
+    doc,
+    DocumentReference,
+    Firestore,
+    FirestoreDataConverter
+} from '@angular/fire/firestore';
 
+import { OrgMembership, orgMembershipConverter } from '@/models/org-membership';
+import { Organization, orgConverter } from '@/models/organization';
+import { teamMemberConverter } from '@/models/team-member';
+import { User, userConverter } from '@/models/user';
 
-// Helper function to generate collection helpers
-function createCollectionHelpers<T>(collectionPath: string,
-    converter?: FirestoreDataConverter<T>) {
-    return {
-        path: collectionPath,
-        collection: (fs: Firestore): CollectionReference<T> =>
-            converter
-                ? collection(fs, collectionPath).withConverter(converter)
-                : collection(fs, collectionPath) as CollectionReference<T>,
-        docPath: (id: string) => `${collectionPath}/${id}`,
-        docRef: (fs: Firestore, id: string): DocumentReference<T> =>
-            converter
-                ? doc(fs, `${collectionPath}/${id}`).withConverter(converter)
-                : doc(fs, `${collectionPath}/${id}`) as DocumentReference<T>,
-    };
-}
+@Injectable({
+    providedIn: 'root'
+})
+export class FirestoreCollectionsService {
+    private firestore = inject(Firestore);
 
-// Helper function to create subcollection helpers
-function createSubcollectionHelpers<T>(
-    getCollectionPath: (parentId: string) => string,
-    converter?: FirestoreDataConverter<T>
-) {
-    return {
-        path: getCollectionPath,
-        collection: (fs: Firestore, parentId: string): CollectionReference<T> =>
-            converter
-                ? collection(fs, getCollectionPath(parentId)).withConverter(converter)
-                : collection(fs, getCollectionPath(parentId)) as CollectionReference<T>,
-        docPath: (parentId: string, docId: string) => `${getCollectionPath(parentId)}/${docId}`,
-        docRef: (fs: Firestore, parentId: string, docId: string): DocumentReference<T> =>
-            converter
-                ? doc(fs, `${getCollectionPath(parentId)}/${docId}`).withConverter(converter)
-                : doc(fs, `${getCollectionPath(parentId)}/${docId}`) as DocumentReference<T>,
-    };
-}
+    // Helper to build top-level collections
+    private createCollectionHelpers<T>(collectionPath: string, converter?: FirestoreDataConverter<T>) {
+        return {
+            path: collectionPath,
+            collection: (): CollectionReference<T> => {
+                return converter
+                    ? collection(this.firestore, collectionPath).withConverter(converter)
+                    : collection(this.firestore, collectionPath) as CollectionReference<T>;
+            },
+            docPath: (id: string) => `${collectionPath}/${id}`,
+            docRef: (id: string): DocumentReference<T> => {
+                return converter
+                    ? doc(this.firestore, `${collectionPath}/${id}`).withConverter(converter)
+                    : doc(this.firestore, `${collectionPath}/${id}`) as DocumentReference<T>;
+            }
+        };
+    }
 
-// Define the Firestore collections using the helper function
-export const FirestoreCollections = {
-    users: {
-        ...createCollectionHelpers<User>('users', userConverter),
+    // Helper to build subcollections
+    private createSubcollectionHelpers<T>(
+        getPath: (parentId: string) => string,
+        converter?: FirestoreDataConverter<T>
+    ) {
+        return {
+            path: getPath,
+            collection: (parentId: string): CollectionReference<T> => {
+                return converter
+                    ? collection(this.firestore, getPath(parentId)).withConverter(converter)
+                    : collection(this.firestore, getPath(parentId)) as CollectionReference<T>;
+            },
+            docPath: (parentId: string, docId: string) => `${getPath(parentId)}/${docId}`,
+            docRef: (parentId: string, docId: string): DocumentReference<T> => {
+                return converter
+                    ? doc(this.firestore, `${getPath(parentId)}/${docId}`).withConverter(converter)
+                    : doc(this.firestore, `${getPath(parentId)}/${docId}`) as DocumentReference<T>;
+            }
+        };
+    }
 
-        orgMemberships: createSubcollectionHelpers<OrgMembership>(
+    // Create collection references
+    public users = {
+        ...this.createCollectionHelpers<User>('users', userConverter),
+        orgMemberships: this.createSubcollectionHelpers<OrgMembership>(
             (uid) => `users/${uid}/orgMemberships`,
             orgMembershipConverter
-        ),
-    },
+        )
+    };
 
-    organizations: {
-        ...createCollectionHelpers<Organization>('organizations', orgConverter),
-
-        users: createSubcollectionHelpers<OrgMembership>(
+    public organizations = {
+        ...this.createCollectionHelpers<Organization>('organizations', orgConverter),
+        users: this.createSubcollectionHelpers<OrgMembership>(
             (orgId) => `organizations/${orgId}/users`,
             orgMembershipConverter
         ),
-
-        teamMembers: createSubcollectionHelpers(
+        teamMembers: this.createSubcollectionHelpers(
             (orgId) => `organizations/${orgId}/teamMembers`,
             teamMemberConverter
-        ),
-    },
+        )
+    };
 
-    phoneNumbers: {
-        ...createCollectionHelpers('phoneNumbers'),
-        shifts: createSubcollectionHelpers(
-            (id) => `phoneNumbers/${id}/shifts`
-        ),
-    },
-};
+    public phoneNumbers = {
+        ...this.createCollectionHelpers('phoneNumbers'),
+        shifts: this.createSubcollectionHelpers((id) => `phoneNumbers/${id}/shifts`)
+    };
+}

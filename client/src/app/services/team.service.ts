@@ -1,48 +1,34 @@
-import { teamMemberConverter, TeamMember } from '@/models/team-member';
-import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, addDoc, getDocs, getDoc, updateDoc, deleteDoc, DocumentReference } from '@angular/fire/firestore';
-import { from, Observable } from 'rxjs';
+import { TeamMember } from '@/models/team-member';
+import { inject, Injectable } from '@angular/core';
+import { Observable, of, switchMap } from 'rxjs';
+import { FirestoreCollectionsService } from './firestore-collections';
+import { collectionData, Firestore } from '@angular/fire/firestore';
+import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class TeamService {
-    constructor(private firestore: Firestore) { }
 
-    private teamMembersCollection(orgId: string) {
-        return collection(this.firestore, `organizations/${orgId}/teamMembers`).withConverter(teamMemberConverter);
-    }
+    private _authService = inject(AuthService);
+    private firestoreCollections = inject(FirestoreCollectionsService);
 
-    getTeamMembers(orgId: string): Observable<TeamMember[]> {
-        const colRef = this.teamMembersCollection(orgId);
-        return from(
-            getDocs(colRef).then(snapshot =>
-                snapshot.docs.map(doc => doc.data())
-            )
+    /**
+    * Get all team members for the current user's organization
+    */
+    getTeamMembers(): Observable<TeamMember[]> {
+        // Use of() to create an observable from the orgId, then switchMap to handle both cases
+        return of(this._authService.currentOrgId).pipe(
+            switchMap(orgId => {
+                // If no organization selected, return empty array
+                if (!orgId) return of([]);
+
+                // Otherwise, query the collection
+                const teamMembersCollection = this.firestoreCollections.organizations.teamMembers
+                    .collection(orgId);
+
+                return collectionData(teamMembersCollection) as Observable<TeamMember[]>;
+            })
         );
-    }
-
-    getTeamMemberById(orgId: string, memberId: string): Observable<TeamMember | null> {
-        const docRef = doc(this.firestore, `organizations/${orgId}/teamMembers/${memberId}`).withConverter(teamMemberConverter);
-        return from(
-            getDoc(docRef).then(snapshot =>
-                snapshot.exists() ? snapshot.data()! : null
-            )
-        );
-    }
-
-    addTeamMember(orgId: string, member: TeamMember): Observable<DocumentReference<TeamMember>> {
-        const colRef = this.teamMembersCollection(orgId);
-        return from(addDoc(colRef, member));
-    }
-
-    updateTeamMember(orgId: string, memberId: string, member: Partial<TeamMember>): Observable<void> {
-        const docRef = doc(this.firestore, `organizations/${orgId}/teamMembers/${memberId}`).withConverter(teamMemberConverter);
-        return from(updateDoc(docRef, member));
-    }
-
-    deleteTeamMember(orgId: string, memberId: string): Observable<void> {
-        const docRef = doc(this.firestore, `organizations/${orgId}/teamMembers/${memberId}`).withConverter(teamMemberConverter);
-        return from(deleteDoc(docRef));
     }
 }

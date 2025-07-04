@@ -1,17 +1,18 @@
 // src/app/services/user.service.ts
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore';
 import { from, forkJoin, Observable, switchMap, map } from 'rxjs';
 import { fromUser, User, userConverter } from '@/models/user';
 import { OrgRole } from '@/models/enums/org-role';
 import { fromOrgMembership, OrgMembership, orgMembershipConverter } from '@/models/org-membership';
-import { FirestoreCollections } from './firestore-collections';
 import { InviteStatus } from '@/models/enums/invite-status';
 import { Organization, orgConverter } from '@/models/organization';
+import { FirestoreCollectionsService } from './firestore-collections';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    constructor(private firestore: Firestore) { }
+
+    private firestoreCollections = inject(FirestoreCollectionsService);
 
     createUserAndOrg(
         uid: string,
@@ -21,19 +22,17 @@ export class UserService {
     ): Observable<{ userId: string, orgId: string }> {
         // Generate a new organization ID
 
-        const orgCol = FirestoreCollections.organizations.collection(this.firestore);
+        const orgCol = this.firestoreCollections.organizations.collection();
         const orgRef = doc(orgCol);
         const orgId = orgRef.id;
 
         // Use withConverter to apply the converters
-        const userRef = FirestoreCollections.users.docRef(this.firestore, uid);
-        const membershipRef = FirestoreCollections.users.orgMemberships.docRef(
-            this.firestore,
+        const userRef = this.firestoreCollections.users.docRef(uid);
+        const membershipRef = this.firestoreCollections.users.orgMemberships.docRef(
             uid,
             orgId
         );
-        const orgUserRef = FirestoreCollections.organizations.users.docRef(
-            this.firestore,
+        const orgUserRef = this.firestoreCollections.organizations.users.docRef(
             orgId,
             uid
         );

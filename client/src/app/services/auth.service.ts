@@ -1,33 +1,60 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, User, createUserWithEmailAndPassword, onAuthStateChanged, AuthError } from '@angular/fire/auth';
-import { BehaviorSubject, catchError, from, map, Observable, switchMap, take, throwError } from 'rxjs';
+import { Auth, signInWithEmailAndPassword, User as FireUser, createUserWithEmailAndPassword, onAuthStateChanged, AuthError } from '@angular/fire/auth';
+import { BehaviorSubject, catchError, firstValueFrom, from, map, Observable, switchMap, take, throwError } from 'rxjs';
 import { UserService } from './user.service';
+import { FirestoreCollectionsService } from './firestore-collections';
+import { Organization } from '@/models/organization';
+import { User } from '@/models/user';
+import { docData } from '@angular/fire/firestore';
+
+// Extended user context with more than just Firebase auth user
+export interface AuthResult {
+    profile: User | null;
+    currentOrganization: Organization | null;
+}
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
+    public static readonly USER_SESSION_KEY = 'user-session';
+
     private auth: Auth = inject(Auth);
     private userService = inject(UserService);
+    private firestoreCollections = inject(FirestoreCollectionsService);
 
     // Observable for auth state
-    private userSubject = new BehaviorSubject<User | null>(null);
-    user$: Observable<User | null> = this.userSubject.asObservable();
+    private userSubject = new BehaviorSubject<FireUser | null>(null);
+    user$: Observable<FireUser | null> = this.userSubject.asObservable();
+
+    private _userSession: AuthResult | null = null;
+    private _debugAuth = false;
 
     constructor() {
         onAuthStateChanged(this.auth, (user) => {
+            if (this._debugAuth) console.log('Auth state changed:', user);
             this.userSubject.next(user);
+
+            // If user logged in, fetch extended profile
+            if (user && this._userSession == null) {
+                // Load user context from Firestore
+                this.loadUserContext(user);
+            } else {
+                // User logged out or session expired, clear session
+                this.deleteUserSession();
+            }
         });
+
+        // Try to restore session from localStorage
+        this.fetchUserSession();
     }
 
-    isLoggedIn(): Observable<boolean> {
-        return this.user$.pipe(
-            map(user => user !== null),
-            take(1)
-        );
+    isLoggedIn(): boolean {
+        this.fetchUserSession();
+        return this._userSession != null;
     }
 
-    login(email: string, password: string): Observable<User> {
+    login(email: string, password: string): Observable<FireUser> {
         return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
             map(userCredential => {
                 this.userSubject.next(userCredential.user);
@@ -89,7 +116,7 @@ export class AuthService {
                         errorMessage = 'An unexpected error occurred.';
                 }
 
-                console.log('Registration error:', error);
+                if (this._debugAuth) console.log('Registration error:', error);
 
                 return throwError(() => new Error(errorMessage));
             })
@@ -98,7 +125,64 @@ export class AuthService {
 
     async logout() {
         await this.auth.signOut().then(() => {
+            this.deleteUserSession();
             window.location.href = '/';
         });
+    }
+
+    public get currentOrgId(): string | null {
+        this.fetchUserSession();
+        return this._userSession?.currentOrganization?.id || null;
+    }
+
+    /// Load user context from Firestore
+    private async loadUserContext(fireUser: FireUser) {
+        try {
+            // Get user profile
+            const userRef = this.firestoreCollections.users.docRef(fireUser.uid);
+            const userProfile = await firstValueFrom(docData(userRef));
+
+            if (!userProfile) {
+                if (this._debugAuth) console.warn('User profile not found');
+                return;
+            }
+
+            // Get organization data
+            const orgId = userProfile.defaultOrgId;
+            const orgRef = this.firestoreCollections.organizations.docRef(orgId);
+            const orgData = await firstValueFrom(docData(orgRef));
+
+            if (!orgData) {
+                if (this._debugAuth) console.warn('Organization not found');
+                return;
+            }
+
+            // Update the context
+            this.storeUserSession({
+                profile: userProfile,
+                currentOrganization: orgData,
+            });
+
+        } catch (error) {
+            if (this._debugAuth) console.error('Error loading user context:', error);
+        }
+    }
+
+    // Try to restore session from localStorage on page refresh
+    private fetchUserSession() {
+        const savedSession = localStorage.getItem(AuthService.USER_SESSION_KEY);
+        if (savedSession) {
+            this._userSession = JSON.parse(savedSession);
+            if (this._debugAuth) console.log('Session restored:', this._userSession);
+        }
+    }
+
+    private storeUserSession(sessionData: AuthResult) {
+        localStorage.setItem(AuthService.USER_SESSION_KEY, JSON.stringify(sessionData));
+    }
+
+    private deleteUserSession() {
+        localStorage.removeItem(AuthService.USER_SESSION_KEY);
+        this._userSession = null;
     }
 }

@@ -39,7 +39,7 @@ export class AuthService {
             if (user && this._userSession == null) {
                 // Load user context from Firestore
                 this.loadUserContext(user);
-            } else {
+            } else if (!user) {
                 // User logged out or session expired, clear session
                 this.deleteUserSession();
             }

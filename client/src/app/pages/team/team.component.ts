@@ -1,6 +1,6 @@
 import { TeamMember } from '@/models/team-member';
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, inject, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, OnDestroy, inject, ViewChild, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -22,40 +22,34 @@ import { TeamService } from '@/services/team.service';
 import { AppAlert } from '@/layout/components/app.alert';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Skeleton } from 'primeng/skeleton';
-
+import { DialogService } from 'primeng/dynamicdialog';
+import { AppModal } from '@/layout/components/app.modal';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FloatLabel } from 'primeng/floatlabel';
 @Component({
     selector: 'app-team',
     imports: [
-        TableModule,
-        MultiSelectModule,
-        SelectModule,
-        InputIconModule,
-        TagModule,
-        InputTextModule,
-        SliderModule,
-        ProgressBarModule,
-        ToggleButtonModule,
-        ToastModule,
-        CommonModule,
-        FormsModule,
-        ButtonModule,
-        RatingModule,
-        RippleModule,
-        IconFieldModule,
-        ToolbarModule,
-        Skeleton,
-        AppAlert
+        TableModule, MultiSelectModule, SelectModule, InputIconModule,
+        TagModule, InputTextModule, SliderModule, ProgressBarModule,
+        ToggleButtonModule, ToastModule, CommonModule, FormsModule,
+        ButtonModule, RatingModule, RippleModule, IconFieldModule,
+        ToolbarModule, Skeleton, AppAlert, AppModal,
+        InputGroupModule, InputGroupAddonModule, FloatLabel, InputNumberModule
     ],
     templateUrl: './team.component.html',
     standalone: true,
-    providers: [MessageService]
+    providers: [MessageService, DialogService]
 })
 export class TeamComponent implements OnInit, OnDestroy {
 
     teamService = inject(TeamService);
     messageService = inject(MessageService);
+    dialogService = inject(DialogService);
 
     @ViewChild(AppAlert) alert: AppAlert | undefined;
+    @ViewChild(AppModal) modal: AppModal | undefined;
 
     teamMembers: TeamMember[] = [];
     selectedMembers: TeamMember[] = [];
@@ -106,5 +100,16 @@ export class TeamComponent implements OnInit, OnDestroy {
 
     deleteSelectedMembers() {
         throw new Error('Method not implemented.');
+    }
+
+    addRecipient() {
+        if (this.modal) {
+            this.modal.title = 'Add Recipient';
+            this.modal?.showModal();
+        }
+    }
+
+    editRecipient() {
+
     }
 }

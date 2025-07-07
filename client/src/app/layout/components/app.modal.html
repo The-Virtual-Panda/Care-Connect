@@ -1,0 +1,11 @@
+<p-dialog [(visible)]="visible" [modal]="true" [draggable]="draggable" [header]="title" [style]="{ width: '25rem' }">
+    <ng-container *ngIf="bodyTemplate">
+        <div class="py-2">
+            <ng-container *ngTemplateOutlet="bodyTemplate"></ng-container>
+        </div>
+    </ng-container>
+    <ng-template #footer>
+        <p-button [label]="cancelText" [text]="true" severity="secondary" (click)="visible = false" />
+        <p-button [label]="submitText" (click)="visible = false" />
+    </ng-template>
+</p-dialog>

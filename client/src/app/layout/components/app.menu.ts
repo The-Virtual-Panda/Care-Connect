@@ -49,9 +49,9 @@ export class AppMenu implements OnInit, OnDestroy {
             },
             { separator: true, visible: isLoggedIn },
             {
-                label: 'Team',
+                label: 'Recipients',
                 icon: 'pi pi-users',
-                routerLink: 'team',
+                routerLink: 'recipients',
                 visible: isLoggedIn,
             },
         ];

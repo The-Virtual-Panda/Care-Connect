@@ -1,4 +1,4 @@
-<app-alert />
+<p>Recipients are designated contacts who will receive phone calls made through this system.</p>
 
 <div class="my-6">
     <p-toolbar>
@@ -9,6 +9,8 @@
         </ng-template>
     </p-toolbar>
 </div>
+
+<app-alert />
 
 <p-table #dt1 [value]="teamMembers" sortField="dateCreated" [sortOrder]="-1" dataKey="id" [rows]="10"
     [loading]="isLoading" showLoader="false" [(selection)]="selectedMembers" [rowHover]="true" [paginator]="true"

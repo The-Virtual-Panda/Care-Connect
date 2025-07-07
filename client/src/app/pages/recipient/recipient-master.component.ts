@@ -28,6 +28,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabel } from 'primeng/floatlabel';
+
 @Component({
     selector: 'app-team',
     imports: [
@@ -38,7 +39,7 @@ import { FloatLabel } from 'primeng/floatlabel';
         ToolbarModule, Skeleton, AppAlert, AppModal,
         InputGroupModule, InputGroupAddonModule, FloatLabel, InputNumberModule
     ],
-    templateUrl: './team.component.html',
+    templateUrl: './recipient-master.component.html',
     standalone: true,
     providers: [MessageService, DialogService]
 })
@@ -49,7 +50,7 @@ export class TeamComponent implements OnInit, OnDestroy {
     dialogService = inject(DialogService);
 
     @ViewChild(AppAlert) alert: AppAlert | undefined;
-    @ViewChild(AppModal) modal: AppModal | undefined;
+    @ViewChild(AppModal) modal!: AppModal;
 
     teamMembers: TeamMember[] = [];
     selectedMembers: TeamMember[] = [];
@@ -103,10 +104,8 @@ export class TeamComponent implements OnInit, OnDestroy {
     }
 
     addRecipient() {
-        if (this.modal) {
-            this.modal.title = 'Add Recipient';
-            this.modal?.showModal();
-        }
+        this.modal.title = 'Add Recipient';
+        this.modal?.showModal();
     }
 
     editRecipient() {

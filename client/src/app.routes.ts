@@ -16,9 +16,9 @@ export const appRoutes: Routes = [
                 data: { breadcrumb: 'Home' }
             },
             {
-                path: 'team',
-                loadComponent: () => import('@/pages/team/team.component').then((c) => c.TeamComponent),
-                data: { breadcrumb: 'Team Members' }
+                path: 'recipients',
+                loadComponent: () => import('@/pages/recipient/recipient-master.component').then((c) => c.TeamComponent),
+                data: { breadcrumb: 'Recipients' }
             }
         ]
     },

@@ -1,16 +1,18 @@
-<p>Recipients are designated contacts who will receive phone calls made through this system.</p>
+<p class="mb-4">Recipients are designated contacts who will receive phone calls made through this system.</p>
 
-<div class="my-6">
+<app-alert />
+
+<p-confirmdialog />
+
+<div class="mb-4">
     <p-toolbar>
         <ng-template #end>
             <p-button label="New Member" icon="pi pi-plus" class="mr-2" (onClick)="addRecipient()" />
-            <p-button severity="danger" label="Delete Member(s)" icon="pi pi-trash" outlined
-                (onClick)="deleteSelectedMembers()" [disabled]="!selectedMembers || !selectedMembers.length" />
+            <p-button severity="danger" label="Delete Member(s)" icon="pi pi-trash" outlined (onClick)="confirmDelete()"
+                [disabled]="!selectedMembers || !selectedMembers.length" />
         </ng-template>
     </p-toolbar>
 </div>
-
-<app-alert />
 
 <p-table #dt1 [value]="teamMembers" sortField="dateCreated" [sortOrder]="-1" dataKey="id" [rows]="10"
     [loading]="isLoading" showLoader="false" [(selection)]="selectedMembers" [rowHover]="true" [paginator]="true"
@@ -69,11 +71,12 @@
                         }"></i>
                     </span>
                 </td> -->
-            <td>
+            <td (click)="$event.stopPropagation()">
                 <p-tableCheckbox [value]="teamMember" />
             </td>
-            <td>{{ teamMember.name }}</td>
-            <td>{{ teamMember.phoneNumber }}</td>
+            <td (click)="editRecipient(teamMember)" class="cursor-pointer text-blue-500 underline hover:text-blue-700">
+                {{ teamMember.name }}</td>
+            <td>{{ teamMember.phoneNumber | phone }}</td>
             <td>{{ teamMember.dateUpdated | date: 'yyyy/MM/dd' }}</td>
             <td>{{ teamMember.dateCreated | date: 'yyyy/MM/dd' }}</td>
         </tr>
@@ -108,17 +111,37 @@
     </ng-template>
 </p-table>
 
-<app-modal>
+<app-modal [closeOnSubmit]="false" (submit)="onSubmitRecipient()">
     <ng-template #body>
-        <p-inputgroup>
-            <p-inputgroup-addon>
-                <i class="pi pi-id-card"></i>
-            </p-inputgroup-addon>
-            <p-floatlabel variant="on">
-                <input pInputText id="name" autocomplete="off" />
-                <label for="name">Name</label>
-            </p-floatlabel>
-        </p-inputgroup>
+        <form [formGroup]="recipientForm" (ngSubmit)="onSubmitRecipient()">
+            <p-fluid>
+                <div class="mb-4">
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-id-card"></i>
+                        </p-inputgroup-addon>
+                        <p-floatlabel variant="on">
+                            <input pInputText id="name" formControlName="name" autocomplete="off"
+                                [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('name')}" />
+                            <label for="name">Name</label>
+                        </p-floatlabel>
+                    </p-inputgroup>
+                    @if (isFieldInvalid('name')) {
+                    <p-message severity="error" size="small" variant="simple">Name is required.</p-message>
+                    }
+                </div>
 
+                <p-floatlabel variant="on" styleClass="mb-4">
+                    <p-inputmask id="phone" mask="(999) 999-9999" formControlName="phoneNumber"
+                        [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('phoneNumber')}" [unmask]="false"
+                        [autoClear]="false" />
+                    <label for="phone">Phone Number</label>
+                </p-floatlabel>
+                @if (isFieldInvalid('phoneNumber')) {
+                <p-message severity="error" size="small" variant="simple">Valid phone number is
+                    required.</p-message>
+                }
+            </p-fluid>
+        </form>
     </ng-template>
 </app-modal>

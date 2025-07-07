@@ -1,7 +1,7 @@
 import { TeamMember } from '@/models/team-member';
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, inject, ViewChild, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -13,10 +13,11 @@ import { RippleModule } from 'primeng/ripple';
 import { SelectModule } from 'primeng/select';
 import { SliderModule } from 'primeng/slider';
 import { Table, TableModule } from 'primeng/table';
+import { PhonePipe } from '@/pipes/phone.pipe';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { TeamService } from '@/services/team.service';
 import { AppAlert } from '@/layout/components/app.alert';
@@ -28,26 +29,34 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabel } from 'primeng/floatlabel';
+import { InputMaskModule } from 'primeng/inputmask';
+import { Fluid } from 'primeng/fluid';
+import { MessageModule } from 'primeng/message';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
-    selector: 'app-team',
+    selector: 'app-recipient-master',
     imports: [
         TableModule, MultiSelectModule, SelectModule, InputIconModule,
         TagModule, InputTextModule, SliderModule, ProgressBarModule,
         ToggleButtonModule, ToastModule, CommonModule, FormsModule,
         ButtonModule, RatingModule, RippleModule, IconFieldModule,
         ToolbarModule, Skeleton, AppAlert, AppModal,
-        InputGroupModule, InputGroupAddonModule, FloatLabel, InputNumberModule
+        InputGroupModule, InputGroupAddonModule, FloatLabel, InputNumberModule,
+        InputMaskModule, Fluid, ReactiveFormsModule, MessageModule,
+        ConfirmDialog, PhonePipe
     ],
     templateUrl: './recipient-master.component.html',
     standalone: true,
-    providers: [MessageService, DialogService]
+    providers: [MessageService, DialogService, ConfirmationService]
 })
-export class TeamComponent implements OnInit, OnDestroy {
+export class RecipientMasterComponent implements OnInit, OnDestroy {
 
     teamService = inject(TeamService);
     messageService = inject(MessageService);
     dialogService = inject(DialogService);
+    formBuilder = inject(FormBuilder);
+    confirmationService = inject(ConfirmationService);
 
     @ViewChild(AppAlert) alert: AppAlert | undefined;
     @ViewChild(AppModal) modal!: AppModal;
@@ -57,7 +66,38 @@ export class TeamComponent implements OnInit, OnDestroy {
     isLoading: boolean = true;
     searchQuery: string = '';
 
+    recipientForm: FormGroup;
+    submitted = false;
+
     private subscription: Subscription | null = null;
+
+    constructor() {
+        this.recipientForm = this.formBuilder.group({
+            id: [''],
+            name: ['', Validators.required],
+            phoneNumber: ['', [Validators.required, this.phoneNumberValidator]],
+            dateUpdated: [null],
+            dateCreated: [null]
+        });
+    }
+
+    // Custom validator that only validates complete phone numbers
+    phoneNumberValidator(control: FormControl): { [key: string]: any } | null {
+        const value = control.value;
+
+        // If empty, let required validator handle it
+        if (!value) return null;
+
+        // Only validate if the input appears to be complete
+        // Check if it has the full expected length including formatting characters
+        if (value.length === 14) { // Format: (123) 456-7890 = 14 chars
+            const phonePattern = /^\(\d{3}\)\s\d{3}-\d{4}$/;
+            return phonePattern.test(value) ? null : { invalidFormat: true };
+        }
+
+        // For incomplete numbers, don't validate yet
+        return null;
+    }
 
     ngOnInit(): void {
         this.reload();
@@ -99,16 +139,115 @@ export class TeamComponent implements OnInit, OnDestroy {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 
-    deleteSelectedMembers() {
-        throw new Error('Method not implemented.');
-    }
-
     addRecipient() {
+        this.submitted = false;
+        this.recipientForm.reset();
         this.modal.title = 'Add Recipient';
         this.modal?.showModal();
     }
 
-    editRecipient() {
+    editRecipient(member: TeamMember) {
+        this.submitted = false;
+        this.recipientForm.patchValue({
+            id: member.id,
+            name: member.name,
+            phoneNumber: member.phoneNumber,
+            dateUpdated: member.dateUpdated,
+            dateCreated: member.dateCreated
+        });
 
+        // Mark the form as pristine and untouched after patching values
+        // This prevents validation errors from showing immediately
+        this.recipientForm.markAsPristine();
+        this.recipientForm.markAsUntouched();
+
+        this.modal.title = 'Edit Recipient';
+        this.modal?.showModal();
+    }
+
+    onSubmitRecipient() {
+        this.submitted = true;
+        if (this.recipientForm.invalid) {
+            return;
+        }
+
+        const recipientData = this.recipientForm.value;
+        console.log('Saving recipient data:', recipientData);
+
+        this.isLoading = true;
+        this.teamService.saveRecipient(recipientData).subscribe({
+            next: () => {
+                this.modal.hideModal();
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient saved successfully' });
+                this.reload();
+            },
+            error: (error: Error) => {
+                this.alert?.showError(`Failed to save recipient: ${error.message}`, 'Error adding recipient');
+                this.isLoading = false;
+            }
+        });
+    }
+
+    // Helper method to check form control validity
+    isFieldInvalid(field: string): boolean {
+        const control = this.recipientForm.get(field);
+
+        // Special handling for phone number
+        if (field === 'phoneNumber') {
+            // Only show validation errors if the form is submitted or
+            // if the field is touched AND has a complete value (or empty)
+            const value = control?.value || '';
+            const isComplete = value.length === 0 || value.length === 14; // Empty or complete
+
+            return (control?.invalid && ((control?.touched && isComplete) || this.submitted)) ?? false;
+        }
+
+        // Standard validation for other fields
+        return (control?.invalid && (control?.touched || this.submitted)) ?? false;
+    }
+
+    confirmDelete() {
+        this.confirmationService.confirm({
+            // target: event.target as EventTarget,
+            message: 'Do you want to delete the selected recipient(s)?',
+
+            header: 'Danger Zone',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Cancel',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true,
+            },
+            acceptButtonProps: {
+                label: 'Delete',
+                severity: 'danger',
+            },
+            accept: () => {
+                this.deleteSelectedMembers();
+            },
+        });
+    }
+
+    deleteSelectedMembers() {
+        if (!this.selectedMembers || this.selectedMembers.length === 0) {
+            return;
+        }
+
+        // Get the IDs of selected members
+        const memberIds = this.selectedMembers.map(member => member.id);
+        this.isLoading = true;
+
+        this.teamService.deleteRecipients(memberIds).subscribe({
+            next: () => {
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient(s) deleted successfully' });
+                this.selectedMembers = [];
+                this.reload();
+            },
+            error: (error: Error) => {
+                this.alert?.showError(`Failed to delete recipient(s): ${error.message}`);
+                this.isLoading = false;
+            }
+        });
     }
 }

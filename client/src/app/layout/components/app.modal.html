@@ -5,7 +5,12 @@
         </div>
     </ng-container>
     <ng-template #footer>
-        <p-button [label]="cancelText" [text]="true" severity="secondary" (click)="visible = false" />
-        <p-button [label]="submitText" (click)="visible = false" />
+        <ng-container *ngIf="footerTemplate; else defaultFooter">
+            <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
+        </ng-container>
+        <ng-template #defaultFooter>
+            <p-button [label]="cancelText" [text]="true" severity="secondary" (click)="onCancel()" />
+            <p-button [label]="submitText" (click)="onSubmit()" />
+        </ng-template>
     </ng-template>
 </p-dialog>

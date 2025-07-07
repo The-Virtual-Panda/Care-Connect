@@ -17,7 +17,7 @@ export const appRoutes: Routes = [
             },
             {
                 path: 'recipients',
-                loadComponent: () => import('@/pages/recipient/recipient-master.component').then((c) => c.TeamComponent),
+                loadComponent: () => import('@/pages/recipient/recipient-master.component').then((c) => c.RecipientMasterComponent),
                 data: { breadcrumb: 'Recipients' }
             }
         ]

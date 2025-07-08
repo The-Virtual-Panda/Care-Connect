@@ -20,7 +20,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { TeamService } from '@/services/team.service';
-import { AppAlert } from '@/layout/components/app.alert';
+import { AppAlert } from '@/layout/components/app-alert.component';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Skeleton } from 'primeng/skeleton';
 import { DialogService } from 'primeng/dynamicdialog';

@@ -13,7 +13,7 @@ export enum AlertSeverity {
 
 @Component({
     selector: 'app-alert',
-    templateUrl: './app.alert.html',
+    templateUrl: './app-alert.component.html',
     standalone: true,
     imports: [CommonModule, MessageModule],
 })

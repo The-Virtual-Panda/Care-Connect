@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AppMenuitem } from './app.menuitem';
-import { AuthService } from '@/services/auth.service';
+import { AuthService } from '@/api/services/auth.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({

@@ -8,10 +8,10 @@ import {
     FirestoreDataConverter
 } from '@angular/fire/firestore';
 
-import { OrgMembership, orgMembershipConverter } from '@/models/org-membership';
-import { Organization, orgConverter } from '@/models/organization';
-import { teamMemberConverter } from '@/models/team-member';
-import { User, userConverter } from '@/models/user';
+import { OrgMembership, orgMembershipConverter } from '@/api/models/org-membership';
+import { Organization, orgConverter } from '@/api/models/organization';
+import { teamMemberConverter } from '@/api/models/team-member';
+import { User, userConverter } from '@/api/models/user';
 
 @Injectable({
     providedIn: 'root'

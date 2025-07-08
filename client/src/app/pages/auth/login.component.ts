@@ -5,7 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
-import { AuthService } from '@/services/auth.service';
+import { AuthService } from '@/api/services/auth.service';
 import { AppAlert } from '@/layout/components/app-alert.component';
 
 @Component({

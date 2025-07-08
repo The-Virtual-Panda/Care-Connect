@@ -1,8 +1,8 @@
-import { TeamMember, TeamMemberDoc } from '@/models/team-member';
+import { TeamMember } from '@/api/models/team-member';
 import { inject, Injectable } from '@angular/core';
 import { Observable, of, switchMap, from, map } from 'rxjs';
 import { FirestoreCollectionsService } from './firestore-collections';
-import { collectionData, deleteDoc, doc, Firestore, setDoc, Timestamp } from '@angular/fire/firestore';
+import { collectionData, deleteDoc, doc, setDoc } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 
 @Injectable({

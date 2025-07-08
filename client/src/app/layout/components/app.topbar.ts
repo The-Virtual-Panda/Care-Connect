@@ -13,7 +13,7 @@ import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { AvatarModule } from 'primeng/avatar';
 import { FormsModule } from "@angular/forms";
-import { AuthService } from '@/services/auth.service';
+import { AuthService } from '@/api/services/auth.service';
 
 interface NotificationsBars {
     id: string;

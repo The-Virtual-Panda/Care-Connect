@@ -1,10 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, User as FireUser, createUserWithEmailAndPassword, onAuthStateChanged, AuthError } from '@angular/fire/auth';
-import { BehaviorSubject, catchError, firstValueFrom, from, map, Observable, switchMap, take, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, firstValueFrom, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { UserService } from './user.service';
 import { FirestoreCollectionsService } from './firestore-collections';
-import { Organization } from '@/models/organization';
-import { User } from '@/models/user';
+import { Organization } from '@/api/models/organization';
+import { User } from '@/api/models/user';
 import { docData } from '@angular/fire/firestore';
 
 // Extended user context with more than just Firebase auth user

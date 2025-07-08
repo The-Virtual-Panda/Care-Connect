@@ -1,12 +1,12 @@
 // src/app/services/user.service.ts
 import { inject, Injectable } from '@angular/core';
-import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore';
-import { from, forkJoin, Observable, switchMap, map } from 'rxjs';
-import { fromUser, User, userConverter } from '@/models/user';
-import { OrgRole } from '@/models/enums/org-role';
-import { fromOrgMembership, OrgMembership, orgMembershipConverter } from '@/models/org-membership';
-import { InviteStatus } from '@/models/enums/invite-status';
-import { Organization, orgConverter } from '@/models/organization';
+import { doc, setDoc } from '@angular/fire/firestore';
+import { from, forkJoin, Observable, map } from 'rxjs';
+import { User } from '@/api/models/user';
+import { OrgRole } from '@/api/models/enums/org-role';
+import { OrgMembership } from '@/api/models/org-membership';
+import { InviteStatus } from '@/api/models/enums/invite-status';
+import { Organization } from '@/api/models/organization';
 import { FirestoreCollectionsService } from './firestore-collections';
 
 @Injectable({ providedIn: 'root' })

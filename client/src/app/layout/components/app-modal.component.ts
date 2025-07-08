@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
     selector: 'app-modal',
-    templateUrl: './app.modal.html',
+    templateUrl: './app-modal.component.html',
     standalone: true,
     imports: [CommonModule, Dialog, ButtonModule, InputTextModule, AvatarModule],
 })

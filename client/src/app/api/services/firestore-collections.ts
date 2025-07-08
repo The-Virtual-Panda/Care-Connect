@@ -12,6 +12,7 @@ import { OrgMembership, orgMembershipConverter } from '@/api/models/org-membersh
 import { Organization, orgConverter } from '@/api/models/organization';
 import { teamMemberConverter } from '@/api/models/team-member';
 import { User, userConverter } from '@/api/models/user';
+import { phoneNumberConverter } from '../models/phone-number';
 
 @Injectable({
     providedIn: 'root'
@@ -80,7 +81,7 @@ export class FirestoreCollectionsService {
     };
 
     public phoneNumbers = {
-        ...this.createCollectionHelpers('phoneNumbers'),
+        ...this.createCollectionHelpers('phoneNumbers', phoneNumberConverter(this)),
         shifts: this.createSubcollectionHelpers((id) => `phoneNumbers/${id}/shifts`)
     };
 }

@@ -12,13 +12,18 @@ export const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                loadComponent: () => import('@/apps/blog/detail').then((c) => c.Detail),
-                data: { breadcrumb: 'Home' }
+                redirectTo: 'recipients',
+                pathMatch: 'full'
             },
             {
                 path: 'recipients',
                 loadComponent: () => import('@/pages/recipient/recipient-master.component').then((c) => c.RecipientMasterComponent),
                 data: { breadcrumb: 'Recipients' }
+            },
+            {
+                path: 'phone-numbers/:id/config',
+                loadComponent: () => import('@/pages/phone-configure/phone-configure.component').then((c) => c.PhoneConfigureComponent),
+                data: { breadcrumb: 'Phone Configuration' }
             }
         ]
     },

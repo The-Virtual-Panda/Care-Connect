@@ -3,12 +3,16 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AppMenuitem } from './app.menuitem';
 import { AuthService } from '@/api/services/auth.service';
-import { Subject, takeUntil } from 'rxjs';
+import { PhoneService } from '@/api/services/phone.service';
+import { Subject, takeUntil, combineLatest } from 'rxjs';
+import { PhoneNumber } from '@/api/models/phone-number';
+import { PhonePipe } from '@/pipes/phone.pipe';
 
 @Component({
     selector: '[app-menu]',
     standalone: true,
     imports: [CommonModule, AppMenuitem, RouterModule],
+    providers: [PhonePipe],
     template: `
         <ul class="layout-menu">
             <ng-container *ngFor="let item of menuItems; let i = index">
@@ -20,9 +24,13 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class AppMenu implements OnInit, OnDestroy {
     private authService = inject(AuthService);
+    private phoneService = inject(PhoneService);
+    private phonePipe = inject(PhonePipe);
     private destroy$ = new Subject<void>();
 
     menuItems: any[] = [];
+    orgPhoneNumbers: PhoneNumber[] = [];
+    currentOrgId: string | null = null;
 
     ngOnInit() {
         // Subscribe to authentication state changes
@@ -30,7 +38,24 @@ export class AppMenu implements OnInit, OnDestroy {
             takeUntil(this.destroy$)
         ).subscribe(user => {
             const isLoggedIn = !!user;
-            this.updateMenuItems(isLoggedIn);
+
+            if (isLoggedIn) {
+                this.currentOrgId = this.authService.currentOrgId;
+                if (this.currentOrgId) {
+                    // Check if the organization has phone numbers
+                    this.phoneService.getOrgPhoneNumbers(this.currentOrgId).pipe(
+                        takeUntil(this.destroy$)
+                    ).subscribe(phoneNumbers => {
+                        this.orgPhoneNumbers = phoneNumbers;
+                        this.updateMenuItems();
+                    });
+                } else {
+                    this.updateMenuItems();
+                }
+            } else {
+                this.currentOrgId = null;
+                this.updateMenuItems();
+            }
         });
     }
 
@@ -39,20 +64,28 @@ export class AppMenu implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    private updateMenuItems(isLoggedIn: boolean) {
+    private updateMenuItems() {
         this.menuItems = [
             {
                 label: 'Home',
                 icon: 'pi pi-home',
                 routerLink: '/',
-                visible: isLoggedIn,
             },
-            { separator: true, visible: isLoggedIn },
+            { separator: true },
             {
                 label: 'Recipients',
                 icon: 'pi pi-users',
                 routerLink: 'recipients',
-                visible: isLoggedIn,
+            },
+            { separator: true },
+            {
+                label: 'Phone Numbers',
+                icon: 'pi pi-phone',
+                visible: this.orgPhoneNumbers.length > 0,
+                items: this.orgPhoneNumbers.map(phone => ({
+                    label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
+                    routerLink: ['/phone-numbers', phone.id, 'config']
+                }))
             },
         ];
     }

@@ -14,11 +14,10 @@ export class PhoneService {
         // Use the phoneNumbers collection from firestoreCollections
         const phoneNumbersCollection = this.firestoreCollections.phoneNumbers.collection();
 
-        // Create query to filter by orgId and order by dateCreated
+        // Create query to filter by orgId only
         const phoneNumbersQuery = query(
             phoneNumbersCollection,
-            where('orgId', '==', orgId),
-            orderBy('dateCreated', 'desc')
+            where('orgId', '==', orgId)
         );
 
         // Execute query and map results

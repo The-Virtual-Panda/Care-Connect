@@ -1,11 +1,14 @@
-import { inject, Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, User as FireUser, createUserWithEmailAndPassword, onAuthStateChanged, AuthError } from '@angular/fire/auth';
-import { BehaviorSubject, catchError, firstValueFrom, from, map, Observable, switchMap, throwError } from 'rxjs';
-import { UserService } from './user.service';
-import { FirestoreCollectionsService } from './firestore-collections';
+import { BehaviorSubject, Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
+
+import { Injectable, inject } from '@angular/core';
+import { Auth, AuthError, User as FireUser, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { docData } from '@angular/fire/firestore';
+
 import { Organization } from '@/api/models/organization';
 import { User } from '@/api/models/user';
-import { docData } from '@angular/fire/firestore';
+
+import { FirestoreCollectionsService } from './firestore-collections';
+import { UserService } from './user.service';
 
 // Extended user context with more than just Firebase auth user
 export interface AuthResult {
@@ -31,6 +34,9 @@ export class AuthService {
     private _debugAuth = false;
 
     constructor() {
+        // Try to restore session from localStorage
+        this.fetchUserSession();
+
         onAuthStateChanged(this.auth, (user) => {
             if (this._debugAuth) console.log('Auth state changed:', user);
             this.userSubject.next(user);
@@ -38,15 +44,19 @@ export class AuthService {
             // If user logged in, fetch extended profile
             if (user && this._userSession == null) {
                 // Load user context from Firestore
-                this.loadUserContext(user);
+                this.loadUserContext(user).subscribe({
+                    next: (session) => {
+                        if (this._debugAuth) console.log('User context loaded from auth state change:', session);
+                    },
+                    error: (err) => {
+                        console.error('Failed to load user context on auth state change:', err);
+                    }
+                });
             } else if (!user) {
                 // User logged out or session expired, clear session
                 this.deleteUserSession();
             }
         });
-
-        // Try to restore session from localStorage
-        this.fetchUserSession();
     }
 
     isLoggedIn(): boolean {
@@ -54,32 +64,39 @@ export class AuthService {
         return this._userSession != null;
     }
 
-    login(email: string, password: string): Observable<FireUser> {
+    login(email: string, password: string): Observable<AuthResult> {
         return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
-            map(userCredential => {
+            switchMap((userCredential) => {
                 this.userSubject.next(userCredential.user);
-                return userCredential.user;
+                // Load full user context and return that instead of just the Firebase user
+                return this.loadUserContext(userCredential.user);
             }),
-            catchError((error: AuthError) => {
+            catchError((error: AuthError | Error) => {
                 let errorMessage: string;
 
-                switch (error.code) {
-                    case 'auth/user-not-found':
-                    case 'auth/wrong-password':
-                    case 'auth/invalid-credential':
-                        errorMessage = 'Invalid email or password. Please try again.';
-                        break;
-                    case 'auth/user-disabled':
-                        errorMessage = 'This account has been disabled. Please contact support.';
-                        break;
-                    case 'auth/too-many-requests':
-                        errorMessage = 'Too many failed login attempts. Please try again later.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Please enter a valid email address.';
-                        break;
-                    default:
-                        errorMessage = 'Login failed. Please try again.';
+                if ('code' in error) {
+                    // Firebase Auth error
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                        case 'auth/wrong-password':
+                        case 'auth/invalid-credential':
+                            errorMessage = 'Invalid email or password. Please try again.';
+                            break;
+                        case 'auth/user-disabled':
+                            errorMessage = 'This account has been disabled. Please contact support.';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage = 'Too many failed login attempts. Please try again later.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Please enter a valid email address.';
+                            break;
+                        default:
+                            errorMessage = 'Login failed. Please try again.';
+                    }
+                } else {
+                    // Context loading error
+                    errorMessage = error.message || 'Failed to load user profile. Please try again.';
                 }
 
                 return throwError(() => new Error(errorMessage));
@@ -87,33 +104,37 @@ export class AuthService {
         );
     }
 
-    registerSelf(email: string, password: string, name: string, orgName: string): Observable<{ userId: string, orgId: string }> {
+    registerSelf(email: string, password: string, name: string, orgName: string): Observable<AuthResult> {
         return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
-            switchMap(userCredential => {
+            switchMap((userCredential) => {
                 this.userSubject.next(userCredential.user);
                 // Now call userService to create the user profile
-                return this.userService.createUserAndOrg(
-                    userCredential.user.uid,
-                    email,
-                    name,
-                    orgName
+                return this.userService.createUserAndOrg(userCredential.user.uid, email, name, orgName).pipe(
+                    // After creating user and org, load the full user context
+                    switchMap(() => this.loadUserContext(userCredential.user))
                 );
             }),
-            catchError((error: AuthError) => {
+            catchError((error: AuthError | Error) => {
                 let errorMessage: string;
 
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'This email is already registered.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'The email address is not valid.';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password is too weak.';
-                        break;
-                    default:
-                        errorMessage = 'An unexpected error occurred.';
+                if ('code' in error) {
+                    // Firebase Auth error
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage = 'This email is already registered.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'The email address is not valid.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMessage = 'Password is too weak.';
+                            break;
+                        default:
+                            errorMessage = 'An unexpected error occurred during registration.';
+                    }
+                } else {
+                    // Context loading error
+                    errorMessage = error.message || 'Failed to complete registration. Please try again.';
                 }
 
                 if (this._debugAuth) console.log('Registration error:', error);
@@ -141,36 +162,58 @@ export class AuthService {
     }
 
     /// Load user context from Firestore
-    private async loadUserContext(fireUser: FireUser) {
-        try {
+    private loadUserContext(fireUser: FireUser): Observable<AuthResult> {
+        return new Observable<AuthResult>((observer) => {
             // Get user profile
             const userRef = this.firestoreCollections.users.docRef(fireUser.uid);
-            const userProfile = await firstValueFrom(docData(userRef));
 
-            if (!userProfile) {
-                if (this._debugAuth) console.warn('User profile not found');
-                return;
-            }
+            docData(userRef)
+                .pipe(
+                    switchMap((userProfile) => {
+                        if (!userProfile) {
+                            const error = new Error('User profile not found');
+                            if (this._debugAuth) console.warn(error.message);
+                            observer.error(error);
+                            return throwError(() => error);
+                        }
 
-            // Get organization data
-            const orgId = userProfile.defaultOrgId;
-            const orgRef = this.firestoreCollections.organizations.docRef(orgId);
-            const orgData = await firstValueFrom(docData(orgRef));
+                        // Get organization data
+                        const orgId = userProfile.defaultOrgId;
+                        const orgRef = this.firestoreCollections.organizations.docRef(orgId);
+                        return docData(orgRef).pipe(
+                            map((orgData) => {
+                                if (!orgData) {
+                                    const error = new Error('Organization not found');
+                                    if (this._debugAuth) console.warn(error.message);
+                                    observer.error(error);
+                                    throw error;
+                                }
 
-            if (!orgData) {
-                if (this._debugAuth) console.warn('Organization not found');
-                return;
-            }
+                                // Create the session data
+                                const sessionData: AuthResult = {
+                                    profile: userProfile as User,
+                                    currentOrganization: orgData as Organization
+                                };
 
-            // Update the context
-            this.storeUserSession({
-                profile: userProfile,
-                currentOrganization: orgData,
-            });
+                                // Update the context
+                                this.storeUserSession(sessionData);
 
-        } catch (error) {
-            if (this._debugAuth) console.error('Error loading user context:', error);
-        }
+                                // Complete the observable
+                                observer.next(sessionData);
+                                observer.complete();
+
+                                return sessionData;
+                            })
+                        );
+                    }),
+                    catchError((error) => {
+                        if (this._debugAuth) console.error('Error loading user context:', error);
+                        observer.error(error);
+                        return throwError(() => new Error('Failed to load user context: ' + error.message));
+                    })
+                )
+                .subscribe();
+        });
     }
 
     // Try to restore session from localStorage on page refresh

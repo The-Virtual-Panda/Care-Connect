@@ -1,23 +1,22 @@
+import { firstValueFrom } from 'rxjs';
+
 import { CommonModule } from '@angular/common';
-import { Component, inject, ViewChild } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
-import { InputTextModule } from 'primeng/inputtext';
+import { Component, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CheckboxModule } from 'primeng/checkbox';
-import { ButtonModule } from 'primeng/button';
+import { Router, RouterModule } from '@angular/router';
+
 import { AuthService } from '@/api/services/auth.service';
 import { AppAlert } from '@/layout/components/app-alert.component';
+
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [
-        CommonModule, RouterModule,
-        InputTextModule, FormsModule,
-        CheckboxModule, ButtonModule,
-        AppAlert
-    ],
-    templateUrl: './login.component.html',
+    imports: [CommonModule, RouterModule, InputTextModule, FormsModule, CheckboxModule, ButtonModule, AppAlert],
+    templateUrl: './login.component.html'
 })
 export class Login {
     private authService = inject(AuthService);
@@ -29,19 +28,21 @@ export class Login {
     password: string = '';
     remember: boolean = false;
 
-    async login() {
+    login() {
         console.log('Login attempt with:', this.email, this.password);
         if (!this.email || !this.password) {
             this.alert.showError('Email and password are required.', 'Validation Error');
             return;
         }
 
-        try {
-            await this.authService.login(this.email, this.password);
-            this.router.navigateByUrl('/');
-        } catch (error: any) {
-            // Use the AppAlert component to show the error
-            this.alert.showError(error?.message || 'Login failed. Please try again.', 'Login Error');
-        }
+        this.authService.login(this.email, this.password).subscribe({
+            next: () => {
+                this.router.navigateByUrl('/');
+            },
+            error: (error: Error) => {
+                // Use the AppAlert component to show the error
+                this.alert.showError(error?.message || 'Login failed. Please try again.', 'Login Error');
+            }
+        });
     }
 }

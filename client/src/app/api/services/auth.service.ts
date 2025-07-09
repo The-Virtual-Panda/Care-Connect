@@ -39,7 +39,7 @@ export class AuthService {
         this.fetchUserSession();
 
         onAuthStateChanged(this.auth, (user) => {
-            if (this._debugAuth) Logger.debug('Auth state changed:', user);
+            if (this._debugAuth) Logger.log('Auth state changed:', user);
             this.userSubject.next(user);
 
             // If user logged in, fetch extended profile
@@ -47,7 +47,7 @@ export class AuthService {
                 // Load user context from Firestore
                 this.loadUserContext(user).subscribe({
                     next: (session) => {
-                        if (this._debugAuth) Logger.debug('User context loaded from auth state change:', session);
+                        if (this._debugAuth) Logger.log('User context loaded from auth state change:', session);
                     },
                     error: (err) => {
                         Logger.error('Failed to load user context on auth state change:', err);
@@ -138,7 +138,7 @@ export class AuthService {
                     errorMessage = error.message || 'Failed to complete registration. Please try again.';
                 }
 
-                if (this._debugAuth) Logger.debug('Registration error:', error);
+                if (this._debugAuth) Logger.log('Registration error:', error);
 
                 return throwError(() => new Error(errorMessage));
             })
@@ -222,7 +222,7 @@ export class AuthService {
         const savedSession = localStorage.getItem(AuthService.USER_SESSION_KEY);
         if (savedSession) {
             this._userSession = JSON.parse(savedSession);
-            if (this._debugAuth) Logger.debug('Session restored:', this._userSession);
+            if (this._debugAuth) Logger.log('Session restored:', this._userSession);
         }
     }
 

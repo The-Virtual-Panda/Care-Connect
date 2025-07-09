@@ -19,7 +19,7 @@ export class PhoneConfigureComponent implements OnInit {
     ngOnInit(): void {
         this.route.paramMap.subscribe((params) => {
             this.phoneId = params.get('id');
-            Logger.debug('Phone ID from route:', this.phoneId);
+            Logger.log('Phone ID from route:', this.phoneId);
         });
     }
 }

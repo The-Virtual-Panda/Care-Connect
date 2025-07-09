@@ -1,8 +1,8 @@
 import { environment } from 'src/environments/environment';
 
 export class Logger {
-    static debug(...args: any[]) {
-        if (!environment.production) console.debug(...args);
+    static log(...args: any[]) {
+        if (!environment.production) console.log(...args);
     }
 
     static info(...args: any[]) {

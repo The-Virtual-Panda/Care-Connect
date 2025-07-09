@@ -52,7 +52,7 @@ export class Register {
         this.authService.registerSelf(this.email, this.password, this.name, this.orgName).subscribe({
             next: (result) => {
                 // Log the registration details (for debugging)
-                Logger.debug('Registration successful:', result);
+                Logger.log('Registration successful:', result);
 
                 // Include some details in the success message
                 this.alert.showSuccess(

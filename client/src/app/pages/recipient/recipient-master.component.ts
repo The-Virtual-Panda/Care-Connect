@@ -198,7 +198,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         }
 
         const recipientData = this.recipientForm.value;
-        Logger.debug('Saving recipient data:', recipientData);
+        Logger.log('Saving recipient data:', recipientData);
 
         this.isLoading = true;
         this.teamService.saveRecipient(recipientData).subscribe({

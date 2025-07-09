@@ -30,7 +30,7 @@ export class Login {
     remember: boolean = false;
 
     login() {
-        Logger.debug('Login attempt with:', this.email, this.password);
+        Logger.log('Login attempt with:', this.email, this.password);
         if (!this.email || !this.password) {
             this.alert.showError('Email and password are required.', 'Validation Error');
             return;

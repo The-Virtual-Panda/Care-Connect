@@ -34,9 +34,9 @@ export class AppFooter {
     useEmulators = environment.useEmulators;
 
     constructor() {
-        Logger.debug(this.useEmulators ? 'Using emulators' : 'Not using emulators');
-        Logger.debug(`App version: ${this.version}`);
-        Logger.debug(`Production mode: ${this.isProd}`);
+        Logger.info(this.useEmulators ? 'Using emulators' : 'Not using emulators');
+        Logger.info(`App version: ${this.version}`);
+        Logger.info(`Production mode: ${this.isProd}`);
     }
 
     isDarkTheme = computed(() => this.layoutService.isDarkTheme());

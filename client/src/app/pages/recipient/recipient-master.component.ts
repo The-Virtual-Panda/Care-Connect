@@ -1,57 +1,82 @@
-import { TeamMember } from '@/api/models/team-member';
+import { Subscription } from 'rxjs';
+
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, inject, ViewChild, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import { TeamMember } from '@/api/models/team-member';
+import { TeamService } from '@/api/services/team.service';
+import { AppAlert } from '@/layout/components/app-alert.component';
+import { AppModal } from '@/layout/components/app-modal.component';
+import { PhonePipe } from '@/pipes/phone.pipe';
+import { Logger } from '@/utils/logger';
+
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { DialogService } from 'primeng/dynamicdialog';
+import { FloatLabel } from 'primeng/floatlabel';
+import { Fluid } from 'primeng/fluid';
 import { IconFieldModule } from 'primeng/iconfield';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputIconModule } from 'primeng/inputicon';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { RatingModule } from 'primeng/rating';
 import { RippleModule } from 'primeng/ripple';
 import { SelectModule } from 'primeng/select';
+import { Skeleton } from 'primeng/skeleton';
 import { SliderModule } from 'primeng/slider';
 import { Table, TableModule } from 'primeng/table';
-import { PhonePipe } from '@/pipes/phone.pipe';
 import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
-import { TeamService } from '@/api/services/team.service';
-import { AppAlert } from '@/layout/components/app-alert.component';
 import { ToolbarModule } from 'primeng/toolbar';
-import { Skeleton } from 'primeng/skeleton';
-import { DialogService } from 'primeng/dynamicdialog';
-import { AppModal } from '@/layout/components/app-modal.component';
-import { InputGroupModule } from 'primeng/inputgroup';
-import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { FloatLabel } from 'primeng/floatlabel';
-import { InputMaskModule } from 'primeng/inputmask';
-import { Fluid } from 'primeng/fluid';
-import { MessageModule } from 'primeng/message';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @Component({
     selector: 'app-recipient-master',
     imports: [
-        TableModule, MultiSelectModule, SelectModule, InputIconModule,
-        TagModule, InputTextModule, SliderModule, ProgressBarModule,
-        ToggleButtonModule, ToastModule, CommonModule, FormsModule,
-        ButtonModule, RatingModule, RippleModule, IconFieldModule,
-        ToolbarModule, Skeleton, AppAlert, AppModal,
-        InputGroupModule, InputGroupAddonModule, FloatLabel, InputNumberModule,
-        InputMaskModule, Fluid, ReactiveFormsModule, MessageModule,
-        ConfirmDialog, PhonePipe
+        TableModule,
+        MultiSelectModule,
+        SelectModule,
+        InputIconModule,
+        TagModule,
+        InputTextModule,
+        SliderModule,
+        ProgressBarModule,
+        ToggleButtonModule,
+        ToastModule,
+        CommonModule,
+        FormsModule,
+        ButtonModule,
+        RatingModule,
+        RippleModule,
+        IconFieldModule,
+        ToolbarModule,
+        Skeleton,
+        AppAlert,
+        AppModal,
+        InputGroupModule,
+        InputGroupAddonModule,
+        FloatLabel,
+        InputNumberModule,
+        InputMaskModule,
+        Fluid,
+        ReactiveFormsModule,
+        MessageModule,
+        ConfirmDialog,
+        PhonePipe
     ],
     templateUrl: './recipient-master.component.html',
     standalone: true,
     providers: [MessageService, DialogService, ConfirmationService]
 })
 export class RecipientMasterComponent implements OnInit, OnDestroy {
-
     teamService = inject(TeamService);
     messageService = inject(MessageService);
     dialogService = inject(DialogService);
@@ -90,7 +115,8 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
 
         // Only validate if the input appears to be complete
         // Check if it has the full expected length including formatting characters
-        if (value.length === 14) { // Format: (123) 456-7890 = 14 chars
+        if (value.length === 14) {
+            // Format: (123) 456-7890 = 14 chars
             const phonePattern = /^\(\d{3}\)\s\d{3}-\d{4}$/;
             return phonePattern.test(value) ? null : { invalidFormat: true };
         }
@@ -172,7 +198,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         }
 
         const recipientData = this.recipientForm.value;
-        console.log('Saving recipient data:', recipientData);
+        Logger.debug('Saving recipient data:', recipientData);
 
         this.isLoading = true;
         this.teamService.saveRecipient(recipientData).subscribe({
@@ -217,15 +243,15 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
             rejectButtonProps: {
                 label: 'Cancel',
                 severity: 'secondary',
-                outlined: true,
+                outlined: true
             },
             acceptButtonProps: {
                 label: 'Delete',
-                severity: 'danger',
+                severity: 'danger'
             },
             accept: () => {
                 this.deleteSelectedMembers();
-            },
+            }
         });
     }
 
@@ -235,7 +261,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         }
 
         // Get the IDs of selected members
-        const memberIds = this.selectedMembers.map(member => member.id);
+        const memberIds = this.selectedMembers.map((member) => member.id);
         this.isLoading = true;
 
         this.teamService.deleteRecipients(memberIds).subscribe({

@@ -1,24 +1,20 @@
 import { Component, ViewChild } from '@angular/core';
-import { ButtonModule } from "primeng/button";
-import { InputTextModule } from "primeng/inputtext";
-import { CheckboxModule } from "primeng/checkbox";
-import { FormsModule } from "@angular/forms";
-import { Router, RouterModule } from "@angular/router";
-import { AppAlert } from '@/layout/components/app-alert.component';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+
 import { AuthService } from '@/api/services/auth.service';
+import { AppAlert } from '@/layout/components/app-alert.component';
+import { Logger } from '@/utils/logger';
+
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [
-        ButtonModule,
-        InputTextModule,
-        CheckboxModule,
-        FormsModule,
-        RouterModule,
-        AppAlert
-    ],
-    templateUrl: './register.component.html',
+    imports: [ButtonModule, InputTextModule, CheckboxModule, FormsModule, RouterModule, AppAlert],
+    templateUrl: './register.component.html'
 })
 export class Register {
     @ViewChild(AppAlert) alert!: AppAlert;
@@ -30,7 +26,10 @@ export class Register {
     confirmPassword = '';
     checkbox = false;
 
-    constructor(private authService: AuthService, private router: Router) { }
+    constructor(
+        private authService: AuthService,
+        private router: Router
+    ) {}
 
     async register() {
         if (!this.email || !this.password || !this.confirmPassword) {
@@ -50,26 +49,25 @@ export class Register {
         }
 
         // Subscribe to the observable
-        this.authService.registerSelf(this.email, this.password, this.name, this.orgName)
-            .subscribe({
-                next: (result) => {
-                    // Log the registration details (for debugging)
-                    console.log('Registration successful:', result);
+        this.authService.registerSelf(this.email, this.password, this.name, this.orgName).subscribe({
+            next: (result) => {
+                // Log the registration details (for debugging)
+                Logger.debug('Registration successful:', result);
 
-                    // Include some details in the success message
-                    this.alert.showSuccess(
-                        `Registration successful! Your account and organization have been created. You will be redirected in a few seconds.`,
-                        'Success'
-                    );
+                // Include some details in the success message
+                this.alert.showSuccess(
+                    `Registration successful! Your account and organization have been created. You will be redirected in a few seconds.`,
+                    'Success'
+                );
 
-                    // Set a timer to redirect after 3 seconds
-                    setTimeout(() => {
-                        this.router.navigate(['/']);
-                    }, 3000);
-                },
-                error: (error) => {
-                    this.alert.showError(error?.message || 'Registration failed.', 'Registration Error');
-                }
-            });
+                // Set a timer to redirect after 3 seconds
+                setTimeout(() => {
+                    this.router.navigate(['/']);
+                }, 3000);
+            },
+            error: (error) => {
+                this.alert.showError(error?.message || 'Registration failed.', 'Registration Error');
+            }
+        });
     }
 }

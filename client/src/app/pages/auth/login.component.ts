@@ -7,6 +7,7 @@ import { Router, RouterModule } from '@angular/router';
 
 import { AuthService } from '@/api/services/auth.service';
 import { AppAlert } from '@/layout/components/app-alert.component';
+import { Logger } from '@/utils/logger';
 
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -29,7 +30,7 @@ export class Login {
     remember: boolean = false;
 
     login() {
-        console.log('Login attempt with:', this.email, this.password);
+        Logger.debug('Login attempt with:', this.email, this.password);
         if (!this.email || !this.password) {
             this.alert.showError('Email and password are required.', 'Validation Error');
             return;

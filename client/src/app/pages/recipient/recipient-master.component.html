@@ -7,53 +7,96 @@
 <div class="mb-4">
     <p-toolbar>
         <ng-template #end>
-            <p-button label="New Member" icon="pi pi-plus" class="mr-2" (onClick)="addRecipient()" />
-            <p-button severity="danger" label="Delete Member(s)" icon="pi pi-trash" outlined (onClick)="confirmDelete()"
+            <p-button
+                label="New Member"
+                icon="pi pi-plus"
+                class="mr-2"
+                (onClick)="addRecipient()" />
+            <p-button
+                severity="danger"
+                label="Delete Member(s)"
+                icon="pi pi-trash"
+                outlined
+                (onClick)="confirmDelete()"
                 [disabled]="!selectedMembers || !selectedMembers.length" />
         </ng-template>
     </p-toolbar>
 </div>
 
-<p-table #dt1 [value]="teamMembers" sortField="dateCreated" [sortOrder]="-1" dataKey="id" [rows]="10"
-    [loading]="isLoading" showLoader="false" [(selection)]="selectedMembers" [rowHover]="true" [paginator]="true"
-    [globalFilterFields]="['name', 'phoneNumber']" stripedRows responsiveLayout="scroll">
+<p-table
+    #dt1
+    [value]="teamMembers"
+    sortField="dateCreated"
+    [sortOrder]="-1"
+    dataKey="id"
+    [rows]="10"
+    [loading]="isLoading"
+    showLoader="false"
+    [(selection)]="selectedMembers"
+    [rowHover]="true"
+    [paginator]="true"
+    [globalFilterFields]="['name', 'phoneNumber']"
+    stripedRows
+    responsiveLayout="scroll">
     <ng-template #caption>
-        <div class="flex justify-between items-center flex-col sm:flex-row">
+        <div class="flex flex-col items-center justify-between sm:flex-row">
             <p-iconfield iconPosition="left">
                 <p-inputicon>
                     <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input pInputText type="text" [(ngModel)]="searchQuery" (input)="onGlobalFilter(dt1, $event)"
+                <input
+                    pInputText
+                    type="text"
+                    [(ngModel)]="searchQuery"
+                    (input)="onGlobalFilter(dt1, $event)"
                     placeholder="Search keyword" />
             </p-iconfield>
-            <p-button class="ml-2" type="button" icon="pi pi-refresh" severity="secondary" (click)="reset()" text />
-            <button pButton label="Clear Filters" class="p-button-outlined ml-auto" icon="pi pi-filter-slash"
+            <p-button
+                class="ml-2"
+                type="button"
+                icon="pi pi-refresh"
+                severity="secondary"
+                (click)="reset()"
+                text />
+            <button
+                pButton
+                label="Clear Filters"
+                class="p-button-outlined ml-auto"
+                icon="pi pi-filter-slash"
                 (click)="clear(dt1)"></button>
         </div>
     </ng-template>
     <ng-template #header>
         <tr>
             <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-            <th pSortableColumn="name" style="width:20%">
+            <th
+                pSortableColumn="name"
+                style="width: 20%">
                 <div class="flex items-center gap-2">
                     Name
                     <p-sortIcon field="name" />
                 </div>
             </th>
             <!-- <th style="min-width: 8rem">Verified</th> -->
-            <th pSortableColumn="phoneNumber" style="min-width: 12rem">
+            <th
+                pSortableColumn="phoneNumber"
+                style="min-width: 12rem">
                 <div class="flex items-center gap-2">
                     Phone Number
                     <p-sortIcon field="phoneNumber" />
                 </div>
             </th>
-            <th pSortableColumn="dateUpdated" style="min-width: 10rem">
+            <th
+                pSortableColumn="dateUpdated"
+                style="min-width: 10rem">
                 <div class="flex items-center gap-2">
                     Date Updated
                     <p-sortIcon field="dateUpdated" />
                 </div>
             </th>
-            <th pSortableColumn="dateCreated" style="min-width: 10rem">
+            <th
+                pSortableColumn="dateCreated"
+                style="min-width: 10rem">
                 <div class="flex items-center gap-2">
                     Date Created
                     <p-sortIcon field="dateCreated" />
@@ -61,7 +104,9 @@
             </th>
         </tr>
     </ng-template>
-    <ng-template #body let-teamMember>
+    <ng-template
+        #body
+        let-teamMember>
         <tr>
             <!-- <td>
                     <span class="flex justfiy-end items-center">
@@ -74,8 +119,11 @@
             <td (click)="$event.stopPropagation()">
                 <p-tableCheckbox [value]="teamMember" />
             </td>
-            <td (click)="editRecipient(teamMember)" class="cursor-pointer text-blue-500 underline hover:text-blue-700">
-                {{ teamMember.name }}</td>
+            <td
+                (click)="editRecipient(teamMember)"
+                class="cursor-pointer text-blue-500 underline hover:text-blue-700">
+                {{ teamMember.name }}
+            </td>
             <td>{{ teamMember.phoneNumber | phone }}</td>
             <td>{{ teamMember.dateUpdated | date: 'yyyy/MM/dd' }}</td>
             <td>{{ teamMember.dateCreated | date: 'yyyy/MM/dd' }}</td>
@@ -83,7 +131,7 @@
     </ng-template>
     <ng-template #emptymessage>
         <tr>
-            <td colspan="8">No team members found.</td>
+            <td colspan="8">No recipients found in your organization</td>
         </tr>
     </ng-template>
     <ng-template #loadingbody>
@@ -111,9 +159,13 @@
     </ng-template>
 </p-table>
 
-<app-modal [closeOnSubmit]="false" (submit)="onSubmitRecipient()">
+<app-modal
+    [closeOnSubmit]="false"
+    (submit)="onSubmitRecipient()">
     <ng-template #body>
-        <form [formGroup]="recipientForm" (ngSubmit)="onSubmitRecipient()">
+        <form
+            [formGroup]="recipientForm"
+            (ngSubmit)="onSubmitRecipient()">
             <p-fluid>
                 <div class="mb-4">
                     <p-inputgroup>
@@ -121,25 +173,44 @@
                             <i class="pi pi-id-card"></i>
                         </p-inputgroup-addon>
                         <p-floatlabel variant="on">
-                            <input pInputText id="name" formControlName="name" autocomplete="off"
-                                [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('name')}" />
+                            <input
+                                pInputText
+                                id="name"
+                                formControlName="name"
+                                autocomplete="off"
+                                [ngClass]="{ 'ng-invalid ng-dirty': isFieldInvalid('name') }" />
                             <label for="name">Name</label>
                         </p-floatlabel>
                     </p-inputgroup>
                     @if (isFieldInvalid('name')) {
-                    <p-message severity="error" size="small" variant="simple">Name is required.</p-message>
+                        <p-message
+                            severity="error"
+                            size="small"
+                            variant="simple"
+                            >Name is required.</p-message
+                        >
                     }
                 </div>
 
-                <p-floatlabel variant="on" styleClass="mb-4">
-                    <p-inputmask id="phone" mask="(999) 999-9999" formControlName="phoneNumber"
-                        [ngClass]="{'ng-invalid ng-dirty': isFieldInvalid('phoneNumber')}" [unmask]="false"
+                <p-floatlabel
+                    variant="on"
+                    styleClass="mb-4">
+                    <p-inputmask
+                        id="phone"
+                        mask="(999) 999-9999"
+                        formControlName="phoneNumber"
+                        [ngClass]="{ 'ng-invalid ng-dirty': isFieldInvalid('phoneNumber') }"
+                        [unmask]="false"
                         [autoClear]="false" />
                     <label for="phone">Phone Number</label>
                 </p-floatlabel>
                 @if (isFieldInvalid('phoneNumber')) {
-                <p-message severity="error" size="small" variant="simple">Valid phone number is
-                    required.</p-message>
+                    <p-message
+                        severity="error"
+                        size="small"
+                        variant="simple"
+                        >Valid phone number is required.</p-message
+                    >
                 }
             </p-fluid>
         </form>

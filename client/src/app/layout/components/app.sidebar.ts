@@ -2,7 +2,7 @@ import { Component, computed, ElementRef, ViewChild } from '@angular/core';
 import { AppMenu } from './app.menu';
 import { LayoutService } from '@/layout/service/layout.service';
 import { RouterModule } from '@angular/router';
-import { AppTopbar } from '@/layout/components/app.topbar';
+import { AppTopbar } from '@/layout/components/app-topbar.component';
 import { CommonModule } from '@angular/common';
 
 @Component({

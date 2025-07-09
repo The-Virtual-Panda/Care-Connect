@@ -84,7 +84,12 @@ export const appConfig: ApplicationConfig = {
         provideHttpClient(withFetch()),
         provideAnimationsAsync(),
 
-        providePrimeNG({ theme: { preset: MyPreset, options: { darkModeSelector: '.app-dark' } } }),
+        providePrimeNG({
+            theme: {
+                preset: MyPreset,
+                options: { darkModeSelector: '.app-dark' }
+            }
+        }),
 
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideAuth(() => {

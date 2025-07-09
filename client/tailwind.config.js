@@ -3,7 +3,7 @@ import PrimeUI from 'tailwindcss-primeui';
 
 export default {
     darkMode: ['selector', '[class*="app-dark"]'],
-    content: ['./index.html', './src/**/*.{js,ts}', './public/**/*.json'],
+    content: ['./index.html', './src/**/*.{html,js,ts}', './public/**/*.json'],
     plugins: [PrimeUI],
     theme: {
         extend: {
@@ -31,12 +31,12 @@ export default {
             },
             keyframes: {
                 'infinite-scroll': {
-                    from: {transform: 'translateX(0)'},
-                    to: {transform: 'translateX(-100%)'}
+                    from: { transform: 'translateX(0)' },
+                    to: { transform: 'translateX(-100%)' }
                 },
                 float: {
-                    '0%, 100%': {transform: 'translateY(0)'},
-                    '50%': {transform: 'translateY(-6px) scale(1.005)'}
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-6px) scale(1.005)' }
                 },
                 wiggle: {
                     '0%, 30%, 100%': {

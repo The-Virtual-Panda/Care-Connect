@@ -1,6 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { Logger } from '@/utils/logger';
 
 @Component({
     selector: 'app-phone-configure',
@@ -15,9 +17,9 @@ export class PhoneConfigureComponent implements OnInit {
     phoneId: string | null = null;
 
     ngOnInit(): void {
-        this.route.paramMap.subscribe(params => {
+        this.route.paramMap.subscribe((params) => {
             this.phoneId = params.get('id');
-            console.log('Phone ID from route:', this.phoneId);
+            Logger.log('Phone ID from route:', this.phoneId);
         });
     }
 }

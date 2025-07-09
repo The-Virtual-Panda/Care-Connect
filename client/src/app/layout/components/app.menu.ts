@@ -1,12 +1,15 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Subject, combineLatest, takeUntil } from 'rxjs';
+
 import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AppMenuitem } from './app.menuitem';
+
+import { PhoneNumber } from '@/api/models/phone-number';
 import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
-import { Subject, takeUntil, combineLatest } from 'rxjs';
-import { PhoneNumber } from '@/api/models/phone-number';
 import { PhonePipe } from '@/pipes/phone.pipe';
+
+import { AppMenuitem } from './app.menuitem';
 
 @Component({
     selector: '[app-menu]',
@@ -33,26 +36,33 @@ export class AppMenu implements OnInit, OnDestroy {
     currentOrgId: string | null = null;
 
     ngOnInit() {
-        // Subscribe to authentication state changes
-        this.authService.user$.pipe(
-            takeUntil(this.destroy$)
-        ).subscribe(user => {
-            const isLoggedIn = !!user;
+        const loggedIn = this.authService.isLoggedIn();
+        if (!loggedIn) {
+            console.error('Using the app menu without a logged-in user. This is not intended design.');
+        }
 
-            if (isLoggedIn) {
-                this.currentOrgId = this.authService.currentOrgId;
-                if (this.currentOrgId) {
-                    // Check if the organization has phone numbers
-                    this.phoneService.getOrgPhoneNumbers(this.currentOrgId).pipe(
-                        takeUntil(this.destroy$)
-                    ).subscribe(phoneNumbers => {
-                        this.orgPhoneNumbers = phoneNumbers;
-                        this.updateMenuItems();
+        // Subscribe to authentication state changes
+        this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
+            const isLoggedIn = !!user;
+            this.currentOrgId = this.authService.currentOrgId;
+
+            if (isLoggedIn && this.currentOrgId) {
+                this.phoneService
+                    .getOrgPhoneNumbers(this.currentOrgId)
+                    .pipe(takeUntil(this.destroy$))
+                    .subscribe({
+                        next: (phoneNumbers) => {
+                            this.orgPhoneNumbers = phoneNumbers;
+                            this.updateMenuItems();
+                        },
+                        error: (err) => {
+                            console.error('Error fetching organization phone numbers:', err);
+                            this.orgPhoneNumbers = [];
+                            this.updateMenuItems();
+                        }
                     });
-                } else {
-                    this.updateMenuItems();
-                }
             } else {
+                console.warn('User is not logged in or no org id found, clearing organization phone numbers');
                 this.currentOrgId = null;
                 this.updateMenuItems();
             }
@@ -69,24 +79,24 @@ export class AppMenu implements OnInit, OnDestroy {
             {
                 label: 'Home',
                 icon: 'pi pi-home',
-                routerLink: '/',
+                routerLink: '/'
             },
             { separator: true },
             {
                 label: 'Recipients',
                 icon: 'pi pi-users',
-                routerLink: 'recipients',
+                routerLink: 'recipients'
             },
             { separator: true },
             {
                 label: 'Phone Numbers',
                 icon: 'pi pi-phone',
                 visible: this.orgPhoneNumbers.length > 0,
-                items: this.orgPhoneNumbers.map(phone => ({
+                items: this.orgPhoneNumbers.map((phone) => ({
                     label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
                     routerLink: ['/phone-numbers', phone.id, 'config']
                 }))
-            },
+            }
         ];
     }
 }

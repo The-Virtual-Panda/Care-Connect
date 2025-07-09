@@ -1,4 +1,3 @@
-// logger.ts
 import { environment } from 'src/environments/environment';
 
 export class Logger {

@@ -135,6 +135,11 @@ export class AuthService {
         return this._userSession?.currentOrganization?.id || null;
     }
 
+    public get username(): string | null {
+        this.fetchUserSession();
+        return this._userSession?.profile?.name || null;
+    }
+
     /// Load user context from Firestore
     private async loadUserContext(fireUser: FireUser) {
         try {

@@ -1,14 +1,15 @@
+import { canActivate, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { Routes } from '@angular/router';
+
+import { AuthLayout } from '@/layout/components/app.authlayout';
 import { AppLayout } from '@/layout/components/app.layout';
 import { Notfound } from '@/pages/notfound/notfound';
-import { AuthLayout } from '@/layout/components/app.authlayout';
-import { AuthGuard } from '@/guards/auth.guard';
 
 export const appRoutes: Routes = [
     {
         path: '',
         component: AppLayout,
-        canActivate: [AuthGuard],
+        ...canActivate(() => redirectUnauthorizedTo(['login'])),
         children: [
             {
                 path: '',
@@ -50,7 +51,7 @@ export const appRoutes: Routes = [
             {
                 path: 'new-password',
                 loadComponent: () => import('@/pages/auth/newpassword').then((c) => c.NewPassword)
-            },
+            }
         ]
     },
     {

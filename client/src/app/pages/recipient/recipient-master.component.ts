@@ -204,7 +204,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         this.teamService.saveRecipient(recipientData).subscribe({
             next: () => {
                 this.modal.hideModal();
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient saved successfully', key: 'br' });
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient saved successfully' });
                 this.reload();
             },
             error: (error: Error) => {
@@ -266,7 +266,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
 
         this.teamService.deleteRecipients(memberIds).subscribe({
             next: () => {
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient(s) deleted successfully', key: 'br' });
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient(s) deleted successfully' });
                 this.selectedMembers = [];
                 this.reload();
             },

@@ -1,4 +1,9 @@
-<p-dialog [(visible)]="visible" [modal]="true" [draggable]="draggable" [header]="title" [style]="{ width: '25rem' }">
+<p-dialog
+    [(visible)]="visible"
+    [modal]="true"
+    [draggable]="draggable"
+    [header]="title"
+    [style]="{ width: modalWidth }">
     <ng-container *ngIf="bodyTemplate">
         <div class="py-2">
             <ng-container *ngTemplateOutlet="bodyTemplate"></ng-container>
@@ -9,8 +14,14 @@
             <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
         </ng-container>
         <ng-template #defaultFooter>
-            <p-button [label]="cancelText" [text]="true" severity="secondary" (click)="onCancel()" />
-            <p-button [label]="submitText" (click)="onSubmit()" />
+            <p-button
+                [label]="cancelText"
+                [text]="true"
+                severity="secondary"
+                (click)="onCancel()" />
+            <p-button
+                [label]="submitText"
+                (click)="onSubmit()" />
         </ng-template>
     </ng-template>
 </p-dialog>

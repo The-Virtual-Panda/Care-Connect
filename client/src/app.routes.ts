@@ -23,7 +23,7 @@ export const appRoutes: Routes = [
             },
             {
                 path: 'phone-numbers/:id/config',
-                loadComponent: () => import('@/pages/phone-configure/phone-configure.component').then((c) => c.PhoneConfigureComponent),
+                loadComponent: () => import('@/pages/phone/phone-details.component').then((c) => c.PhoneDetailsComponent),
                 data: { breadcrumb: 'Phone Configuration' }
             }
         ]

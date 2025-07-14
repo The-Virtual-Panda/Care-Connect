@@ -39,7 +39,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
 
 @Component({
-    selector: 'app-recipient-master',
+    selector: 'cc-recipient-master',
     imports: [
         TableModule,
         MultiSelectModule,
@@ -204,7 +204,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         this.teamService.saveRecipient(recipientData).subscribe({
             next: () => {
                 this.modal.hideModal();
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient saved successfully' });
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient saved successfully', key: 'br' });
                 this.reload();
             },
             error: (error: Error) => {
@@ -266,7 +266,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
 
         this.teamService.deleteRecipients(memberIds).subscribe({
             next: () => {
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient(s) deleted successfully' });
+                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient(s) deleted successfully', key: 'br' });
                 this.selectedMembers = [];
                 this.reload();
             },

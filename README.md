@@ -29,6 +29,8 @@ firebase deploy --only functions
 
 ### Firebase Firestore Rules
 
+Training Bookmark: <https://fireship.io/courses/firebase-security/basics-paths/>
+
 ```bash
 firebase deploy --only firestore:rules
 ```

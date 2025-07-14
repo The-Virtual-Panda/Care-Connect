@@ -12,7 +12,8 @@ service cloud.firestore {
     }
 
     function isOrgMember(orgId) {
-      return isSignedIn() && exists(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid));
+      return isSignedIn()
+          && exists(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid));
     }
 
     function isOrgAdmin(orgId) {
@@ -31,13 +32,8 @@ service cloud.firestore {
       allow get: if isUser(userId);
 
       // Only the user can update their own profile
-      allow create: if isUser(userId) &&
-                       request.resource.data.dateCreated is timestamp &&
-                       request.resource.data.dateUpdated is timestamp;
-
-      allow update: if isUser(userId) &&
-                       request.resource.data.dateUpdated is timestamp &&
-                       request.resource.data.dateUpdated > resource.data.dateUpdated;
+      allow create: if isUser(userId);
+      allow update: if isUser(userId);
 
       // User's organization memberships
       match /orgMemberships/{orgId} {

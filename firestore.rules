@@ -1,0 +1,84 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Common functions used across rules
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isOrgMember(orgId) {
+      return isSignedIn()
+          && exists(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid));
+    }
+
+    function isOrgAdmin(orgId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own profile
+      allow get: if isUser(userId);
+
+      // Only the user can update their own profile
+      allow create: if isUser(userId);
+      allow update: if isUser(userId);
+
+      // User's organization memberships
+      match /orgMemberships/{orgId} {
+        allow read: if isUser(userId);
+        allow create, update: if isOrgAdmin(orgId);
+        allow delete: if isOrgAdmin(orgId) || isUser(userId);
+      }
+    }
+
+    // Organizations collection
+    match /organizations/{orgId} {
+      // Org members can read their organization
+      allow read: if isOrgMember(orgId);
+
+      // Only admins can modify the organization
+      allow write: if isOrgAdmin(orgId);
+
+      // Organization users subcollection
+      match /users/{userId} {
+        allow read: if isOrgMember(orgId);
+        allow write: if isOrgAdmin(orgId);
+      }
+
+      // Team members subcollection
+      match /teamMembers/{teamMemberId} {
+        allow read: if isOrgMember(orgId);
+        allow write: if isOrgAdmin(orgId);
+      }
+    }
+
+    // Phone numbers collection
+    match /phoneNumbers/{phoneId} {
+      // Org members can read phone numbers belonging to their org
+      allow read: if isOrgMember(resource.data.orgId);
+
+      // Only org admins can create/update/delete phone numbers
+      allow create: if isOrgAdmin(request.resource.data.orgId);
+      allow update, delete: if isOrgAdmin(resource.data.orgId);
+
+      // Shifts subcollection
+      match /shifts/{shiftId} {
+        allow read: if isOrgMember(resource.data.orgId) ||
+                      isOrgMember(get(/databases/$(database)/documents/phoneNumbers/$(phoneId)).data.orgId);
+        allow write: if isOrgAdmin(get(/databases/$(database)/documents/phoneNumbers/$(phoneId)).data.orgId);
+      }
+    }
+  }
+}

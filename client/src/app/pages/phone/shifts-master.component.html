@@ -1,0 +1,306 @@
+<p class="mb-4">Shifts manage when team members are on call for this phone number.</p>
+
+<p-toast position="bottom-right" />
+
+<p-confirmdialog />
+
+<div class="mb-4">
+    <p-toolbar>
+        <ng-template #end>
+            <p-button
+                label="New Shift"
+                icon="pi pi-plus"
+                class="mr-2"
+                (onClick)="addShift()" />
+            <p-button
+                severity="danger"
+                label="Delete Shift(s)"
+                icon="pi pi-trash"
+                outlined
+                (onClick)="confirmDelete()"
+                [disabled]="!selectedShifts || !selectedShifts.length" />
+        </ng-template>
+    </p-toolbar>
+</div>
+
+<p-table
+    #dt1
+    [value]="shifts"
+    sortField="start"
+    [sortOrder]="1"
+    dataKey="id"
+    [rows]="10"
+    [loading]="isLoading"
+    showLoader="false"
+    [(selection)]="selectedShifts"
+    [rowHover]="true"
+    [paginator]="true"
+    [globalFilterFields]="['assigneeId', 'timeZone']"
+    stripedRows
+    responsiveLayout="scroll">
+    <ng-template #caption>
+        <div class="flex flex-col items-center justify-between sm:flex-row">
+            <p-iconfield iconPosition="left">
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input
+                    pInputText
+                    type="text"
+                    [(ngModel)]="searchQuery"
+                    (input)="onGlobalFilter(dt1, $event)"
+                    placeholder="Search shifts..." />
+            </p-iconfield>
+            <p-button
+                class="ml-2"
+                type="button"
+                icon="pi pi-refresh"
+                severity="secondary"
+                (click)="reset()"
+                text />
+            <button
+                pButton
+                label="Clear Filters"
+                class="p-button-outlined ml-auto"
+                icon="pi pi-filter-slash"
+                (click)="clear(dt1)"></button>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+            <th
+                pSortableColumn="assigneeId"
+                style="width: 20%">
+                <div class="flex items-center gap-2">
+                    Assignee
+                    <p-sortIcon field="assigneeId"></p-sortIcon>
+                </div>
+            </th>
+            <th
+                pSortableColumn="start"
+                style="min-width: 12rem">
+                <div class="flex items-center gap-2">
+                    Start Time
+                    <p-sortIcon field="start"></p-sortIcon>
+                </div>
+            </th>
+            <th
+                pSortableColumn="end"
+                style="min-width: 12rem">
+                <div class="flex items-center gap-2">
+                    End Time
+                    <p-sortIcon field="end"></p-sortIcon>
+                </div>
+            </th>
+            <th
+                pSortableColumn="timeZone"
+                style="min-width: 10rem">
+                <div class="flex items-center gap-2">
+                    Time Zone
+                    <p-sortIcon field="timeZone"></p-sortIcon>
+                </div>
+            </th>
+            <th
+                pSortableColumn="enabled"
+                style="min-width: 8rem">
+                <div class="flex items-center gap-2">
+                    Enabled
+                    <p-sortIcon field="enabled"></p-sortIcon>
+                </div>
+            </th>
+            <th style="min-width: 8rem">Actions</th>
+        </tr>
+    </ng-template>
+    <ng-template
+        #body
+        let-shift>
+        <tr>
+            <td (click)="$event.stopPropagation()">
+                <p-tableCheckbox [value]="shift" />
+            </td>
+            <td>{{ getAssigneeName(shift.assigneeId) }}</td>
+            <td>{{ formatDateTime(shift.start) }}</td>
+            <td>{{ formatDateTime(shift.end) }}</td>
+            <td>{{ shift.timeZone }}</td>
+            <td>
+                <p-tag
+                    [value]="shift.enabled ? 'Yes' : 'No'"
+                    [severity]="shift.enabled ? 'success' : 'danger'">
+                </p-tag>
+            </td>
+            <td>
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-pencil"
+                    class="p-button-rounded p-button-text mr-2"
+                    (click)="editShift(shift)"></button>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="7">No shifts found for this phone number</td>
+        </tr>
+    </ng-template>
+    <ng-template #loadingbody>
+        <tr>
+            <td></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<app-modal
+    [closeOnSubmit]="false"
+    (submit)="onSubmitShift()">
+    <ng-template #body>
+        <form
+            [formGroup]="shiftForm"
+            (ngSubmit)="onSubmitShift()">
+            <p-fluid>
+                <div class="mb-4">
+                    <label
+                        for="assigneeId"
+                        class="mb-2 block text-sm font-medium"
+                        >Assignee</label
+                    >
+                    <p-dropdown
+                        id="assigneeId"
+                        formControlName="assigneeId"
+                        [options]="teamMembers"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Select an assignee"
+                        [class.ng-invalid]="isFieldInvalid('assigneeId')"
+                        [class.ng-dirty]="isFieldInvalid('assigneeId')">
+                    </p-dropdown>
+                    <small
+                        class="p-error"
+                        *ngIf="isFieldInvalid('assigneeId')"
+                        >Assignee is required.</small
+                    >
+                </div>
+
+                <div class="mb-4 grid gap-2">
+                    <div class="col-12 md:col-6">
+                        <label
+                            for="start"
+                            class="mb-2 block text-sm font-medium"
+                            >Start Time</label
+                        >
+                        <p-calendar
+                            id="start"
+                            formControlName="start"
+                            [showTime]="true"
+                            [stepMinute]="15"
+                            [showSeconds]="false"
+                            size="small"
+                            [class.ng-invalid]="isFieldInvalid('start')"
+                            [class.ng-dirty]="isFieldInvalid('start')"
+                            dateFormat="mm/dd/yy"
+                            [appendTo]="'body'">
+                        </p-calendar>
+                        <small
+                            class="p-error"
+                            *ngIf="isFieldInvalid('start') && !shiftForm.get('start')?.hasError('startDateInvalid')"
+                            >Start time is required.</small
+                        >
+                        <small
+                            class="p-error"
+                            *ngIf="submitted && shiftForm.get('start')?.hasError('startDateInvalid')"
+                            >Start time must be in the future for new shifts.</small
+                        >
+                    </div>
+                    <div class="col-12 md:col-6">
+                        <label
+                            for="end"
+                            class="mb-2 block text-sm font-medium"
+                            >End Time</label
+                        >
+                        <p-calendar
+                            id="end"
+                            formControlName="end"
+                            [showTime]="true"
+                            [stepMinute]="15"
+                            [showSeconds]="false"
+                            [class.ng-invalid]="isFieldInvalid('end') || (submitted && shiftForm.hasError('endBeforeStart'))"
+                            [class.ng-dirty]="isFieldInvalid('end') || (submitted && shiftForm.hasError('endBeforeStart'))"
+                            dateFormat="mm/dd/yy"
+                            [appendTo]="'body'">
+                        </p-calendar>
+                        <small
+                            class="p-error"
+                            *ngIf="isFieldInvalid('end') && !shiftForm.hasError('endBeforeStart')"
+                            >End time is required.</small
+                        >
+                        <small
+                            class="p-error"
+                            *ngIf="submitted && shiftForm.hasError('endBeforeStart')"
+                            >End time cannot be before or equal to start time.</small
+                        >
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label
+                        for="timeZone"
+                        class="mb-2 block text-sm font-medium"
+                        >Time Zone</label
+                    >
+                    <p-dropdown
+                        id="timeZone"
+                        formControlName="timeZone"
+                        [options]="timeZones"
+                        size="small"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="Select a time zone"
+                        [class.ng-invalid]="isFieldInvalid('timeZone')"
+                        [class.ng-dirty]="isFieldInvalid('timeZone')">
+                    </p-dropdown>
+                    <small
+                        class="p-error"
+                        *ngIf="isFieldInvalid('timeZone')"
+                        >Time zone is required.</small
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label
+                        for="enabled"
+                        class="mb-2 block text-sm font-medium"
+                        >Enabled</label
+                    >
+                    <p-inputSwitch
+                        id="enabled"
+                        formControlName="enabled"></p-inputSwitch>
+                </div>
+            </p-fluid>
+        </form>
+    </ng-template>
+</app-modal>

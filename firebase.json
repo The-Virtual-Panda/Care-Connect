@@ -1,39 +1,42 @@
 {
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default",
-      "ignore": [
-        "node_modules",
-        ".git",
-        ".gitignore",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        ".env.*",
-        ".env",
-        "**/test/**",
-        "**/seed-data/**",
-        "*.ts",
-        "tsconfig.json"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ]
-    }
-  ],
-  "emulators": {
-    "functions": {
-      "port": 5001
-    },
     "firestore": {
-      "port": 8080
+        "rules": "firestore.rules"
     },
-    "auth": {
-      "port": 9099
-    },
-    "ui": {
-      "enabled": true
-    },
-    "singleProjectMode": true
-  }
+    "functions": [
+        {
+            "source": "functions",
+            "codebase": "default",
+            "ignore": [
+                "node_modules",
+                ".git",
+                ".gitignore",
+                "firebase-debug.log",
+                "firebase-debug.*.log",
+                ".env.*",
+                ".env",
+                "**/test/**",
+                "**/seed-data/**",
+                "*.ts",
+                "tsconfig.json"
+            ],
+            "predeploy": [
+                "npm --prefix \"$RESOURCE_DIR\" run build"
+            ]
+        }
+    ],
+    "emulators": {
+        "functions": {
+            "port": 5001
+        },
+        "firestore": {
+            "port": 8080
+        },
+        "auth": {
+            "port": 9099
+        },
+        "ui": {
+            "enabled": true
+        },
+        "singleProjectMode": true
+    }
 }

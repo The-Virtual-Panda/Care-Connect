@@ -39,7 +39,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
 
 @Component({
-    selector: 'app-recipient-master',
+    selector: 'cc-recipient-master',
     imports: [
         TableModule,
         MultiSelectModule,

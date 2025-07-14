@@ -4,13 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { Logger } from '@/utils/logger';
 
+import { ShiftsMasterComponent } from './shifts-master.component';
+
 @Component({
-    selector: 'app-phone-configure',
+    selector: 'cc-phone-details',
     standalone: true,
-    imports: [CommonModule],
-    templateUrl: './phone-configure.component.html'
+    imports: [CommonModule, ShiftsMasterComponent],
+    templateUrl: './phone-details.component.html'
 })
-export class PhoneConfigureComponent implements OnInit {
+export class PhoneDetailsComponent implements OnInit {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
 

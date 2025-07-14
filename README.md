@@ -19,10 +19,20 @@
 
 ## Deployment
 
+### Firebase Function
+
 Deploy the functions, from the root of the repository, run this:
 
 ```bash
 firebase deploy --only functions
+```
+
+### Firebase Firestore Rules
+
+Training Bookmark: <https://fireship.io/courses/firebase-security/basics-paths/>
+
+```bash
+firebase deploy --only firestore:rules
 ```
 
 ## Testing Twilio

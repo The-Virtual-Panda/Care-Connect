@@ -76,16 +76,22 @@ export class AppMenu implements OnInit, OnDestroy {
 
     private updateMenuItems() {
         this.menuItems = [
+            // {
+            //     label: 'Home',
+            //     icon: 'pi pi-home',
+            //     routerLink: '/'
+            // },
+            // { separator: true },
             {
-                label: 'Home',
-                icon: 'pi pi-home',
-                routerLink: '/'
-            },
-            { separator: true },
-            {
-                label: 'Recipients',
-                icon: 'pi pi-users',
-                routerLink: 'recipients'
+                label: 'Organization',
+                icon: 'pi pi-building',
+                items: [
+                    {
+                        label: 'Recipients',
+                        icon: 'pi pi-users',
+                        routerLink: 'recipients'
+                    }
+                ]
             },
             { separator: true },
             {

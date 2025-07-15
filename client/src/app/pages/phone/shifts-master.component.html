@@ -35,75 +35,95 @@
     [(selection)]="selectedShifts"
     [rowHover]="true"
     [paginator]="true"
-    [globalFilterFields]="['assigneeId', 'timeZone']"
     stripedRows
     responsiveLayout="scroll">
     <ng-template #caption>
-        <div class="flex flex-col items-center justify-between sm:flex-row">
-            <p-iconfield iconPosition="left">
-                <p-inputicon>
-                    <i class="pi pi-search"></i>
-                </p-inputicon>
-                <input
-                    pInputText
-                    type="text"
-                    [(ngModel)]="searchQuery"
-                    (input)="onGlobalFilter(dt1, $event)"
-                    placeholder="Search shifts..." />
-            </p-iconfield>
-            <p-button
-                class="ml-2"
-                type="button"
-                icon="pi pi-refresh"
-                severity="secondary"
-                (click)="reset()"
-                text />
-            <button
-                pButton
-                label="Clear Filters"
-                class="p-button-outlined ml-auto"
-                icon="pi pi-filter-slash"
-                (click)="clear(dt1)"></button>
+        <div class="mb-2 flex flex-col items-center justify-between sm:flex-row">
+            <div class="flex flex-wrap items-center gap-2">
+                <p-select
+                    [options]="timeRangeOptions"
+                    [(ngModel)]="selectedTimeRange"
+                    (onChange)="onTimeRangeChange()"
+                    optionLabel="label"
+                    [style]="{ 'min-width': '150px' }"
+                    appendTo="body"
+                    placeholder="Select Time Range" />
+                <p-select
+                    [options]="teamMembers"
+                    [(ngModel)]="selectedAssignee"
+                    (onChange)="onAssigneeChange()"
+                    optionLabel="name"
+                    optionValue="id"
+                    [style]="{ 'min-width': '180px' }"
+                    appendTo="body"
+                    placeholder="Filter by assignee"
+                    [showClear]="true" />
+                <div class="flex items-center">
+                    <button
+                        pButton
+                        icon="pi pi-chevron-left"
+                        class="p-button-rounded p-button-text"
+                        (click)="navigateDate(-1)"
+                        [disabled]="!selectedDate"></button>
+                    <p-datepicker
+                        [(ngModel)]="selectedDate"
+                        [showButtonBar]="true"
+                        appendTo="body"
+                        (onSelect)="onDateChange()"
+                        (onClear)="onDateChange()"
+                        placeholder="Filter by date"
+                        dateFormat="mm/dd/yy" />
+                    <button
+                        pButton
+                        icon="pi pi-chevron-right"
+                        class="p-button-rounded p-button-text"
+                        (click)="navigateDate(1)"
+                        [disabled]="!selectedDate"></button>
+                </div>
+            </div>
+            <div class="mt-2 flex items-center sm:mt-0">
+                <button
+                    pButton
+                    label="Clear Filters"
+                    class="p-button-outlined mr-2"
+                    icon="pi pi-filter-slash"
+                    (click)="clear(dt1)"></button>
+                <p-button
+                    type="button"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    (click)="reset()" />
+            </div>
         </div>
     </ng-template>
     <ng-template #header>
         <tr>
             <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-            <th
-                pSortableColumn="assigneeId"
-                style="width: 20%">
+            <th pSortableColumn="assigneeId">
                 <div class="flex items-center gap-2">
                     Assignee
                     <p-sortIcon field="assigneeId"></p-sortIcon>
                 </div>
             </th>
-            <th
-                pSortableColumn="start"
-                style="min-width: 12rem">
+            <th pSortableColumn="start">
                 <div class="flex items-center gap-2">
                     Start Time
                     <p-sortIcon field="start"></p-sortIcon>
                 </div>
             </th>
-            <th
-                pSortableColumn="end"
-                style="min-width: 12rem">
+            <th pSortableColumn="end">
                 <div class="flex items-center gap-2">
                     End Time
                     <p-sortIcon field="end"></p-sortIcon>
                 </div>
             </th>
-            <th
-                pSortableColumn="timeZone"
-                style="min-width: 10rem">
+            <th pSortableColumn="timeZone">
                 <div class="flex items-center gap-2">
                     Time Zone
                     <p-sortIcon field="timeZone"></p-sortIcon>
                 </div>
             </th>
-            <th
-                pSortableColumn="enabled"
-                style="min-width: 8rem">
+            <th pSortableColumn="enabled">
                 <div class="flex items-center gap-2">
                     Enabled
                     <p-sortIcon field="enabled"></p-sortIcon>
@@ -111,6 +131,7 @@
             </th>
             <th style="min-width: 8rem">Actions</th>
         </tr>
+        <!-- No column filter row needed as filters are now in the toolbar -->
     </ng-template>
     <ng-template
         #body
@@ -141,7 +162,7 @@
     </ng-template>
     <ng-template #emptymessage>
         <tr>
-            <td colspan="7">No shifts found for this phone number</td>
+            <td colspan="7">No shifts found</td>
         </tr>
     </ng-template>
     <ng-template #loadingbody>
@@ -189,7 +210,7 @@
                         class="mb-2 block text-sm font-medium"
                         >Assignee</label
                     >
-                    <p-dropdown
+                    <p-select
                         id="assigneeId"
                         formControlName="assigneeId"
                         [options]="teamMembers"
@@ -198,43 +219,50 @@
                         placeholder="Select an assignee"
                         [class.ng-invalid]="isFieldInvalid('assigneeId')"
                         [class.ng-dirty]="isFieldInvalid('assigneeId')">
-                    </p-dropdown>
-                    <small
-                        class="p-error"
-                        *ngIf="isFieldInvalid('assigneeId')"
-                        >Assignee is required.</small
-                    >
+                    </p-select>
+                    @if (isFieldInvalid('assigneeId')) {
+                        <p-message
+                            severity="error"
+                            size="small"
+                            variant="simple"
+                            >Assignee is required.</p-message
+                        >
+                    }
                 </div>
 
-                <div class="mb-4 grid gap-2">
+                <div class="mb-4 grid gap-4">
                     <div class="col-12 md:col-6">
                         <label
                             for="start"
-                            class="mb-2 block text-sm font-medium"
-                            >Start Time</label
-                        >
-                        <p-calendar
+                            class="mb-2 block text-sm font-medium">
+                            Start Time
+                        </label>
+                        <p-datepicker
                             id="start"
                             formControlName="start"
                             [showTime]="true"
                             [stepMinute]="15"
-                            [showSeconds]="false"
-                            size="small"
                             [class.ng-invalid]="isFieldInvalid('start')"
                             [class.ng-dirty]="isFieldInvalid('start')"
                             dateFormat="mm/dd/yy"
-                            [appendTo]="'body'">
-                        </p-calendar>
-                        <small
-                            class="p-error"
-                            *ngIf="isFieldInvalid('start') && !shiftForm.get('start')?.hasError('startDateInvalid')"
-                            >Start time is required.</small
-                        >
-                        <small
-                            class="p-error"
-                            *ngIf="submitted && shiftForm.get('start')?.hasError('startDateInvalid')"
-                            >Start time must be in the future for new shifts.</small
-                        >
+                            hourFormat="12"
+                            [appendTo]="'body'" />
+                        @if (isFieldInvalid('start') && !shiftForm.get('start')?.hasError('startDateInvalid')) {
+                            <p-message
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >Start time is required.</p-message
+                            >
+                        }
+                        @if (submitted && shiftForm.get('start')?.hasError('startDateInvalid')) {
+                            <p-message
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >Start time must be in the future for new shifts.</p-message
+                            >
+                        }
                     </div>
                     <div class="col-12 md:col-6">
                         <label
@@ -242,27 +270,32 @@
                             class="mb-2 block text-sm font-medium"
                             >End Time</label
                         >
-                        <p-calendar
+                        <p-datepicker
                             id="end"
                             formControlName="end"
-                            [showTime]="true"
-                            [stepMinute]="15"
-                            [showSeconds]="false"
                             [class.ng-invalid]="isFieldInvalid('end') || (submitted && shiftForm.hasError('endBeforeStart'))"
                             [class.ng-dirty]="isFieldInvalid('end') || (submitted && shiftForm.hasError('endBeforeStart'))"
+                            [showTime]="true"
+                            [stepMinute]="15"
+                            hourFormat="12"
                             dateFormat="mm/dd/yy"
-                            [appendTo]="'body'">
-                        </p-calendar>
-                        <small
-                            class="p-error"
-                            *ngIf="isFieldInvalid('end') && !shiftForm.hasError('endBeforeStart')"
-                            >End time is required.</small
-                        >
-                        <small
-                            class="p-error"
-                            *ngIf="submitted && shiftForm.hasError('endBeforeStart')"
-                            >End time cannot be before or equal to start time.</small
-                        >
+                            [appendTo]="'body'" />
+                        @if (isFieldInvalid('end') && !shiftForm.hasError('endBeforeStart')) {
+                            <p-message
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >End time is required.</p-message
+                            >
+                        }
+                        @if (submitted && shiftForm.hasError('endBeforeStart')) {
+                            <p-message
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >End time cannot be before or equal to start time.</p-message
+                            >
+                        }
                     </div>
                 </div>
 
@@ -270,24 +303,27 @@
                     <label
                         for="timeZone"
                         class="mb-2 block text-sm font-medium"
-                        >Time Zone</label
-                    >
-                    <p-dropdown
+                        >Time Zone
+                    </label>
+                    <p-select
                         id="timeZone"
                         formControlName="timeZone"
+                        [appendTo]="'body'"
                         [options]="timeZones"
-                        size="small"
                         optionLabel="label"
                         optionValue="value"
                         placeholder="Select a time zone"
                         [class.ng-invalid]="isFieldInvalid('timeZone')"
                         [class.ng-dirty]="isFieldInvalid('timeZone')">
-                    </p-dropdown>
-                    <small
-                        class="p-error"
-                        *ngIf="isFieldInvalid('timeZone')"
-                        >Time zone is required.</small
-                    >
+                    </p-select>
+                    @if (isFieldInvalid('timeZone')) {
+                        <p-message
+                            severity="error"
+                            size="small"
+                            variant="simple"
+                            >Time zone is required.</p-message
+                        >
+                    }
                 </div>
 
                 <div class="mb-4">
@@ -298,7 +334,7 @@
                     >
                     <p-inputSwitch
                         id="enabled"
-                        formControlName="enabled"></p-inputSwitch>
+                        formControlName="enabled" />
                 </div>
             </p-fluid>
         </form>

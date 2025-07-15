@@ -13,8 +13,8 @@ import { Logger } from '@/utils/logger';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { DatePicker } from 'primeng/datepicker';
 import { DropdownModule } from 'primeng/dropdown';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Fluid } from 'primeng/fluid';
@@ -31,6 +31,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { RatingModule } from 'primeng/rating';
 import { RippleModule } from 'primeng/ripple';
+import { Select } from 'primeng/select';
 import { SelectModule } from 'primeng/select';
 import { Skeleton } from 'primeng/skeleton';
 import { SliderModule } from 'primeng/slider';
@@ -69,10 +70,11 @@ import { ToolbarModule } from 'primeng/toolbar';
         InputNumberModule,
         InputMaskModule,
         Fluid,
+        Select,
         ReactiveFormsModule,
         MessageModule,
         ConfirmDialog,
-        CalendarModule,
+        DatePicker,
         DropdownModule,
         InputSwitchModule
     ],
@@ -93,7 +95,16 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
     shifts: Shift[] = [];
     selectedShifts: Shift[] = [];
     isLoading: boolean = true;
-    searchQuery: string = '';
+    timeRangeOptions = [
+        { label: 'Future Shifts', value: 'future' },
+        { label: 'Past Shifts', value: 'past' },
+        { label: 'All Shifts', value: 'all' }
+    ];
+
+    // Table filters
+    selectedTimeRange = { label: 'Future Shifts', value: 'future' };
+    selectedAssignee: string | null = null;
+    selectedDate: Date | null = null;
 
     shiftForm: FormGroup;
     submitted = false;
@@ -101,13 +112,13 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
 
     teamMembers: TeamMember[] = [];
     timeZones: { label: string; value: string }[] = [
-        { label: 'America/New_York (Eastern Time)', value: 'America/New_York' },
-        { label: 'America/Chicago (Central Time)', value: 'America/Chicago' },
-        { label: 'America/Denver (Mountain Time)', value: 'America/Denver' },
-        { label: 'America/Los_Angeles (Pacific Time)', value: 'America/Los_Angeles' },
-        { label: 'America/Anchorage (Alaska Time)', value: 'America/Anchorage' },
-        { label: 'America/Adak (Hawaii-Aleutian Time)', value: 'America/Adak' },
-        { label: 'America/Phoenix (Mountain Time - Arizona)', value: 'America/Phoenix' }
+        { label: 'Eastern Time (America/New_York)', value: 'America/New_York' },
+        { label: 'Central Time (America/Chicago)', value: 'America/Chicago' },
+        { label: 'Mountain Time (America/Denver)', value: 'America/Denver' },
+        { label: 'Pacific Time (America/Los_Angeles)', value: 'America/Los_Angeles' },
+        { label: 'Alaska Time (America/Anchorage)', value: 'America/Anchorage' },
+        { label: 'Hawaii-Aleutian Time (America/Adak)', value: 'America/Adak' },
+        { label: 'Mountain Time - Arizona (America/Phoenix)', value: 'America/Phoenix' }
     ];
 
     private subscription: Subscription | null = null;
@@ -167,7 +178,7 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
 
         this.subscription = this.phoneService.getPhoneShifts(this.phoneId).subscribe({
             next: (shifts) => {
-                this.shifts = shifts;
+                this.shifts = this.applyAllFilters(shifts);
                 this.isLoading = false;
             },
             error: (error) => {
@@ -182,6 +193,116 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
         });
     }
 
+    /**
+     * Filters shifts based on the selected time segment
+     */
+    filterShiftsByTimeSegment(shifts: Shift[]): Shift[] {
+        if (!shifts || !this.selectedTimeRange) {
+            return shifts;
+        }
+
+        const now = new Date();
+
+        switch (this.selectedTimeRange.value) {
+            case 'past':
+                // Present shifts are those where the current time falls within the shift period
+                return shifts.filter((shift) => {
+                    const startDate = new Date(shift.start);
+                    const endDate = new Date(shift.end);
+                    return startDate <= now && endDate >= now;
+                });
+
+            case 'future':
+                // Future shifts haven't started yet
+                return shifts.filter((shift) => {
+                    const startDate = new Date(shift.start);
+                    return startDate > now;
+                });
+
+            case 'all':
+            default:
+                return shifts;
+        }
+    }
+
+    /**
+     * Apply all filters (time range, assignee, date range) to the shifts
+     */
+    applyAllFilters(shifts: Shift[]): Shift[] {
+        if (!shifts) {
+            return [];
+        }
+
+        let filteredShifts = shifts;
+
+        // Filter by assignee if one is selected
+        if (this.selectedAssignee) {
+            filteredShifts = filteredShifts.filter((shift) => shift.assigneeId === this.selectedAssignee);
+        }
+
+        // If a date is selected, ignore the time range filter
+        if (!this.selectedDate) {
+            filteredShifts = this.filterShiftsByTimeSegment(filteredShifts);
+        } else {
+            // Create a date range spanning the entire selected day (00:00:00 to 23:59:59)
+            const startOfDay = new Date(this.selectedDate);
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date(this.selectedDate);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            filteredShifts = filteredShifts.filter((shift) => {
+                const shiftStart = new Date(shift.start);
+                const shiftEnd = new Date(shift.end);
+
+                // Show shift if any part of it occurs during the selected day
+                return shiftStart <= endOfDay && shiftEnd >= startOfDay;
+            });
+        }
+
+        return filteredShifts;
+    }
+
+    /**
+     * Handle assignee selection change
+     */
+    onAssigneeChange(): void {
+        this.reload();
+    }
+
+    /**
+     * Handle date selection change
+     */
+    onDateChange(): void {
+        this.reload();
+    }
+
+    /**
+     * Navigate the selected date forward or backward by the specified number of days
+     * @param days Number of days to navigate (positive for forward, negative for backward)
+     */
+    navigateDate(days: number): void {
+        if (!this.selectedDate) {
+            // If no date is selected, use today as the base date
+            this.selectedDate = new Date();
+        } else {
+            // Create a new date object to avoid directly mutating the bound property
+            const newDate = new Date(this.selectedDate);
+            // Add the specified number of days
+            newDate.setDate(newDate.getDate() + days);
+            this.selectedDate = newDate;
+        }
+        // Reload with the new date
+        this.reload();
+    }
+
+    /**
+     * Handle time range selection change
+     */
+    onTimeRangeChange(): void {
+        this.reload();
+    }
+
     reset() {
         this.selectedShifts = [];
         this.reload();
@@ -189,12 +310,13 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
 
     clear(table: Table<any>) {
         table.clear();
-        this.searchQuery = '';
+        this.selectedTimeRange = { label: 'Future Shifts', value: 'future' };
+        this.selectedAssignee = null;
+        this.selectedDate = null;
+        this.reload();
     }
 
-    onGlobalFilter(table: Table<any>, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
-    }
+    // No longer needed as we removed the search box
 
     addShift() {
         this.submitted = false;

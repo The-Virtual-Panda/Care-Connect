@@ -455,6 +455,11 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
         return date ? new Date(date).toLocaleString() : '';
     }
 
+    formatTimeZone(timeZoneId: string): string {
+        const timeZoneObj = this.timeZones.find((tz) => tz.value === timeZoneId);
+        return timeZoneObj ? timeZoneObj.label.split(' (')[0] : timeZoneId;
+    }
+
     // Custom validator to check that end date is after start date
     dateRangeValidator(group: AbstractControl): ValidationErrors | null {
         const start = group.get('start')?.value;

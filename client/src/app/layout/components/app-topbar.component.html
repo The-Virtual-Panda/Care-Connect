@@ -23,6 +23,28 @@
         class="topbar-right"
         *ngIf="authService.isLoggedIn()">
         <ul class="topbar-menu">
+            @if (userOrganizations.length > 1) {
+                <li class="right-sidebar-item">
+                    <div class="mr-2 flex items-center">
+                        <p-select
+                            [options]="userOrganizations"
+                            [(ngModel)]="selectedOrg"
+                            optionLabel="name"
+                            size="small"
+                            [loading]="isLoadingUserOrgs()"
+                            (onChange)="switchOrganization($event.value)">
+                            <ng-template pTemplate="selectedItem">
+                                <div
+                                    class="align-items-center flex gap-2"
+                                    *ngIf="selectedOrg">
+                                    <i class="pi pi-building"></i>
+                                    <div>{{ selectedOrg.name }}</div>
+                                </div>
+                            </ng-template>
+                        </p-select>
+                    </div>
+                </li>
+            }
             <!-- <li class="right-sidebar-item">
                 <button class="app-config-button" (click)="onConfigButtonClick()"><i class="pi pi-cog"></i>
                 </button>
@@ -146,6 +168,14 @@
                         </li> -->
                         <li>
                             <p class="py-2 text-center font-medium dark:text-surface-200">{{ authService.username }}</p>
+                        </li>
+                        <li *ngIf="authService.isSystemAdmin()">
+                            <a
+                                routerLink="/admin"
+                                class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
+                                <i class="pi pi-shield"></i>
+                                <span>Admin Center</span>
+                            </a>
                         </li>
                         <li>
                             <a

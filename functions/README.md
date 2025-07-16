@@ -1,5 +1,16 @@
 # Readme
 
+## For Development
+
+Make sure you change the variables in `.env` to target dev. There is currently no override.
+
+- NODE_ENV=dev
+- USE_EMULATOR=true
+
+## For Targeting Live
+
+Check the `.env.prod` file which has service account credentials.
+
 ## Loading new rules
 
 - ChatGPT that thing

@@ -1,4 +1,4 @@
-import { Timestamp, DocumentData, QueryDocumentSnapshot, SnapshotOptions } from '@angular/fire/firestore';
+import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
 
 export interface Organization {
     id: string;
@@ -25,7 +25,7 @@ export function toOrganization(doc: OrganizationDoc, id: string): Organization {
         dateCreated: doc.dateCreated.toDate(),
         dateUpdated: doc.dateUpdated.toDate(),
         twilioAccountSid: doc.twilioAccountSid || null,
-        twilioAuthToken: doc.twilioAuthToken || null,
+        twilioAuthToken: doc.twilioAuthToken || null
     };
 }
 
@@ -35,7 +35,7 @@ export function fromOrganization(org: Organization): OrganizationDoc {
         dateCreated: Timestamp.fromDate(org.dateCreated),
         dateUpdated: Timestamp.fromDate(org.dateUpdated),
         twilioAccountSid: org.twilioAccountSid || null,
-        twilioAuthToken: org.twilioAuthToken || null,
+        twilioAuthToken: org.twilioAuthToken || null
     };
 }
 

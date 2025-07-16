@@ -3,8 +3,12 @@ import { Component, ElementRef, ViewChild, computed, inject, model, signal } fro
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
+import { OrgMembership } from '@/api/models/org-membership';
+import { Organization } from '@/api/models/organization';
 import { AuthService } from '@/api/services/auth.service';
+import { UserService } from '@/api/services/user.service';
 import { LayoutService } from '@/layout/service/layout.service';
+import { Logger } from '@/utils/logger';
 
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
@@ -14,6 +18,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { RippleModule } from 'primeng/ripple';
+import { Select } from 'primeng/select';
 import { StyleClassModule } from 'primeng/styleclass';
 
 import { AppBreadcrumb } from './app.breadcrumb';
@@ -40,20 +45,25 @@ interface NotificationsBars {
         RippleModule,
         BadgeModule,
         OverlayBadgeModule,
-        AvatarModule
+        AvatarModule,
+        Select
     ],
     templateUrl: './app-topbar.component.html'
 })
 export class AppTopbar {
     layoutService = inject(LayoutService);
     authService = inject(AuthService);
+    userService = inject(UserService);
 
     isDarkTheme = computed(() => this.layoutService.isDarkTheme());
+    isLoadingUserOrgs = signal(false);
+
+    userOrganizations: Array<Organization & { membership: OrgMembership }> = [];
+    selectedOrg: Organization | null = null;
 
     @ViewChild('menubutton') menuButton!: ElementRef;
 
     notificationSearch = '';
-
     notificationsBars = signal<NotificationsBars[]>([
         {
             id: 'inbox',
@@ -159,5 +169,39 @@ export class AppTopbar {
 
     logout() {
         this.authService.logout();
+    }
+
+    ngOnInit() {
+        this.loadUserOrganizations();
+    }
+
+    loadUserOrganizations() {
+        this.isLoadingUserOrgs.set(true);
+        this.userService.getUserOrganizations(this.authService.userId).subscribe({
+            next: (orgs) => {
+                this.isLoadingUserOrgs.set(false);
+                this.userOrganizations = orgs;
+
+                Logger.info('User organizations loaded:', this.userOrganizations);
+
+                // Set the current organization based on focused org
+                const currentOrgId = this.authService.currentOrgId;
+                const focusedOrg = orgs.find((org) => org.id === currentOrgId);
+
+                if (focusedOrg) {
+                    this.selectedOrg = focusedOrg;
+                } else if (orgs.length > 0) {
+                    this.selectedOrg = orgs[0];
+                }
+            },
+            error: (err) => {
+                this.isLoadingUserOrgs.set(false);
+                console.error('Failed to load organizations:', err);
+            }
+        });
+    }
+
+    switchOrganization(org: Organization) {
+        throw new Error('Method not implemented.');
     }
 }

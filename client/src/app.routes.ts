@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 
 import { AuthLayout } from '@/layout/components/app.authlayout';
 import { AppLayout } from '@/layout/components/app.layout';
+import { Access } from '@/pages/auth/access';
 import { Notfound } from '@/pages/notfound/notfound';
 
 export const appRoutes: Routes = [
@@ -22,42 +23,22 @@ export const appRoutes: Routes = [
                 data: { breadcrumb: 'Recipients' }
             },
             {
-                path: 'phone-numbers/:id/config',
-                loadComponent: () => import('@/pages/phone/phone-details.component').then((c) => c.PhoneDetailsComponent),
-                data: { breadcrumb: 'Phone Configuration' }
+                path: 'phone-numbers',
+                loadChildren: () => import('@/routes/phone.routes').then((m) => m.phoneRoutes),
+                data: { breadcrumb: 'Phone' }
+            },
+            {
+                path: 'admin',
+                loadChildren: () => import('@/routes/admin.routes').then((m) => m.adminRoutes)
             }
         ]
     },
     {
         path: '',
         component: AuthLayout,
-        children: [
-            {
-                path: 'login',
-                loadComponent: () => import('@/pages/auth/login.component').then((c) => c.Login)
-            },
-            {
-                path: 'register',
-                loadComponent: () => import('@/pages/auth/register.component').then((c) => c.Register)
-            },
-            {
-                path: 'verification',
-                loadComponent: () => import('@/pages/auth/verification').then((c) => c.Verification)
-            },
-            {
-                path: 'forgot-password',
-                loadComponent: () => import('@/pages/auth/forgotpassword').then((c) => c.ForgotPassword)
-            },
-            {
-                path: 'new-password',
-                loadComponent: () => import('@/pages/auth/newpassword').then((c) => c.NewPassword)
-            }
-        ]
+        loadChildren: () => import('@/routes/auth.routes').then((m) => m.authRoutes)
     },
-    {
-        path: 'not-authorized',
-        loadComponent: () => import('@/pages/auth/access').then((c) => c.Access)
-    },
+    { path: 'not-authorized', component: Access },
     { path: 'notfound', component: Notfound },
     { path: '**', redirectTo: '/notfound' }
 ];

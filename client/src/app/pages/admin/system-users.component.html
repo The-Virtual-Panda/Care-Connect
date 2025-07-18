@@ -1,1 +1,116 @@
-<p>system-users works!</p>
+<p-toast position="bottom-right"></p-toast>
+
+<p-table
+    #dt1
+    [value]="filteredUsers"
+    sortField="dateCreated"
+    [sortOrder]="-1"
+    dataKey="uid"
+    [rows]="10"
+    [loading]="isLoading"
+    [showLoader]="false"
+    [rowHover]="true"
+    [paginator]="true"
+    [stripedRows]="true"
+    responsiveLayout="scroll">
+    <ng-template #caption>
+        <div class="flex flex-col items-center justify-between sm:flex-row">
+            <div class="flex flex-wrap items-center gap-2">
+                <p-iconfield iconPosition="left">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input
+                        pInputText
+                        type="text"
+                        [(ngModel)]="searchTerm"
+                        (input)="applyFilter()"
+                        placeholder="Search users" />
+                </p-iconfield>
+            </div>
+            <div class="mt-2 flex items-center sm:mt-0">
+                <p-button
+                    variant="outlined"
+                    icon="pi pi-filter-slash"
+                    label="Clear Filters"
+                    class="ml-auto"
+                    (click)="clear(dt1)" />
+                <p-button
+                    class="ml-2"
+                    type="button"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    (click)="reset()"
+                    text />
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th pSortableColumn="email">
+                <div class="flex items-center gap-2">
+                    Email
+                    <p-sortIcon field="email"></p-sortIcon>
+                </div>
+            </th>
+            <th pSortableColumn="name">
+                <div class="flex items-center gap-2">
+                    Name
+                    <p-sortIcon field="name"></p-sortIcon>
+                </div>
+            </th>
+            <th pSortableColumn="lastLogin">
+                <div class="flex items-center gap-2">
+                    Last Login
+                    <p-sortIcon field="lastLogin"></p-sortIcon>
+                </div>
+            </th>
+            <th pSortableColumn="dateCreated">
+                <div class="flex items-center gap-2">
+                    Date Registered
+                    <p-sortIcon field="dateCreated"></p-sortIcon>
+                </div>
+            </th>
+            <th style="min-width: 8rem">Actions</th>
+        </tr>
+    </ng-template>
+    <ng-template
+        #body
+        let-user>
+        <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ formatDateTime(user.lastLogin) }}</td>
+            <td>{{ formatDateTime(user.dateCreated) }}</td>
+            <td></td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="6">No users found</td>
+        </tr>
+    </ng-template>
+    <ng-template #loadingbody>
+        <tr>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+        </tr>
+        <tr>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+        </tr>
+        <tr>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+        </tr>
+    </ng-template>
+</p-table>

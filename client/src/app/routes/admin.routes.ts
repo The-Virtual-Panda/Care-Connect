@@ -7,7 +7,7 @@ import { SystemUsersComponent } from '@/pages/admin/system-users.component';
 export const adminRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'dashboard/orgs',
         pathMatch: 'full'
     },
     {

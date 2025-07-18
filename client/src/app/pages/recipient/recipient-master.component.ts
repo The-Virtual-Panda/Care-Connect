@@ -6,8 +6,8 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 
 import { TeamMember } from '@/api/models/team-member';
 import { TeamService } from '@/api/services/team.service';
-import { AppAlert } from '@/layout/components/app-alert.component';
-import { AppModal } from '@/layout/components/app-modal.component';
+import { AppAlert } from '@/components/app-alert.component';
+import { AppModal } from '@/components/app-modal.component';
 import { PhonePipe } from '@/pipes/phone.pipe';
 import { Logger } from '@/utils/logger';
 

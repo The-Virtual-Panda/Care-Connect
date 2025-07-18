@@ -1,9 +1,11 @@
-import { Component, computed, ElementRef, ViewChild } from '@angular/core';
-import { AppMenu } from './app.menu';
-import { LayoutService } from '@/layout/service/layout.service';
-import { RouterModule } from '@angular/router';
-import { AppTopbar } from '@/layout/components/app-topbar.component';
 import { CommonModule } from '@angular/common';
+import { Component, ElementRef, ViewChild, computed } from '@angular/core';
+import { RouterModule } from '@angular/router';
+
+import { AppTopbar } from '@/components/app-topbar.component';
+import { LayoutService } from '@/layout/service/layout.service';
+
+import { AppMenu } from './app.menu';
 
 @Component({
     selector: '[app-sidebar]',
@@ -36,7 +38,7 @@ export class AppSidebar {
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef
-    ) { }
+    ) {}
 
     onMouseEnter() {
         if (!this.layoutService.layoutState().anchored) {

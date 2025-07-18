@@ -1,15 +1,18 @@
-import { Component, computed, Renderer2, ViewChild } from '@angular/core';
+import { Subscription, filter } from 'rxjs';
+
 import { CommonModule } from '@angular/common';
+import { Component, Renderer2, ViewChild, computed } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { filter, Subscription } from 'rxjs';
-import { AppTopbar } from './app-topbar.component';
-import { AppSidebar } from './app.sidebar';
-import { LayoutService } from '@/layout/service/layout.service';
-import { AppConfigurator } from './app.configurator';
+
 import { AppBreadcrumb } from '@/layout/components/app.breadcrumb';
 import { AppFooter } from '@/layout/components/app.footer';
-import { AppSearch } from '@/layout/components/app.search';
 import { AppRightMenu } from '@/layout/components/app.rightmenu';
+import { AppSearch } from '@/layout/components/app.search';
+import { LayoutService } from '@/layout/service/layout.service';
+
+import { AppTopbar } from '../../components/app-topbar.component';
+import { AppConfigurator } from './app.configurator';
+import { AppSidebar } from './app.sidebar';
 
 @Component({
     selector: 'app-layout',
@@ -87,7 +90,12 @@ export class AppLayout {
         const sidebarEl = document.querySelector('.layout-sidebar');
         const topbarButtonEl = document.querySelector('.topbar-left > a');
 
-        return !(sidebarEl?.isSameNode(event.target) || sidebarEl?.contains(event.target) || topbarButtonEl?.isSameNode(event.target) || topbarButtonEl?.contains(event.target));
+        return !(
+            sidebarEl?.isSameNode(event.target) ||
+            sidebarEl?.contains(event.target) ||
+            topbarButtonEl?.isSameNode(event.target) ||
+            topbarButtonEl?.contains(event.target)
+        );
     }
 
     hideMenu() {

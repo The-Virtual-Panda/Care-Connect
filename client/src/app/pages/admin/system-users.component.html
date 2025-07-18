@@ -1,11 +1,12 @@
 <p-toast position="bottom-right"></p-toast>
 
 <p-table
-    #dt1
-    [value]="filteredUsers"
+    #dt
+    [value]="systemUsers"
     sortField="dateCreated"
     [sortOrder]="-1"
     dataKey="uid"
+    [globalFilterFields]="['email', 'name']"
     [rows]="10"
     [loading]="isLoading"
     [showLoader]="false"
@@ -23,8 +24,7 @@
                     <input
                         pInputText
                         type="text"
-                        [(ngModel)]="searchTerm"
-                        (input)="applyFilter()"
+                        (input)="onGlobalFilter(dt, $event)"
                         placeholder="Search users" />
                 </p-iconfield>
             </div>
@@ -33,15 +33,13 @@
                     variant="outlined"
                     icon="pi pi-filter-slash"
                     label="Clear Filters"
-                    class="ml-auto"
-                    (click)="clear(dt1)" />
+                    class="ml-auto mr-2"
+                    (click)="clearFilters(dt)" />
                 <p-button
-                    class="ml-2"
                     type="button"
                     icon="pi pi-refresh"
                     severity="secondary"
-                    (click)="reset()"
-                    text />
+                    (click)="reload()" />
             </div>
         </div>
     </ng-template>
@@ -80,8 +78,8 @@
         <tr>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ formatDateTime(user.lastLogin) }}</td>
-            <td>{{ formatDateTime(user.dateCreated) }}</td>
+            <td>{{ user.lastLogin | date: 'yyyy/MM/dd' }}</td>
+            <td>{{ user.dateCreated | date: 'yyyy/MM/dd' }}</td>
             <td></td>
         </tr>
     </ng-template>

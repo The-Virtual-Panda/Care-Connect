@@ -21,7 +21,7 @@ import { RippleModule } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { StyleClassModule } from 'primeng/styleclass';
 
-import { AppBreadcrumb } from './app.breadcrumb';
+import { AppBreadcrumb } from '../layout/components/app.breadcrumb';
 
 interface NotificationsBars {
     id: string;

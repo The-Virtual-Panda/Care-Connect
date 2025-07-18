@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
 import { AuthService } from '@/api/services/auth.service';
-import { AppAlert } from '@/layout/components/app-alert.component';
+import { AppAlert } from '@/components/app-alert.component';
 import { Logger } from '@/utils/logger';
 
 import { ButtonModule } from 'primeng/button';

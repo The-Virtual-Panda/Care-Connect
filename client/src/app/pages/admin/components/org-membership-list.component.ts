@@ -2,6 +2,7 @@ import { OrgMembership } from '@/api/models/org-membership';
 import { AdminService } from '@/api/services/admin.service';
 import { AppInviteStatusBadgeComponent } from '@/components/app-invite-status-badge.component';
 import { OrgRoleDisplayPipe } from '@/pipes/org-role.pipe';
+import { Logger } from '@/utils/logger';
 
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
@@ -25,11 +26,15 @@ export class OrgsMembershipListComponent implements OnInit {
         if (this.userId && this.orgId) {
             throw new Error('Only one of userId or orgId can be set.');
         }
+
+        Logger.log('OrgsMembershipListComponent initialized with:', { userId: this.userId, orgId: this.orgId });
+
         if (this.userId) {
             this.adminService.getUserOrgMemberships(this.userId).subscribe((memberships) => {
                 this.orgMemberships = memberships;
             });
         } else if (this.orgId) {
+            console.warn('orgId is set, fetching members for organization:', this.orgId);
             this.adminService.getOrgMembers(this.orgId).subscribe((memberships) => {
                 this.orgMemberships = memberships;
             });

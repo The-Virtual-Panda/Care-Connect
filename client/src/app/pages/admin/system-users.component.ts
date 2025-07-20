@@ -45,12 +45,10 @@ import { OrgsMembershipListComponent } from './components/org-membership-list.co
 export class SystemUsersComponent implements OnInit, OnDestroy {
     private adminService = inject(AdminService);
     private messageService = inject(MessageService);
-    private router = inject(Router);
 
     systemUsers: User[] = [];
     isLoading = true;
     searchTerm = '';
-    selectedOrgFilter: string | null = null;
 
     private subscriptions: Subscription[] = [];
 
@@ -83,14 +81,9 @@ export class SystemUsersComponent implements OnInit, OnDestroy {
         this.subscriptions.push(subscription);
     }
 
-    viewUserDetails(user: User): void {
-        this.router.navigate(['/admin/users', user.uid]);
-    }
-
     clearFilters(table: Table): void {
         table.clear();
         this.searchTerm = '';
-        this.selectedOrgFilter = null;
     }
 
     onGlobalFilter(table: Table, event: Event) {

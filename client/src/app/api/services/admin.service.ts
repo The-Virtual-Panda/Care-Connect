@@ -35,7 +35,7 @@ export class AdminService {
     /**
      * Get all organizations in the system
      */
-    getAllOrganizations(): Observable<Organization[]> {
+    getAllOrgs(): Observable<Organization[]> {
         const orgsCollection = this.firestoreCollections.organizations.collection();
         return from(getDocs(orgsCollection)).pipe(map((snapshot) => snapshot.docs.map((doc) => doc.data())));
     }

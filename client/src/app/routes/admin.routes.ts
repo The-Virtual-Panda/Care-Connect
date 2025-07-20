@@ -1,8 +1,8 @@
-import { Routes } from '@angular/router';
-
 import { AdminDashboard } from '@/pages/admin/admin-dashboard.component';
-import { OrgsComponent } from '@/pages/admin/orgs.component';
-import { SystemUsersComponent } from '@/pages/admin/system-users.component';
+import { OrgsComponent } from '@/pages/admin/orgs-master.component';
+import { SystemUsersComponent } from '@/pages/admin/system-users-master.component';
+
+import { Routes } from '@angular/router';
 
 export const adminRoutes: Routes = [
     {

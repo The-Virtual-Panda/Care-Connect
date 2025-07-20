@@ -22,7 +22,7 @@ import { OrgsMembershipListComponent } from './components/org-membership-list.co
 
 @Component({
     selector: 'app-orgs',
-    templateUrl: './orgs.component.html',
+    templateUrl: './orgs-master.component.html',
     providers: [MessageService],
     imports: [
         CommonModule,

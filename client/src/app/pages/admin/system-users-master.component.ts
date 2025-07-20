@@ -24,7 +24,7 @@ import { OrgsMembershipListComponent } from './components/org-membership-list.co
 
 @Component({
     selector: 'app-system-users',
-    templateUrl: './system-users.component.html',
+    templateUrl: './system-users-master.component.html',
     standalone: true,
     imports: [
         CommonModule,

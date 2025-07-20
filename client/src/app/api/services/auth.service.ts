@@ -1,12 +1,19 @@
-import { BehaviorSubject, Observable, catchError, from, map, of, switchMap, throwError } from 'rxjs';
-
-import { Injectable, inject } from '@angular/core';
-import { Auth, AuthError, User as FireUser, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { docData } from '@angular/fire/firestore';
-
 import { Organization } from '@/api/models/organization';
 import { User } from '@/api/models/user';
 import { Logger } from '@/utils/logger';
+import { BehaviorSubject, Observable, catchError, from, map, of, switchMap, throwError } from 'rxjs';
+
+import { Injectable, inject } from '@angular/core';
+import {
+    Auth,
+    AuthError,
+    User as FireUser,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword
+} from '@angular/fire/auth';
+import { docData } from '@angular/fire/firestore';
 
 import { FirestoreCollectionsService } from './firestore-collections';
 import { UserService } from './user.service';

@@ -1,14 +1,14 @@
-import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild, computed, inject, model, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
 import { OrgMembership } from '@/api/models/org-membership';
 import { Organization } from '@/api/models/organization';
 import { AuthService } from '@/api/services/auth.service';
 import { UserService } from '@/api/services/user.service';
 import { LayoutService } from '@/layout/service/layout.service';
 import { Logger } from '@/utils/logger';
+
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, ViewChild, computed, inject, model, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
@@ -181,8 +181,6 @@ export class AppTopbar {
             next: (orgs) => {
                 this.isLoadingUserOrgs.set(false);
                 this.userOrganizations = orgs;
-
-                Logger.info('User organizations loaded:', this.userOrganizations);
 
                 // Set the current organization based on focused org
                 const currentOrgId = this.authService.currentOrgId;

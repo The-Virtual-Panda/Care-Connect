@@ -6,11 +6,10 @@
     sortField="dateCreated"
     [sortOrder]="-1"
     dataKey="uid"
-    [globalFilterFields]="['email', 'name']"
+    [globalFilterFields]="['uid', 'email', 'name']"
     [rows]="10"
     [loading]="isLoading"
     [showLoader]="false"
-    [rowHover]="true"
     [paginator]="true"
     [stripedRows]="true"
     responsiveLayout="scroll">
@@ -45,6 +44,10 @@
     </ng-template>
     <ng-template #header>
         <tr>
+            <th style="width: 5rem"></th>
+            <th>
+                <div class="flex items-center gap-2">UID</div>
+            </th>
             <th pSortableColumn="email">
                 <div class="flex items-center gap-2">
                     Email
@@ -74,13 +77,36 @@
     </ng-template>
     <ng-template
         #body
-        let-user>
+        let-user
+        let-expanded="expanded">
         <tr>
-            <td>{{ user.name }}</td>
+            <td>
+                <p-button
+                    type="button"
+                    pRipple
+                    [pRowToggler]="user"
+                    [text]="true"
+                    severity="secondary"
+                    [rounded]="true"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+            </td>
+            <td>{{ user.uid }}</td>
             <td>{{ user.email }}</td>
+            <td>{{ user.name }}</td>
             <td>{{ user.lastLogin | date: 'yyyy/MM/dd' }}</td>
             <td>{{ user.dateCreated | date: 'yyyy/MM/dd' }}</td>
             <td></td>
+        </tr>
+    </ng-template>
+    <ng-template
+        #expandedrow
+        let-user>
+        <tr>
+            <td colspan="7">
+                <div class="p-4">
+                    <orgs-membership-list [userId]="user.uid" />
+                </div>
+            </td>
         </tr>
     </ng-template>
     <ng-template #emptymessage>

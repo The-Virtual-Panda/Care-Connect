@@ -1,10 +1,9 @@
-import { Routes } from '@angular/router';
-
 import { ForgotPassword } from '@/pages/auth/forgotpassword';
 import { Login } from '@/pages/auth/login.component';
 import { NewPassword } from '@/pages/auth/newpassword';
 import { Register } from '@/pages/auth/register.component';
-import { Verification } from '@/pages/auth/verification';
+
+import { Routes } from '@angular/router';
 
 export const authRoutes: Routes = [
     {
@@ -14,10 +13,6 @@ export const authRoutes: Routes = [
     {
         path: 'register',
         component: Register
-    },
-    {
-        path: 'verification',
-        component: Verification
     },
     {
         path: 'forgot-password',

@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "emu": "firebase emulators:start --import=./functions/seed-data",
-        "emu:save": "firebase emulators:start --import=./functions/seed-data --export-on-exit=./functions/seed-data",
+        "emu": "firebase emulators:start --import=./functions/seed-data --project dev",
+        "emu:save": "firebase emulators:start --import=./functions/seed-data --export-on-exit=./functions/seed-data --project dev",
         "deploy:firestore-rules": "firebase deploy --only firestore:rules --project",
         "deploy:functions": "firebase deploy --only functions --project"
     }

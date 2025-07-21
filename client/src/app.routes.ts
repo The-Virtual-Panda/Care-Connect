@@ -1,10 +1,10 @@
-import { canActivate, hasCustomClaim, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
-import { Routes } from '@angular/router';
-
-import { AuthLayout } from '@/layout/components/app.authlayout';
-import { AppLayout } from '@/layout/components/app.layout';
+import { AuthLayout } from '@/layouts/app.authlayout';
+import { AppLayout } from '@/layouts/app.layout';
 import { Access } from '@/pages/auth/access';
 import { Notfound } from '@/pages/notfound/notfound';
+
+import { canActivate, hasCustomClaim, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
+import { Routes } from '@angular/router';
 
 const adminOnly = () => hasCustomClaim('systemAdmin');
 
@@ -33,6 +33,10 @@ export const appRoutes: Routes = [
                 path: 'admin',
                 ...canActivate(adminOnly),
                 loadChildren: () => import('@/routes/admin.routes').then((m) => m.adminRoutes)
+            },
+            {
+                path: 'profile',
+                loadChildren: () => import('@/routes/profile.routes').then((m) => m.profileRoutes)
             }
         ]
     },

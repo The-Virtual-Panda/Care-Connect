@@ -9,11 +9,11 @@ Make sure you change the variables in `.env` to target dev. There is currently n
 
 ## For Targeting Live
 
-Check the `.env.prod` file which has service account credentials.
+Check the `.env.local` file which has service account credentials.
 
 ## Running Files directly in the test directory
 
-Using npx. Make sure that it does .env.prod at the top if you want that.
+Using npx. Make sure that it does .env.local at the top if you want that.
 Run like this `npx ts-node .\test\[file].ts`
 
 ### Admin Scripts

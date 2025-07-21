@@ -1,5 +1,6 @@
 {
-  "projects": {
-    "default": "care-connect-2f651"
-  }
+    "projects": {
+        "prod": "care-connect-2f651",
+        "dev": "dev-care-connect"
+    }
 }

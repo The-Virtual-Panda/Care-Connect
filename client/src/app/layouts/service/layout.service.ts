@@ -1,5 +1,6 @@
-import { computed, effect, Injectable, signal } from '@angular/core';
 import { Subject } from 'rxjs';
+
+import { Injectable, computed, effect, signal } from '@angular/core';
 
 export interface layoutConfig {
     preset: string;
@@ -31,12 +32,15 @@ interface MenuChangeEvent {
     providedIn: 'root'
 })
 export class LayoutService {
+    static readonly CONFIG_KEY = 'app-visual-config';
+    static readonly STATE_KEY = 'app-visual-state';
+
     _config: layoutConfig = {
         preset: 'Aura',
         primary: 'blue',
         surface: null,
         darkTheme: false,
-        menuMode: 'horizontal',
+        menuMode: 'horizontal'
     };
 
     _state: LayoutState = {
@@ -96,43 +100,30 @@ export class LayoutService {
     };
 
     layoutConfig = signal<layoutConfig>(this._config);
-
     layoutState = signal<LayoutState>(this._state);
 
     private configUpdate = new Subject<layoutConfig>();
-
     private overlayOpen = new Subject<any>();
-
     private menuSource = new Subject<MenuChangeEvent>();
-
     private resetSource = new Subject();
 
     menuSource$ = this.menuSource.asObservable();
-
     resetSource$ = this.resetSource.asObservable();
-
     configUpdate$ = this.configUpdate.asObservable();
-
     overlayOpen$ = this.overlayOpen.asObservable();
 
     isDarkTheme = computed(() => this.layoutConfig().darkTheme);
 
-    isSidebarActive = computed(() => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive || this.layoutState().overlaySubmenuActive);
-
+    isSidebarActive = computed(
+        () => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive || this.layoutState().overlaySubmenuActive
+    );
     isSlim = computed(() => this.layoutConfig().menuMode === 'slim');
-
     isHorizontal = computed(() => this.layoutConfig().menuMode === 'horizontal');
-
     isOverlay = computed(() => this.layoutConfig().menuMode === 'overlay');
-
     isCompact = computed(() => this.layoutConfig().menuMode === 'compact');
-
     isStatic = computed(() => this.layoutConfig().menuMode === 'static');
-
     isReveal = computed(() => this.layoutConfig().menuMode === 'reveal');
-
     isDrawer = computed(() => this.layoutConfig().menuMode === 'drawer');
-
     transitionComplete = signal<boolean>(false);
 
     isSidebarStateChanged = computed(() => {
@@ -143,11 +134,19 @@ export class LayoutService {
     private initialized = false;
 
     constructor() {
+        //this.loadFromStorage();
+
         effect(() => {
             const config = this.layoutConfig();
             if (config) {
                 this.onConfigUpdate();
+                this.saveToLocalStorage();
             }
+        });
+
+        effect(() => {
+            const st = this.layoutState();
+            if (st) this.saveToLocalStorage();
         });
 
         effect(() => {
@@ -186,8 +185,7 @@ export class LayoutService {
             .then(() => {
                 this.onTransitionEnd();
             })
-            .catch(() => {
-            });
+            .catch(() => {});
     }
 
     toggleDarkMode(config?: layoutConfig): void {
@@ -295,5 +293,26 @@ export class LayoutService {
         const root = document.documentElement;
         const colorScheme: any = this.isDarkTheme() ? this.bodyBackgroundPalette.dark : this.bodyBackgroundPalette.light;
         root.style.setProperty('--surface-ground', colorScheme[color]);
+    }
+
+    saveToLocalStorage() {
+        try {
+            localStorage.setItem(LayoutService.STATE_KEY, JSON.stringify(this.layoutState()));
+            localStorage.setItem(LayoutService.CONFIG_KEY, JSON.stringify(this.layoutConfig()));
+        } catch (e) {
+            console.error('save state', e);
+        }
+    }
+
+    loadFromStorage() {
+        try {
+            const cfgStr = localStorage.getItem(LayoutService.CONFIG_KEY);
+            if (cfgStr) this.layoutConfig.set({ ...this._config, ...JSON.parse(cfgStr) });
+
+            const stateStr = localStorage.getItem(LayoutService.STATE_KEY);
+            if (stateStr) this.layoutState.set({ ...this._state, ...JSON.parse(stateStr) });
+        } catch (e) {
+            console.error('load storage', e);
+        }
     }
 }

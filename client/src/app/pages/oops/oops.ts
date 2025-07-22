@@ -1,4 +1,4 @@
-import { AppConfigurator } from '@/components/nav/app.configurator';
+import { AppConfigurator } from '@/pages/settings/app.configurator';
 
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';

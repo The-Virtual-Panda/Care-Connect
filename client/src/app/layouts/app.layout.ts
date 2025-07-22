@@ -10,13 +10,12 @@ import { Component, Renderer2, ViewChild, computed } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 
 import { AppTopbar } from '../components/nav/app-topbar.component';
-import { AppConfigurator } from '../components/nav/app.configurator';
 import { AppSidebar } from '../components/nav/app.sidebar';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppConfigurator, AppBreadcrumb, AppFooter, AppSearch, AppRightMenu],
+    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppBreadcrumb, AppFooter, AppSearch, AppRightMenu],
     template: `
         <div class="layout-wrapper" [ngClass]="containerClass()">
             <div app-sidebar></div>
@@ -30,7 +29,6 @@ import { AppSidebar } from '../components/nav/app.sidebar';
                     <div app-footer></div>
                 </div>
             </div>
-            <app-configurator />
             <div app-search></div>
             <div app-rightmenu></div>
             <div class="layout-mask animate-fadein"></div>

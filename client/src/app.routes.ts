@@ -35,8 +35,8 @@ export const appRoutes: Routes = [
                 loadChildren: () => import('@/routes/admin.routes').then((m) => m.adminRoutes)
             },
             {
-                path: 'profile',
-                loadChildren: () => import('@/routes/profile.routes').then((m) => m.profileRoutes)
+                path: 'settings',
+                loadChildren: () => import('@/routes/settings.routes').then((m) => m.settingsRoutes)
             }
         ]
     },

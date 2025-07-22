@@ -1,5 +1,5 @@
-import { AppConfigurator } from '@/components/nav/app.configurator';
 import { LayoutService } from '@/layouts/service/layout.service';
+import { AppConfigurator } from '@/pages/settings/app.configurator';
 
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';

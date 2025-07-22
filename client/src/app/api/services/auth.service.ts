@@ -3,7 +3,7 @@ import { User } from '@/api/models/user';
 import { Logger } from '@/utils/logger';
 import { BehaviorSubject, Observable, catchError, from, map, of, switchMap, throwError } from 'rxjs';
 
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
 import {
     Auth,
     AuthError,

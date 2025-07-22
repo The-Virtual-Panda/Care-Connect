@@ -47,16 +47,16 @@
             }
             <li class="right-sidebar-item profile-item static sm:relative">
                 <a
-                    class="right-sidebar-button relative z-50"
+                    class="relative z-50"
                     pStyleClass="@next"
                     enterFromClass="hidden"
                     enterActiveClass="animate-scalein"
                     leaveActiveClass="animate-fadeout"
                     leaveToClass="hidden"
                     [hideOnOutsideClick]="true">
-                    <p-avatar
-                        styleClass="!w-10 !h-10"
-                        icon="pi pi-user" />
+                    <app-avatar
+                        [styleClass]="'!w-10 !h-10'"
+                        [userId]="authService.userId" />
                 </a>
                 <div
                     class="absolute right-0 top-auto z-[999] m-0 mt-2 hidden w-52 origin-top list-none overflow-hidden rounded-2xl border bg-surface-0 p-2 shadow-[0px_56px_16px_0px_rgba(0,0,0,0.00),0px_36px_14px_0px_rgba(0,0,0,0.01),0px_20px_12px_0px_rgba(0,0,0,0.02),0px_9px_9px_0px_rgba(0,0,0,0.03),0px_2px_5px_0px_rgba(0,0,0,0.04)] border-surface dark:bg-surface-900">

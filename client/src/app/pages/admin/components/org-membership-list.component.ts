@@ -3,6 +3,7 @@ import { OrgRole } from '@/api/models/enums/org-role';
 import { OrgMembership } from '@/api/models/org-membership';
 import { User } from '@/api/models/user';
 import { AdminService } from '@/api/services/admin.service';
+import { AppAvatarComponent } from '@/components/app-avatar.component';
 import { AppInviteStatusBadgeComponent } from '@/components/app-invite-status-badge.component';
 import { AppModal } from '@/components/app-modal.component';
 import { OrgRoleDisplayPipe } from '@/pipes/org-role.pipe';
@@ -23,7 +24,19 @@ import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'orgs-membership-list',
-    imports: [TableModule, CommonModule, ToastModule, SelectModule, AppInviteStatusBadgeComponent, OrgRoleDisplayPipe, FormsModule, AppModal, Button, Fluid],
+    imports: [
+        TableModule,
+        CommonModule,
+        ToastModule,
+        SelectModule,
+        AppInviteStatusBadgeComponent,
+        OrgRoleDisplayPipe,
+        FormsModule,
+        AppModal,
+        Button,
+        Fluid,
+        AppAvatarComponent
+    ],
     templateUrl: './org-membership-list.component.html',
     providers: [MessageService]
 })

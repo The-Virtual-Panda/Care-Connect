@@ -1,6 +1,7 @@
 import { Organization } from '@/api/models/organization';
 import { User } from '@/api/models/user';
 import { AdminService } from '@/api/services/admin.service';
+import { AppAvatarComponent } from '@/components/app-avatar.component';
 import { Subscription } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
@@ -38,7 +39,8 @@ import { OrgsMembershipListComponent } from './components/org-membership-list.co
         SkeletonModule,
         TooltipModule,
         IconFieldModule,
-        OrgsMembershipListComponent
+        OrgsMembershipListComponent,
+        AppAvatarComponent
     ],
     providers: [MessageService]
 })

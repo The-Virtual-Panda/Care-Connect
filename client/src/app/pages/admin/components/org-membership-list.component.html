@@ -15,6 +15,7 @@
         <tr>
             <th>Status</th>
             <th *ngIf="!userId">User ID</th>
+            <th *ngIf="!userId">Avatar</th>
             <th *ngIf="!orgId">Organization ID</th>
             <th>Role</th>
             <th>Date Joined</th>
@@ -26,6 +27,7 @@
         <tr>
             <td><app-invite-status-badge [status]="membership.inviteStatus" /></td>
             <td *ngIf="!userId">{{ membership.userId }}</td>
+            <td *ngIf="!userId"><app-avatar [userId]="membership.userId" /></td>
             <td *ngIf="!orgId">{{ membership.orgId }}</td>
             <td>{{ membership.role | OrgRole }}</td>
             <td>{{ membership.dateJoined | date: 'yyyy/MM/dd' }}</td>

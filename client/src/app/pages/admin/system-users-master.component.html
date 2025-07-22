@@ -48,6 +48,9 @@
             <th>
                 <div class="flex items-center gap-2">UID</div>
             </th>
+            <th>
+                <div class="flex items-center gap-2">Avatar</div>
+            </th>
             <th pSortableColumn="email">
                 <div class="flex items-center gap-2">
                     Email
@@ -91,6 +94,9 @@
                     [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             </td>
             <td>{{ user.uid }}</td>
+            <td>
+                <app-avatar [userId]="user.uid" />
+            </td>
             <td>{{ user.email }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.lastLogin | date: 'yyyy/MM/dd' }}</td>
@@ -122,19 +128,22 @@
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><p-skeleton></p-skeleton></td>
-            <td><p-skeleton></p-skeleton></td>
-            <td><p-skeleton></p-skeleton></td>
-            <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td></td>
         </tr>
         <tr>
             <td></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>

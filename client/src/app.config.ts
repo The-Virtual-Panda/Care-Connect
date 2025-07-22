@@ -7,6 +7,7 @@ import { getAnalytics, provideAnalytics } from '@angular/fire/analytics';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { connectAuthEmulator, getAuth, provideAuth } from '@angular/fire/auth';
 import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { connectStorageEmulator, getStorage, provideStorage } from '@angular/fire/storage';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
 
@@ -109,6 +110,13 @@ export const appConfig: ApplicationConfig = {
                 connectFirestoreEmulator(firestore, 'localhost', 8080);
             }
             return firestore;
+        }),
+        provideStorage(() => {
+            const storage = getStorage();
+            if (environment.useEmulators) {
+                connectStorageEmulator(storage, 'localhost', 9199);
+            }
+            return storage;
         }),
         ...(environment.production ? [provideAnalytics(() => getAnalytics())] : [])
     ]

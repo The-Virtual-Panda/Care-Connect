@@ -21,6 +21,7 @@ import { RippleModule } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { StyleClassModule } from 'primeng/styleclass';
 
+import { AppAvatarComponent } from '../app-avatar.component';
 import { AppBreadcrumb } from './app.breadcrumb';
 
 interface NotificationsBars {
@@ -47,7 +48,8 @@ interface NotificationsBars {
         BadgeModule,
         OverlayBadgeModule,
         AvatarModule,
-        Select
+        Select,
+        AppAvatarComponent
     ]
 })
 export class AppTopbar {

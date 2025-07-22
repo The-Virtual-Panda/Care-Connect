@@ -1,0 +1,14 @@
+@if (isLoading || !avatarUrl) {
+    <p-avatar
+        icon="pi pi-user"
+        [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }"
+        shape="circle"
+        [size]="size"
+        [styleClass]="styleClass" />
+} @else {
+    <p-avatar
+        [image]="avatarUrl"
+        [size]="size"
+        shape="circle"
+        [styleClass]="styleClass" />
+}

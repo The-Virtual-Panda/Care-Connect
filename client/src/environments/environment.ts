@@ -1,7 +1,7 @@
-import { baseEnvironment } from "./environment.base";
+import { baseEnvironment } from './environment.base';
 
 export const environment = {
     ...baseEnvironment,
     production: false,
-    useEmulators: true,
+    useEmulators: true
 };

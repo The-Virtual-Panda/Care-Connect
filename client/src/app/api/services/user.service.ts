@@ -1,20 +1,21 @@
 // src/app/services/user.service.ts
-import { Observable, forkJoin, from, map, of, switchMap } from 'rxjs';
-
-import { Injectable, inject } from '@angular/core';
-import { collectionData, doc, getDoc, getDocs, query, setDoc, where } from '@angular/fire/firestore';
-
 import { InviteStatus } from '@/api/models/enums/invite-status';
 import { OrgRole } from '@/api/models/enums/org-role';
 import { OrgMembership } from '@/api/models/org-membership';
 import { Organization } from '@/api/models/organization';
 import { User } from '@/api/models/user';
+import { Observable, forkJoin, from, map, of, switchMap } from 'rxjs';
+
+import { Injectable, Pipe, inject } from '@angular/core';
+import { collectionData, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { Storage, getDownloadURL, ref, uploadBytesResumable } from '@angular/fire/storage';
 
 import { FirestoreCollectionsService } from './firestore-collections';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
     private firestoreCollections = inject(FirestoreCollectionsService);
+    private storage = inject(Storage);
 
     createUserAndOrg(uid: string, email: string, name: string, orgName: string): Observable<{ userId: string; orgId: string }> {
         // Generate a new organization ID
@@ -126,5 +127,75 @@ export class UserService {
                 );
             })
         );
+    }
+
+    /**
+     * Gets the user profile by user ID.
+     * @param userId The user ID to fetch.
+     * @returns Observable of the User or null if not found.
+     */
+    getUserProfile(userId: string | null): Observable<User | null> {
+        if (!userId) return of(null);
+
+        const userRef = this.firestoreCollections.users.docRef(userId);
+        return from(getDoc(userRef)).pipe(map((docSnap) => (docSnap.exists() ? (docSnap.data() as User) : null)));
+    }
+
+    getProfileImageUrl(userId: string | null): Observable<string | null> {
+        if (!userId) return of(null);
+        const userRef = this.firestoreCollections.users.docRef(userId);
+        return from(getDoc(userRef)).pipe(
+            map((docSnap) => {
+                if (docSnap.exists()) {
+                    const user = docSnap.data() as User;
+                    return user.avatarUrl || null;
+                }
+                return null;
+            })
+        );
+    }
+
+    updateUserProfile(userId: string | null, newName: string): Observable<void> {
+        if (!userId) return of();
+
+        const userRef = this.firestoreCollections.users.docRef(userId);
+        return from(updateDoc(userRef, { name: newName, dateModified: new Date() }));
+    }
+
+    uploadProfileImage(userId: string | null, file: File): Observable<string> {
+        if (!userId) return of();
+
+        const path = `users/${userId}/avatar/original_${Date.now()}.${this.getExt(file.name)}`;
+        const storageRef = ref(this.storage, path);
+        const task = uploadBytesResumable(storageRef, file, { contentType: file.type });
+
+        // Wrap the upload task in an Observable
+        const upload$ = new Observable<void>((observer) => {
+            task.on(
+                'state_changed',
+                // progress cb (noop, but you could expose it)
+                () => {},
+                // error
+                (err) => observer.error(err),
+                // complete
+                () => {
+                    observer.next();
+                    observer.complete();
+                }
+            );
+        });
+
+        return upload$.pipe(
+            switchMap(() => from(getDownloadURL(storageRef))),
+            switchMap((url) => {
+                const userRef = this.firestoreCollections.users.docRef(userId);
+                return from(updateDoc(userRef, { avatarUrl: url, dateAvatarUpdated: new Date() })).pipe(map(() => url));
+            })
+        );
+    }
+
+    private getExt(name: string): string {
+        const i = name.lastIndexOf('.');
+        return i >= 0 ? name.substring(i + 1) : 'jpg';
     }
 }

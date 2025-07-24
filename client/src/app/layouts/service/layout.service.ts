@@ -316,7 +316,6 @@ export class LayoutService {
             if (stateStr) this.layoutState.set({ ...this._state, ...JSON.parse(stateStr) });
 
             const preset = presets[this.layoutConfig().preset as KeyOfType<typeof presets>];
-            console.log('load storage', this.layoutConfig());
             $t()
                 .preset(preset)
                 .preset(getPresetExt(this.layoutConfig().preset as KeyOfType<typeof presets>, this.layoutConfig().primary))

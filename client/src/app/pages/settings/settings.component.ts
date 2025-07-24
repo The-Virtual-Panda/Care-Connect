@@ -9,6 +9,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 
+import { AccountComponent } from './account.component';
 import { AppConfigurator } from './app.configurator';
 import { ProfileComponent } from './profile.component';
 
@@ -25,7 +26,8 @@ import { ProfileComponent } from './profile.component';
         InputGroupAddonModule,
         ButtonModule,
         DividerModule,
-        AppConfigurator
+        AppConfigurator,
+        AccountComponent
     ]
 })
 export class SettingsComponent {

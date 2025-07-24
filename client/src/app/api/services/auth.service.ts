@@ -7,11 +7,14 @@ import { Injectable, computed, inject } from '@angular/core';
 import {
     Auth,
     AuthError,
+    EmailAuthProvider,
     User as FireUser,
     createUserWithEmailAndPassword,
     onAuthStateChanged,
+    reauthenticateWithCredential,
     sendPasswordResetEmail,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
+    updatePassword
 } from '@angular/fire/auth';
 import { docData } from '@angular/fire/firestore';
 
@@ -158,6 +161,46 @@ export class AuthService {
             this.deleteUserSession();
             window.location.href = '/';
         });
+    }
+
+    /**
+     * Changes password for the currently signed‑in user.
+     * @param currentPassword – used to reauthenticate
+     * @param newPassword – the new password
+     */
+    changePassword(currentPassword: string, newPassword: string): Observable<void> {
+        if (!this.auth.currentUser || !this.auth.currentUser.email) {
+            return throwError(() => new Error('No user is currently signed in.'));
+        }
+
+        const credential = EmailAuthProvider.credential(this.auth.currentUser.email, currentPassword);
+        return from(reauthenticateWithCredential(this.auth.currentUser, credential)).pipe(
+            switchMap(() => from(updatePassword(this.auth.currentUser!, newPassword))),
+            map(() => undefined),
+            catchError((err: any) => {
+                let msg = 'Failed to change password. Please try again.';
+                if (err.code) {
+                    switch (err.code) {
+                        case 'auth/wrong-password':
+                            msg = 'Current password is incorrect.';
+                            break;
+                        case 'auth/weak-password':
+                            msg = 'New password is too weak.';
+                            break;
+                        case 'auth/requires-recent-login':
+                            msg = 'Please sign in again and retry.';
+                            break;
+                        case 'auth/network-request-failed':
+                            msg = 'Network error. Check your connection.';
+                            break;
+                        // …add more cases as you see fit…
+                    }
+                } else if (err.message) {
+                    msg = err.message;
+                }
+                return throwError(() => new Error(msg));
+            })
+        );
     }
 
     // TODO: Refactor this out - Force people to use an observable on the org id

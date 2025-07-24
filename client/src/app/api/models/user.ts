@@ -1,4 +1,4 @@
-import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from "@angular/fire/firestore";
+import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
 
 export interface User {
     uid: string;
@@ -6,6 +6,8 @@ export interface User {
     name: string;
     defaultOrgId: string;
     lastLogin: Date | null;
+    avatarUrl?: string | null;
+    dateAvatarUpdated?: Date | null;
     dateUpdated: Date;
     dateCreated: Date;
 }
@@ -15,6 +17,8 @@ export interface UserDoc {
     name: string;
     defaultOrgId: string;
     lastLogin: Timestamp | null;
+    avatarUrl?: string | null;
+    dateAvatarUpdated?: Timestamp | null;
     dateCreated: Timestamp;
     dateUpdated: Timestamp;
 }
@@ -26,8 +30,10 @@ export function toUser(uid: string, doc: UserDoc): User {
         name: doc.name,
         defaultOrgId: doc.defaultOrgId,
         lastLogin: doc.lastLogin ? doc.lastLogin.toDate() : null,
+        avatarUrl: doc.avatarUrl || null,
+        dateAvatarUpdated: doc.dateAvatarUpdated ? doc.dateAvatarUpdated.toDate() : null,
         dateUpdated: doc.dateUpdated.toDate(),
-        dateCreated: doc.dateCreated.toDate(),
+        dateCreated: doc.dateCreated.toDate()
     };
 }
 
@@ -37,8 +43,10 @@ export function fromUser(user: User): UserDoc {
         name: user.name,
         defaultOrgId: user.defaultOrgId,
         lastLogin: user.lastLogin ? Timestamp.fromDate(user.lastLogin) : null,
+        avatarUrl: user.avatarUrl || null,
+        dateAvatarUpdated: user.dateAvatarUpdated ? Timestamp.fromDate(user.dateAvatarUpdated) : null,
         dateCreated: Timestamp.fromDate(user.dateCreated),
-        dateUpdated: Timestamp.fromDate(user.dateUpdated),
+        dateUpdated: Timestamp.fromDate(user.dateUpdated)
     };
 }
 

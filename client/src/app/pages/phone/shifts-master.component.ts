@@ -8,7 +8,7 @@ import { Shift } from '@/api/models/shift';
 import { TeamMember } from '@/api/models/team-member';
 import { PhoneService } from '@/api/services/phone.service';
 import { TeamService } from '@/api/services/team.service';
-import { AppModal } from '@/layout/components/app-modal.component';
+import { AppModal } from '@/components/app-modal.component';
 import { Logger } from '@/utils/logger';
 
 import { ConfirmationService, MessageService } from 'primeng/api';

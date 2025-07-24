@@ -21,9 +21,13 @@ service cloud.firestore {
         get(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Default deny all
+    function isSystemAdmin() {
+      return isSignedIn() && request.auth.token.systemAdmin == true;
+    }
+
+    // Default deny all, except for system admins who have full access
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if isSystemAdmin();
     }
 
     // Users collection

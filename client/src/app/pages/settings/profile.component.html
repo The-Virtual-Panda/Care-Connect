@@ -1,0 +1,63 @@
+<div class="mb-4 flex flex-col gap-2">
+    <app-alert [timeout]="3000" />
+    <div class="text-lg font-semibold leading-tight text-surface-900 dark:text-surface-0">Profile</div>
+    <p>This information is public to your organizations.</p>
+</div>
+
+<div class="flex flex-col gap-8">
+    <div class="flex flex-auto flex-col gap-6">
+        <div class="flex flex-col gap-2">
+            <label class="text-surface-900 dark:text-surface-0">Avatar</label>
+            <div class="flex flex-row items-center gap-4">
+                <div class="mr-2">
+                    <app-avatar
+                        [userId]="authService.userId"
+                        [size]="'xlarge'" />
+                </div>
+
+                <p-fileupload
+                    mode="basic"
+                    name="demo[]"
+                    chooseIcon="pi pi-upload"
+                    chooseLabel="Upload"
+                    url="https://www.primefaces.org/cdn/api/upload.php"
+                    accept="image/*"
+                    maxFileSize="1000000"
+                    (onUpload)="onBasicUploadAuto($event)"
+                    [auto]="true" />
+            </div>
+        </div>
+
+        <form
+            [formGroup]="profileForm"
+            (ngSubmit)="updateProfile()">
+            <div class="flex w-full flex-col gap-2 md:w-1/2">
+                <label
+                    for="name"
+                    class="text-surface-900 dark:text-surface-0"
+                    >Name</label
+                >
+                <input
+                    pInputText
+                    type="text"
+                    id="name"
+                    [ngClass]="{ 'ng-invalid ng-dirty': isInvalid('name') }"
+                    formControlName="name" />
+                @if (isInvalid('name')) {
+                    <p-message
+                        severity="error"
+                        size="small"
+                        variant="simple"
+                        >Name is required.</p-message
+                    >
+                }
+            </div>
+        </form>
+    </div>
+
+    <p-button
+        label="Update Profile"
+        type="submit"
+        [disabled]="!isDirty()"
+        (onClick)="updateProfile()" />
+</div>

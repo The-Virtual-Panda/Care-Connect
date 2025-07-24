@@ -1,12 +1,22 @@
-import { BehaviorSubject, Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
-
-import { Injectable, inject } from '@angular/core';
-import { Auth, AuthError, User as FireUser, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from '@angular/fire/auth';
-import { docData } from '@angular/fire/firestore';
-
 import { Organization } from '@/api/models/organization';
 import { User } from '@/api/models/user';
 import { Logger } from '@/utils/logger';
+import { BehaviorSubject, Observable, catchError, from, map, of, switchMap, throwError } from 'rxjs';
+
+import { Injectable, computed, inject } from '@angular/core';
+import {
+    Auth,
+    AuthError,
+    EmailAuthProvider,
+    User as FireUser,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    reauthenticateWithCredential,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    updatePassword
+} from '@angular/fire/auth';
+import { docData } from '@angular/fire/firestore';
 
 import { FirestoreCollectionsService } from './firestore-collections';
 import { UserService } from './user.service';
@@ -14,7 +24,8 @@ import { UserService } from './user.service';
 // Extended user context with more than just Firebase auth user
 export interface AuthResult {
     profile: User | null;
-    currentOrganization: Organization | null;
+    focusedOrg: Organization | null;
+    isSystemAdmin?: boolean;
 }
 
 @Injectable({
@@ -152,14 +163,104 @@ export class AuthService {
         });
     }
 
+    /**
+     * Changes password for the currently signed‑in user.
+     * @param currentPassword – used to reauthenticate
+     * @param newPassword – the new password
+     */
+    changePassword(currentPassword: string, newPassword: string): Observable<void> {
+        if (!this.auth.currentUser || !this.auth.currentUser.email) {
+            return throwError(() => new Error('No user is currently signed in.'));
+        }
+
+        const credential = EmailAuthProvider.credential(this.auth.currentUser.email, currentPassword);
+        return from(reauthenticateWithCredential(this.auth.currentUser, credential)).pipe(
+            switchMap(() => from(updatePassword(this.auth.currentUser!, newPassword))),
+            map(() => undefined),
+            catchError((err: any) => {
+                let msg = 'Failed to change password. Please try again.';
+                if (err.code) {
+                    switch (err.code) {
+                        case 'auth/wrong-password':
+                            msg = 'Current password is incorrect.';
+                            break;
+                        case 'auth/weak-password':
+                            msg = 'New password is too weak.';
+                            break;
+                        case 'auth/requires-recent-login':
+                            msg = 'Please sign in again and retry.';
+                            break;
+                        case 'auth/network-request-failed':
+                            msg = 'Network error. Check your connection.';
+                            break;
+                        // …add more cases as you see fit…
+                    }
+                } else if (err.message) {
+                    msg = err.message;
+                }
+                return throwError(() => new Error(msg));
+            })
+        );
+    }
+
+    // TODO: Refactor this out - Force people to use an observable on the org id
     public get currentOrgId(): string | null {
         this.fetchUserSession();
-        return this._userSession?.currentOrganization?.id || null;
+        return this._userSession?.focusedOrg?.id || null;
     }
 
     public get username(): string | null {
         this.fetchUserSession();
         return this._userSession?.profile?.name || null;
+    }
+
+    public get userId(): string | null {
+        this.fetchUserSession();
+        return this._userSession?.profile?.uid || null;
+    }
+
+    /**
+     * Check if the current user is a system administrator
+     * Note: This only returns the stored value and doesn't verify against the latest token.
+     * Use fetchSystemAdminStatus() Observable for real-time verification.
+     * @returns boolean indicating whether the stored user session has admin privileges
+     */
+    public isSystemAdmin(): boolean {
+        this.fetchUserSession();
+        return this._userSession?.isSystemAdmin === true;
+    }
+
+    /**
+     * Fetch the system admin status from Firebase Auth token
+     * @param forceRefresh If true, will get fresh token information even if available in session
+     * @returns Observable<boolean> indicating whether the user has system admin privileges
+     */
+    public fetchSystemAdminStatus(forceRefresh = false): Observable<boolean> {
+        // First check if we have the information in the session already
+        this.fetchUserSession();
+        if (!forceRefresh && this._userSession?.isSystemAdmin !== undefined) {
+            return of(this._userSession.isSystemAdmin);
+        }
+
+        // Otherwise check the token directly
+        return from(this.auth.currentUser?.getIdTokenResult() || Promise.resolve(null)).pipe(
+            map((idTokenResult) => {
+                if (this._debugAuth) Logger.log('Token claims:', idTokenResult?.claims);
+                const isAdmin = !!(idTokenResult?.claims && idTokenResult.claims['systemAdmin'] === true);
+
+                // Update the session with this information
+                if (this._userSession) {
+                    this._userSession.isSystemAdmin = isAdmin;
+                    this.storeUserSession(this._userSession);
+                }
+
+                return isAdmin;
+            }),
+            catchError((error) => {
+                Logger.error('Error checking system admin status:', error);
+                return of(false);
+            })
+        );
     }
 
     /// Load user context from Firestore
@@ -190,18 +291,37 @@ export class AuthService {
                                     throw error;
                                 }
 
-                                // Create the session data
+                                // Create the session data initially without the admin status
                                 const sessionData: AuthResult = {
                                     profile: userProfile as User,
-                                    currentOrganization: orgData as Organization
+                                    focusedOrg: orgData as Organization
                                 };
 
-                                // Update the context
-                                this.storeUserSession(sessionData);
+                                // Check if user is a system admin
+                                from(fireUser.getIdTokenResult()).subscribe({
+                                    next: (idTokenResult) => {
+                                        // Add system admin status to session data
+                                        sessionData.isSystemAdmin = idTokenResult?.claims && idTokenResult.claims['systemAdmin'] === true;
 
-                                // Complete the observable
-                                observer.next(sessionData);
-                                observer.complete();
+                                        if (this._debugAuth) Logger.log('System admin status:', sessionData.isSystemAdmin);
+
+                                        // Update the context
+                                        this.storeUserSession(sessionData);
+
+                                        // Complete the observable
+                                        observer.next(sessionData);
+                                        observer.complete();
+                                    },
+                                    error: (error) => {
+                                        // In case of token error, still proceed with non-admin status
+                                        Logger.error('Error checking system admin status:', error);
+                                        sessionData.isSystemAdmin = false;
+                                        this.storeUserSession(sessionData);
+
+                                        observer.next(sessionData);
+                                        observer.complete();
+                                    }
+                                });
 
                                 return sessionData;
                             })

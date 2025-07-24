@@ -1,0 +1,84 @@
+<div class="mb-4 flex flex-col gap-2">
+    <app-alert [timeout]="3000" />
+    <div class="text-lg font-semibold leading-tight text-surface-900 dark:text-surface-0">Account</div>
+</div>
+<form
+    [formGroup]="passwordForm"
+    (ngSubmit)="updatePassword()">
+    <div class="mb-4 flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+            <div class="text-base font-semibold leading-tight text-surface-900 dark:text-surface-0">Change Password</div>
+            <span class="text-sm text-surface-500 dark:text-surface-400">Modify your current password</span>
+        </div>
+        <div class="flex w-full flex-col gap-2 md:w-1/2">
+            <label
+                for="currentPassword"
+                class="text-surface-900 dark:text-surface-0"
+                >Current Password</label
+            >
+            <input
+                pInputText
+                type="password"
+                id="currentPassword"
+                formControlName="currentPassword"
+                [ngClass]="{ 'ng-invalid ng-dirty': isInvalid('currentPassword') }"
+                autocomplete="current-password" />
+            @if (isInvalid('currentPassword')) {
+                <p-message
+                    severity="error"
+                    size="small"
+                    variant="simple"
+                    >Current password is required.</p-message
+                >
+            }
+        </div>
+        <div class="flex w-full flex-col gap-2 md:w-1/2">
+            <label
+                for="newPassword"
+                class="text-surface-900 dark:text-surface-0"
+                >New Password</label
+            >
+            <input
+                pInputText
+                type="password"
+                id="newPassword"
+                formControlName="newPassword"
+                [ngClass]="{ 'ng-invalid ng-dirty': isInvalid('newPassword') }"
+                autocomplete="new-password" />
+            @if (isInvalid('newPassword')) {
+                <p-message
+                    severity="error"
+                    size="small"
+                    variant="simple"
+                    >New password is required.</p-message
+                >
+            }
+        </div>
+        <div class="flex w-full flex-col gap-2 md:w-1/2">
+            <label
+                for="confirmPassword"
+                class="text-surface-900 dark:text-surface-0"
+                >Confirm New Password</label
+            >
+            <input
+                pInputText
+                type="password"
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                [ngClass]="{ 'ng-invalid ng-dirty': isInvalid('confirmPassword') }"
+                autocomplete="new-password" />
+            @if (isInvalid('confirmPassword')) {
+                <p-message
+                    severity="error"
+                    size="small"
+                    variant="simple"
+                    >Passwords do not match</p-message
+                >
+            }
+        </div>
+    </div>
+    <p-button
+        label="Update Password"
+        (click)="updatePassword()"
+        [disabled]="!passwordForm.valid"></p-button>
+</form>

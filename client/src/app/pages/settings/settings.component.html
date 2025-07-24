@@ -1,0 +1,58 @@
+<div class="flex flex-auto flex-col">
+    <div class="flex-auto rounded-t-3xl bg-surface-0 px-8 py-6 lg:px-20 lg:py-8 dark:bg-surface-900">
+        <h2 class="mt-0 text-2xl font-medium leading-tight text-surface-900 dark:text-surface-0">Settings</h2>
+        <p-divider />
+        <div class="grid grid-cols-12 gap-4 py-6 lg:py-8">
+            <div class="col-span-12 lg:col-span-2">
+                <ul class="m-0 hidden list-none flex-col justify-start p-0 lg:flex">
+                    @for (item of items; let i = $index; track item.label) {
+                        <li
+                            class="-ml-[2px] border-l-2 transition-colors hover:border-primary hover:text-primary dark:border-surface-700"
+                            [ngClass]="{
+                                'border-primary text-primary': selectedTab === i,
+                                'border-surface-200 text-surface-700 dark:text-surface-200': selectedTab !== i
+                            }">
+                            <a
+                                class="flex cursor-pointer items-center px-4 py-3 font-medium"
+                                (click)="selectedTab = i">
+                                <i [ngClass]="[item.icon, 'mr-2', '!text-base', '!leading-normal']"></i>
+                                <span>{{ item.label }}</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="lg:hidden">
+                    <div class="overflow-x-auto border-b border-surface-200 pb-2 dark:border-surface-700">
+                        <ul class="flex list-none flex-row justify-start whitespace-nowrap">
+                            @for (item of items; let i = $index; track item.label) {
+                                <li>
+                                    <a
+                                        class="mr-8 flex cursor-pointer items-center font-medium"
+                                        [ngClass]="{ 'text-primary': selectedTab === i, 'text-surface-700 dark:text-surface-200': selectedTab !== i }"
+                                        (click)="selectedTab = i">
+                                        <i [ngClass]="[item.icon, 'mr-2', '!text-base', '!leading-normal']"></i>
+                                        <span>{{ item.label }}</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-12 lg:col-span-10">
+                <ng-container [ngSwitch]="selectedTab">
+                    <ng-container *ngSwitchCase="0">
+                        <app-profile />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="1">
+                        <app-account />
+                    </ng-container>
+                    <ng-container *ngSwitchCase="2">
+                        <app-configurator />
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

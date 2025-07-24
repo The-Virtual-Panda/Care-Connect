@@ -1,5 +1,32 @@
 # Readme
 
+## For Development
+
+Make sure you change the variables in `.env` to target dev. There is currently no override.
+
+- NODE_ENV=dev
+- USE_EMULATOR=true
+
+## For Targeting Live
+
+Check the `.env.local` file which has service account credentials.
+
+## Running Files directly in the test directory
+
+Using npx. Make sure that it does .env.local at the top if you want that.
+Run like this `npx ts-node .\test\[file].ts`
+
+### Admin Scripts
+
+Grant admin role to a user:
+`npx ts-node .\test\grant-role.ts grant USER_ID`
+
+Revoke admin role from a user:
+`npx ts-node .\test\grant-role.ts revoke USER_ID`
+
+Or CLI Mode:
+`npx ts-node .\test\grant-role.ts grant`
+
 ## Loading new rules
 
 - ChatGPT that thing

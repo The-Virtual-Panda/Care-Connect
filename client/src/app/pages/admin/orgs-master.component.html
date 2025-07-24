@@ -1,0 +1,140 @@
+<p-toast position="bottom-right"></p-toast>
+
+<p-table
+    #dt
+    [value]="orgs"
+    sortField="dateModified"
+    [sortOrder]="-1"
+    dataKey="uid"
+    [globalFilterFields]="['id', 'name', 'twilioAccountSid']"
+    [rows]="10"
+    [loading]="isLoading"
+    [showLoader]="false"
+    [paginator]="true"
+    [stripedRows]="true"
+    responsiveLayout="scroll">
+    <ng-template #caption>
+        <div class="flex flex-col items-center justify-between sm:flex-row">
+            <div class="flex flex-wrap items-center gap-2">
+                <p-iconfield iconPosition="left">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input
+                        pInputText
+                        type="text"
+                        (input)="onGlobalFilter(dt, $event)"
+                        placeholder="Search orgs" />
+                </p-iconfield>
+            </div>
+            <div class="mt-2 flex items-center sm:mt-0">
+                <p-button
+                    variant="outlined"
+                    icon="pi pi-filter-slash"
+                    label="Clear Filters"
+                    class="ml-auto mr-2"
+                    (click)="clearFilters(dt)" />
+                <p-button
+                    type="button"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    (click)="reload()" />
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 5rem"></th>
+            <th>
+                <div class="flex items-center gap-2">ID</div>
+            </th>
+            <th pSortableColumn="name">
+                <div class="flex items-center gap-2">
+                    Name
+                    <p-sortIcon field="name"></p-sortIcon>
+                </div>
+            </th>
+            <th pSortableColumn="twilioAccountSid">
+                <div class="flex items-center gap-2">
+                    Twilio Account SID
+                    <p-sortIcon field="twilioAccountSid"></p-sortIcon>
+                </div>
+            </th>
+            <th pSortableColumn="dateModified">
+                <div class="flex items-center gap-2">
+                    Last Modified
+                    <p-sortIcon field="dateModified"></p-sortIcon>
+                </div>
+            </th>
+            <th pSortableColumn="dateCreated">
+                <div class="flex items-center gap-2">
+                    Date Created
+                    <p-sortIcon field="dateCreated"></p-sortIcon>
+                </div>
+            </th>
+            <th style="min-width: 8rem">Actions</th>
+        </tr>
+    </ng-template>
+    <ng-template
+        #body
+        let-org
+        let-expanded="expanded">
+        <tr>
+            <td>
+                <p-button
+                    type="button"
+                    pRipple
+                    [pRowToggler]="org"
+                    [text]="true"
+                    severity="secondary"
+                    [rounded]="true"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+            </td>
+            <td>{{ org.id }}</td>
+            <td>{{ org.name }}</td>
+            <td>{{ org.twilioAccountSid }}</td>
+            <td>{{ org.dateUpdated | date: 'yyyy/MM/dd' }}</td>
+            <td>{{ org.dateCreated | date: 'yyyy/MM/dd' }}</td>
+            <td></td>
+        </tr>
+    </ng-template>
+    <ng-template
+        #expandedrow
+        let-org>
+        <tr>
+            <td colspan="7">
+                <div class="p-4">
+                    <orgs-membership-list [orgId]="org.id" />
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="6">No orgs found</td>
+        </tr>
+    </ng-template>
+    <ng-template #loadingbody>
+        <tr>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+        </tr>
+        <tr>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+        </tr>
+        <tr>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+        </tr>
+    </ng-template>
+</p-table>

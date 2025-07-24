@@ -2,6 +2,9 @@
     "firestore": {
         "rules": "firestore.rules"
     },
+    "storage": {
+        "rules": "storage.rules"
+    },
     "functions": [
         {
             "source": "functions",
@@ -12,7 +15,7 @@
                 ".gitignore",
                 "firebase-debug.log",
                 "firebase-debug.*.log",
-                ".env.*",
+                ".env.local",
                 ".env",
                 "**/test/**",
                 "**/seed-data/**",
@@ -25,6 +28,7 @@
         }
     ],
     "emulators": {
+        "singleProjectMode": false,
         "functions": {
             "port": 5001
         },
@@ -37,6 +41,8 @@
         "ui": {
             "enabled": true
         },
-        "singleProjectMode": true
+        "storage": {
+            "port": 9199
+        }
     }
 }

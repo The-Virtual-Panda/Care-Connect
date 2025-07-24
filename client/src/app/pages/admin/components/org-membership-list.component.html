@@ -1,0 +1,93 @@
+<p-toast position="bottom-right"></p-toast>
+<p-table [value]="orgMemberships">
+    <ng-template #caption>
+        <div class="mb-4 flex items-center justify-between">
+            <h5 class="font-bold">Organization Memberships</h5>
+            <p-button
+                label="New Membership"
+                icon="pi pi-plus"
+                class="ml-2"
+                [loading]="isLoadingModal"
+                (onClick)="addMembership()" />
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th>Status</th>
+            <th *ngIf="!userId">User ID</th>
+            <th *ngIf="!userId">Avatar</th>
+            <th *ngIf="!orgId">Organization ID</th>
+            <th>Role</th>
+            <th>Date Joined</th>
+        </tr>
+    </ng-template>
+    <ng-template
+        #body
+        let-membership>
+        <tr>
+            <td><app-invite-status-badge [status]="membership.inviteStatus" /></td>
+            <td *ngIf="!userId">{{ membership.userId }}</td>
+            <td *ngIf="!userId"><app-avatar [userId]="membership.userId" /></td>
+            <td *ngIf="!orgId">{{ membership.orgId }}</td>
+            <td>{{ membership.role | OrgRole }}</td>
+            <td>{{ membership.dateJoined | date: 'yyyy/MM/dd' }}</td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="6">There are no memberships for this organization yet.</td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<app-modal
+    [closeOnSubmit]="false"
+    size="small"
+    title="Add membership"
+    (cancel)="resetModal()"
+    (submit)="onSubmitNewMembership()">
+    <ng-template #body>
+        <p-fluid>
+            @if (userId) {
+                <p-select
+                    placeholder="Select an organization"
+                    [options]="allOrgs"
+                    [(ngModel)]="selectedOrg"
+                    optionLabel="name"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    appendTo="body" />
+            } @else if (orgId) {
+                <p-select
+                    placeholder="Select a user"
+                    [options]="allUsers"
+                    [(ngModel)]="selectedUser"
+                    optionLabel="name"
+                    [filter]="true"
+                    filterBy="name"
+                    [showClear]="true"
+                    appendTo="body" />
+            }
+            <p-select
+                placeholder="Select a role"
+                [options]="allOrgRoles"
+                [(ngModel)]="selectedRole"
+                appendTo="body"
+                class="mt-4">
+                <ng-template
+                    #selectedItem
+                    let-selectedOption>
+                    <div *ngIf="selectedOption">
+                        <div>{{ selectedOption | OrgRole }}</div>
+                    </div>
+                </ng-template>
+                <ng-template
+                    let-role
+                    #item>
+                    <div>{{ role | OrgRole }}</div>
+                </ng-template>
+            </p-select>
+        </p-fluid>
+    </ng-template>
+</app-modal>

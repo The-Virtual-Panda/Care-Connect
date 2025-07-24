@@ -1,11 +1,9 @@
 import { LayoutService } from '@/layouts/service/layout.service';
+import { KeyOfType, SurfacesType, getPresetExt, getPrimaryColors, presets } from '@/utils/theme';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
-import Aura from '@primeng/themes/aura';
-import Lara from '@primeng/themes/lara';
-import Nora from '@primeng/themes/nora';
 
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, Input, OnInit, PLATFORM_ID, Signal, booleanAttribute, computed, inject, model } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -14,32 +12,6 @@ import { DrawerModule } from 'primeng/drawer';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-
-const presets = {
-    Aura,
-    Lara,
-    Nora
-} as const;
-
-declare type KeyOfType<T> = keyof T extends infer U ? U : never;
-
-declare type SurfacesType = {
-    name?: string;
-    palette?: {
-        0?: string;
-        50?: string;
-        100?: string;
-        200?: string;
-        300?: string;
-        400?: string;
-        500?: string;
-        600?: string;
-        700?: string;
-        800?: string;
-        900?: string;
-        950?: string;
-    };
-};
 
 @Component({
     selector: 'app-configurator',
@@ -168,7 +140,7 @@ declare type SurfacesType = {
         </div>
     `
 })
-export class AppConfigurator implements OnInit {
+export class AppConfigurator {
     router = inject(Router);
     config = inject(PrimeNG);
     layoutService = inject(LayoutService);
@@ -182,212 +154,12 @@ export class AppConfigurator implements OnInit {
         { name: 'Dark', value: true }
     ];
 
-    menuThemeOptions: { name: string; value: string }[] = [];
-
-    ngOnInit() {
-        if (isPlatformBrowser(this.platformId)) {
-            this.onPresetChange(this.layoutService.layoutConfig().preset);
-        }
-        this.updateMenuThemeOptions();
-    }
-
-    updateMenuThemeOptions() {
-        if (this.darkTheme()) {
-            this.menuThemeOptions = [
-                { name: 'Dark', value: 'dark' },
-                { name: 'Primary', value: 'primary' }
-            ];
-        } else {
-            this.menuThemeOptions = [
-                { name: 'Light', value: 'light' },
-                { name: 'Dark', value: 'dark' },
-                { name: 'Primary', value: 'primary' }
-            ];
-        }
-    }
-
     selectedPrimaryColor = computed(() => this.layoutService.layoutConfig().primary);
     selectedPreset = computed(() => this.layoutService.layoutConfig().preset);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuMode = model(this.layoutService.layoutConfig().menuMode);
 
-    primaryColors = computed<SurfacesType[]>(() => {
-        const presetPalette = presets[this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>].primitive;
-        const colors = [
-            'emerald',
-            'green',
-            'lime',
-            'orange',
-            'amber',
-            'yellow',
-            'teal',
-            'cyan',
-            'sky',
-            'blue',
-            'indigo',
-            'violet',
-            'purple',
-            'fuchsia',
-            'pink',
-            'rose'
-        ];
-        const palettes: SurfacesType[] = [{ name: 'noir', palette: {} }];
-
-        colors.forEach((color) => {
-            palettes.push({
-                name: color,
-                palette: presetPalette?.[color as KeyOfType<typeof presetPalette>] as SurfacesType['palette']
-            });
-        });
-
-        return palettes;
-    });
-
-    getPresetExt() {
-        const color: SurfacesType = this.primaryColors().find((c) => c.name === this.selectedPrimaryColor()) || {};
-
-        if (color.name === 'noir') {
-            return {
-                semantic: {
-                    primary: {
-                        50: '{zinc.50}',
-                        100: '{zinc.100}',
-                        200: '{zinc.200}',
-                        300: '{zinc.300}',
-                        400: '{zinc.400}',
-                        500: '{zinc.500}',
-                        600: '{zinc.600}',
-                        700: '{zinc.700}',
-                        800: '{zinc.800}',
-                        900: '{zinc.900}',
-                        950: '{zinc.950}'
-                    },
-                    colorScheme: {
-                        light: {
-                            primary: {
-                                color: '{primary.950}',
-                                contrastColor: '#ffffff',
-                                hoverColor: '{primary.800}',
-                                activeColor: '{primary.700}'
-                            },
-                            highlight: {
-                                background: '{primary.950}',
-                                focusBackground: '{primary.700}',
-                                color: '#ffffff',
-                                focusColor: '#ffffff'
-                            },
-                            surface: {
-                                0: '#ffffff',
-                                50: '{zinc.50}',
-                                100: '{zinc.100}',
-                                200: '{zinc.200}',
-                                300: '{zinc.300}',
-                                400: '{zinc.400}',
-                                500: '{zinc.500}',
-                                600: '{zinc.600}',
-                                700: '{zinc.700}',
-                                800: '{zinc.800}',
-                                900: '{zinc.900}',
-                                950: '{zinc.950}'
-                            }
-                        },
-                        dark: {
-                            primary: {
-                                color: '{primary.50}',
-                                contrastColor: '{primary.950}',
-                                hoverColor: '{primary.200}',
-                                activeColor: '{primary.300}'
-                            },
-                            highlight: {
-                                background: '{primary.50}',
-                                focusBackground: '{primary.300}',
-                                color: '{primary.950}',
-                                focusColor: '{primary.950}'
-                            },
-                            surface: {
-                                0: '#ffffff',
-                                50: '{zinc.50}',
-                                100: '{zinc.100}',
-                                200: '{zinc.200}',
-                                300: '{zinc.300}',
-                                400: '{zinc.400}',
-                                500: '{zinc.500}',
-                                600: '{zinc.600}',
-                                700: '{zinc.700}',
-                                800: '{zinc.800}',
-                                900: '{zinc.900}',
-                                950: '{zinc.950}'
-                            }
-                        }
-                    }
-                }
-            };
-        } else {
-            return {
-                semantic: {
-                    primary: color.palette,
-                    colorScheme: {
-                        light: {
-                            primary: {
-                                color: '{primary.500}',
-                                contrastColor: '#ffffff',
-                                hoverColor: '{primary.600}',
-                                activeColor: '{primary.700}'
-                            },
-                            highlight: {
-                                background: '{primary.50}',
-                                focusBackground: '{primary.100}',
-                                color: '{primary.700}',
-                                focusColor: '{primary.800}'
-                            },
-                            surface: {
-                                0: 'color-mix(in srgb, {primary.900}, white 100%)',
-                                50: 'color-mix(in srgb, {primary.900}, white 95%)',
-                                100: 'color-mix(in srgb, {primary.900}, white 90%)',
-                                200: 'color-mix(in srgb, {primary.900}, white 80%)',
-                                300: 'color-mix(in srgb, {primary.900}, white 70%)',
-                                400: 'color-mix(in srgb, {primary.900}, white 60%)',
-                                500: 'color-mix(in srgb, {primary.900}, white 50%)',
-                                600: 'color-mix(in srgb, {primary.900}, white 40%)',
-                                700: 'color-mix(in srgb, {primary.900}, white 30%)',
-                                800: 'color-mix(in srgb, {primary.900}, white 20%)',
-                                900: 'color-mix(in srgb, {primary.900}, white 10%)',
-                                950: 'color-mix(in srgb, {primary.900}, white 0%)'
-                            }
-                        },
-                        dark: {
-                            primary: {
-                                color: '{primary.400}',
-                                contrastColor: '{surface.900}',
-                                hoverColor: '{primary.300}',
-                                activeColor: '{primary.200}'
-                            },
-                            highlight: {
-                                background: 'color-mix(in srgb, {primary.400}, transparent 84%)',
-                                focusBackground: 'color-mix(in srgb, {primary.400}, transparent 76%)',
-                                color: 'rgba(255,255,255,.87)',
-                                focusColor: 'rgba(255,255,255,.87)'
-                            },
-                            surface: {
-                                0: 'color-mix(in srgb, var(--surface-ground), white 100%)',
-                                50: 'color-mix(in srgb, var(--surface-ground), white 95%)',
-                                100: 'color-mix(in srgb, var(--surface-ground), white 90%)',
-                                200: 'color-mix(in srgb, var(--surface-ground), white 80%)',
-                                300: 'color-mix(in srgb, var(--surface-ground), white 70%)',
-                                400: 'color-mix(in srgb, var(--surface-ground), white 60%)',
-                                500: 'color-mix(in srgb, var(--surface-ground), white 50%)',
-                                600: 'color-mix(in srgb, var(--surface-ground), white 40%)',
-                                700: 'color-mix(in srgb, var(--surface-ground), white 30%)',
-                                800: 'color-mix(in srgb, var(--surface-ground), white 20%)',
-                                900: 'color-mix(in srgb, var(--surface-ground), white 10%)',
-                                950: 'color-mix(in srgb, var(--surface-ground), white 5%)'
-                            }
-                        }
-                    }
-                }
-            };
-        }
-    }
+    primaryColors = computed<SurfacesType[]>(() => getPrimaryColors(this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>));
 
     updateColors(event: any, type: string, color: any) {
         if (type === 'primary') {
@@ -403,7 +175,7 @@ export class AppConfigurator implements OnInit {
 
     applyTheme(type: string, color: any) {
         if (type === 'primary') {
-            updatePreset(this.getPresetExt());
+            updatePreset(getPresetExt(this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>, color.name));
         } else if (type === 'surface') {
             updateSurfacePalette(color.palette);
         }
@@ -414,8 +186,12 @@ export class AppConfigurator implements OnInit {
             ...state,
             preset: event
         }));
+
         const preset = presets[event as KeyOfType<typeof presets>];
-        $t().preset(preset).preset(this.getPresetExt()).use({ useDefaultOptions: true });
+        $t()
+            .preset(preset)
+            .preset(getPresetExt(this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>, this.layoutService.layoutConfig().primary))
+            .use({ useDefaultOptions: true });
     }
 
     setMenuMode(mode: string) {
@@ -440,7 +216,6 @@ export class AppConfigurator implements OnInit {
         if (this.darkTheme()) {
             this.setMenuTheme('dark');
         }
-        this.updateMenuThemeOptions();
         this.layoutService.updateBodyBackground(this.layoutService.layoutConfig().primary);
     }
 

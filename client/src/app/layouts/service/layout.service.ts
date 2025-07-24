@@ -1,3 +1,6 @@
+import { Logger } from '@/utils/logger';
+import { KeyOfType, getPresetExt, presets } from '@/utils/theme';
+import { $t } from '@primeng/themes';
 import { Subject } from 'rxjs';
 
 import { Injectable, computed, effect, signal } from '@angular/core';
@@ -134,7 +137,7 @@ export class LayoutService {
     private initialized = false;
 
     constructor() {
-        //this.loadFromStorage();
+        this.loadFromStorage();
 
         effect(() => {
             const config = this.layoutConfig();
@@ -171,14 +174,14 @@ export class LayoutService {
         if (supportsViewTransition) {
             this.startViewTransition(config);
         } else {
-            this.toggleDarkMode(config);
+            this.handleDarkMode(config);
             this.onTransitionEnd();
         }
     }
 
     private startViewTransition(config: layoutConfig): void {
         const transition = (document as any).startViewTransition(() => {
-            this.toggleDarkMode(config);
+            this.handleDarkMode(config);
         });
 
         transition.ready
@@ -188,7 +191,7 @@ export class LayoutService {
             .catch(() => {});
     }
 
-    toggleDarkMode(config?: layoutConfig): void {
+    handleDarkMode(config?: layoutConfig): void {
         const _config = config || this.layoutConfig();
         if (_config.darkTheme) {
             document.documentElement.classList.add('app-dark');
@@ -311,6 +314,15 @@ export class LayoutService {
 
             const stateStr = localStorage.getItem(LayoutService.STATE_KEY);
             if (stateStr) this.layoutState.set({ ...this._state, ...JSON.parse(stateStr) });
+
+            const preset = presets[this.layoutConfig().preset as KeyOfType<typeof presets>];
+            console.log('load storage', this.layoutConfig());
+            $t()
+                .preset(preset)
+                .preset(getPresetExt(this.layoutConfig().preset as KeyOfType<typeof presets>, this.layoutConfig().primary))
+                .use({ useDefaultOptions: true });
+            this.updateBodyBackground(this.layoutConfig().primary);
+            this.handleDarkMode();
         } catch (e) {
             console.error('load storage', e);
         }

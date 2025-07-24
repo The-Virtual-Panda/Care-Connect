@@ -17,12 +17,17 @@ service cloud.firestore {
     }
 
     function isOrgAdmin(orgId) {
-      return isSignedIn() &&
-        get(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid)).data.role == 'admin';
+        return isSignedIn()
+            && exists(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid))
+            && get(/databases/$(database)/documents/organizations/$(orgId)/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isSystemAdmin() {
-      return isSignedIn() && request.auth.token.systemAdmin == true;
+      return isSignedIn() && 'systemAdmin' in request.auth.token && request.auth.token.systemAdmin == true;
+    }
+
+    function doesOrgExist(orgId) {
+      return exists(/databases/$(database)/documents/organizations/$(orgId));
     }
 
     // Default deny all, except for system admins who have full access
@@ -52,11 +57,16 @@ service cloud.firestore {
       // Org members can read their organization
       allow read: if isOrgMember(orgId);
 
+      allow create: if isSignedIn() && doesOrgExist(orgId) == false;
+
       // Only admins can modify the organization
       allow write: if isOrgAdmin(orgId);
 
       // Organization users subcollection
       match /users/{userId} {
+        // 1) let the signed‑in user create their OWN membership - TODO: REVIEW
+        allow create: if isUser(userId) && request.resource.data.role == 'admin';
+
         allow read: if isOrgMember(orgId);
         allow write: if isOrgAdmin(orgId);
       }

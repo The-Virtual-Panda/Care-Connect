@@ -16,6 +16,13 @@ Types of changes:
 
 ## [Unreleased]
 
+## [v1.1.1] - 2025-07-24
+
+### Fixed
+
+- Fixed org creation and firebase rules to allow for user creation
+- Fixed user registration erroring out
+
 ## [v1.1.0] - 2025-07-24
 
 ### Added

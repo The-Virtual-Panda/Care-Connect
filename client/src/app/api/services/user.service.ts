@@ -26,8 +26,8 @@ export class UserService {
 
         // Use withConverter to apply the converters
         const userRef = this.firestoreCollections.users.docRef(uid);
-        const membershipRef = this.firestoreCollections.users.orgMemberships.docRef(uid, orgId);
         const orgUserRef = this.firestoreCollections.organizations.users.docRef(orgId, uid);
+        const membershipRef = this.firestoreCollections.users.orgMemberships.docRef(uid, orgId);
 
         const now = new Date();
 
@@ -61,19 +61,14 @@ export class UserService {
             dateJoined: now
         };
 
-        return forkJoin([
-            // Create user document - pass the model directly
-            from(setDoc(userRef, userData)),
+        return forkJoin([from(setDoc(userRef, userData)), from(setDoc(orgRef, orgData))]).pipe(
+            // Add user to the organization's users collection
+            switchMap(() => from(setDoc(orgUserRef, membershipData))),
 
-            // Create organization document
-            from(setDoc(orgRef, orgData)),
-
-            // Create user's membership - pass the model directly
-            from(setDoc(membershipRef, membershipData)),
-
-            // Add user to organization's users collection
-            from(setDoc(orgUserRef, membershipData))
-        ]).pipe(map(() => ({ userId: uid, orgId: orgId })));
+            // Create the user's membership document
+            switchMap(() => from(setDoc(membershipRef, membershipData))),
+            map(() => ({ userId: uid, orgId: orgId }))
+        );
     }
 
     /**

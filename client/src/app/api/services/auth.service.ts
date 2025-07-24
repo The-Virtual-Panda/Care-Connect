@@ -1,7 +1,7 @@
 import { Organization } from '@/api/models/organization';
 import { User } from '@/api/models/user';
 import { Logger } from '@/utils/logger';
-import { BehaviorSubject, Observable, catchError, from, map, of, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, first, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 
 import { Injectable, computed, inject } from '@angular/core';
 import {
@@ -25,7 +25,7 @@ import { UserService } from './user.service';
 export interface AuthResult {
     profile: User | null;
     focusedOrg: Organization | null;
-    isSystemAdmin?: boolean;
+    isSystemAdmin?: boolean | null;
 }
 
 @Injectable({
@@ -111,6 +111,7 @@ export class AuthService {
                     errorMessage = error.message || 'Failed to load user profile. Please try again.';
                 }
 
+                Logger.error('Login error:', error);
                 return throwError(() => new Error(errorMessage));
             })
         );
@@ -149,8 +150,7 @@ export class AuthService {
                     errorMessage = error.message || 'Failed to complete registration. Please try again.';
                 }
 
-                if (this._debugAuth) Logger.log('Registration error:', error);
-
+                Logger.error('Registration error:', error);
                 return throwError(() => new Error(errorMessage));
             })
         );
@@ -239,7 +239,7 @@ export class AuthService {
         // First check if we have the information in the session already
         this.fetchUserSession();
         if (!forceRefresh && this._userSession?.isSystemAdmin !== undefined) {
-            return of(this._userSession.isSystemAdmin);
+            return of(this._userSession.isSystemAdmin === true);
         }
 
         // Otherwise check the token directly
@@ -265,76 +265,50 @@ export class AuthService {
 
     /// Load user context from Firestore
     private loadUserContext(fireUser: FireUser): Observable<AuthResult> {
-        return new Observable<AuthResult>((observer) => {
-            // Get user profile
-            const userRef = this.firestoreCollections.users.docRef(fireUser.uid);
+        const userRef = this.firestoreCollections.users.docRef(fireUser.uid);
 
-            docData(userRef)
-                .pipe(
-                    switchMap((userProfile) => {
-                        if (!userProfile) {
-                            const error = new Error('User profile not found');
-                            if (this._debugAuth) console.warn(error.message);
-                            observer.error(error);
-                            return throwError(() => error);
+        const userPlusOrg$ = docData(userRef).pipe(
+            first(),
+            switchMap((userProfile: User | undefined) => {
+                if (!userProfile) {
+                    return throwError(() => new Error('User profile not found'));
+                }
+                return docData(this.firestoreCollections.organizations.docRef(userProfile.defaultOrgId)).pipe(
+                    first(),
+                    map((orgData: Organization | undefined) => {
+                        if (!orgData) {
+                            throw new Error('Organization not found');
                         }
-
-                        // Get organization data
-                        const orgId = userProfile.defaultOrgId;
-                        const orgRef = this.firestoreCollections.organizations.docRef(orgId);
-                        return docData(orgRef).pipe(
-                            map((orgData) => {
-                                if (!orgData) {
-                                    const error = new Error('Organization not found');
-                                    if (this._debugAuth) console.warn(error.message);
-                                    observer.error(error);
-                                    throw error;
-                                }
-
-                                // Create the session data initially without the admin status
-                                const sessionData: AuthResult = {
-                                    profile: userProfile as User,
-                                    focusedOrg: orgData as Organization
-                                };
-
-                                // Check if user is a system admin
-                                from(fireUser.getIdTokenResult()).subscribe({
-                                    next: (idTokenResult) => {
-                                        // Add system admin status to session data
-                                        sessionData.isSystemAdmin = idTokenResult?.claims && idTokenResult.claims['systemAdmin'] === true;
-
-                                        if (this._debugAuth) Logger.log('System admin status:', sessionData.isSystemAdmin);
-
-                                        // Update the context
-                                        this.storeUserSession(sessionData);
-
-                                        // Complete the observable
-                                        observer.next(sessionData);
-                                        observer.complete();
-                                    },
-                                    error: (error) => {
-                                        // In case of token error, still proceed with non-admin status
-                                        Logger.error('Error checking system admin status:', error);
-                                        sessionData.isSystemAdmin = false;
-                                        this.storeUserSession(sessionData);
-
-                                        observer.next(sessionData);
-                                        observer.complete();
-                                    }
-                                });
-
-                                return sessionData;
-                            })
-                        );
-                    }),
-                    catchError((error) => {
-                        if (this._debugAuth) console.error('Error loading user context:', error);
-                        observer.error(error);
-                        return throwError(() => new Error('Failed to load user context: ' + error.message));
+                        return { userProfile, orgData };
                     })
-                )
-                .subscribe();
-        });
+                );
+            })
+        );
+
+        const claims$ = from(fireUser.getIdTokenResult(true)).pipe(
+            map((idTokenResult) => idTokenResult.claims ?? {}),
+            catchError(() => of({}))
+        );
+
+        return forkJoin([userPlusOrg$, claims$]).pipe(
+            map(([{ userProfile, orgData }, claims]) => {
+                const isSystemAdmin = Boolean((claims as any)?.systemAdmin);
+                const sessionData: AuthResult = {
+                    profile: userProfile,
+                    focusedOrg: orgData,
+                    isSystemAdmin
+                };
+                if (this._debugAuth) {
+                    Logger.log('System admin status:', isSystemAdmin);
+                }
+                this.storeUserSession(sessionData);
+                return sessionData;
+            }),
+            catchError((err) => {
+                Logger.error('Error loading user context:', err);
+                return throwError(() => new Error('Failed to load user context: ' + err.message));
+            })
+        );
     }
 
     // Try to restore session from localStorage on page refresh

@@ -16,6 +16,12 @@ Types of changes:
 
 ## [Unreleased]
 
+## [v1.2.0] - 2025-07-28
+
+### Added
+
+- Added the ability to duplicate a shift
+
 ## [v1.1.1] - 2025-07-24
 
 ### Fixed

@@ -1,15 +1,14 @@
-import { Subscription } from 'rxjs';
-
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-
 import { Shift } from '@/api/models/shift';
 import { TeamMember } from '@/api/models/team-member';
 import { PhoneService } from '@/api/services/phone.service';
 import { TeamService } from '@/api/services/team.service';
 import { AppModal } from '@/components/app-modal.component';
 import { Logger } from '@/utils/logger';
+import { Subscription } from 'rxjs';
+
+import { CommonModule } from '@angular/common';
+import { Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -40,6 +39,7 @@ import { TagModule } from 'primeng/tag';
 import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
     selector: 'cc-shifts-master',
@@ -76,7 +76,8 @@ import { ToolbarModule } from 'primeng/toolbar';
         ConfirmDialog,
         DatePicker,
         DropdownModule,
-        InputSwitchModule
+        InputSwitchModule,
+        TooltipModule
     ],
     providers: [MessageService, DialogService, ConfirmationService]
 })
@@ -316,8 +317,6 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
         this.reload();
     }
 
-    // No longer needed as we removed the search box
-
     addShift() {
         this.submitted = false;
         this.isEditMode = false;
@@ -353,6 +352,26 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
         this.shiftForm.markAsUntouched();
 
         this.modal.title = 'Edit Shift';
+        this.modal?.showModal();
+    }
+
+    duplicateShift(shift: Shift) {
+        this.submitted = false;
+        this.isEditMode = false;
+
+        this.shiftForm.patchValue({
+            id: null, // Clear ID for new shift
+            assigneeId: shift.assigneeId,
+            start: shift.start,
+            end: shift.end,
+            enabled: shift.enabled,
+            timeZone: shift.timeZone
+        });
+
+        this.shiftForm.markAsPristine();
+        this.shiftForm.markAsUntouched();
+
+        this.modal.title = 'Duplicate Shift';
         this.modal?.showModal();
     }
 

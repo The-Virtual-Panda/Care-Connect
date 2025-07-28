@@ -155,8 +155,16 @@
                     pButton
                     pRipple
                     icon="pi pi-pencil"
+                    pTooltip="Edit Shift"
                     class="p-button-rounded p-button-text mr-2"
                     (click)="editShift(shift)"></button>
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-copy"
+                    pTooltip="Duplicate Shift"
+                    class="p-button-rounded p-button-text mr-2"
+                    (click)="duplicateShift(shift)"></button>
             </td>
         </tr>
     </ng-template>

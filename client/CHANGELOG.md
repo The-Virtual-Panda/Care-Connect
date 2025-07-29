@@ -16,6 +16,11 @@ Types of changes:
 
 ## [Unreleased]
 
+### Fixed
+
+- Admin - Fixed the column span of the system users row expansion
+- Admin - Fixed the expansion behavior of the organization table
+
 ## [v1.2.0] - 2025-07-28
 
 ### Added

@@ -12,8 +12,8 @@ import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScroll
 
 import { providePrimeNG } from 'primeng/config';
 
+import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
-import { environment } from './environments/environment';
 
 export const appConfig: ApplicationConfig = {
     providers: [

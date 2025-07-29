@@ -4,6 +4,8 @@
         "emu:save": "firebase emulators:start --import=./functions/seed-data --export-on-exit=./functions/seed-data --project prod",
         "deploy:firestore-rules": "firebase deploy --only firestore:rules --project",
         "deploy:storage-rules": "firebase deploy --only storage --project",
-        "deploy:functions": "firebase deploy --only functions --project"
+        "deploy:functions": "firebase deploy --only functions --project",
+        "deploy:hosting:client": "npm --prefix client run build && firebase deploy --only hosting:client --project",
+        "deploy:hosting:marketing": "npm --prefix marketing run build && firebase deploy --only hosting:marketing --project"
     }
 }

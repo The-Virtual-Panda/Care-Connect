@@ -1,4 +1,36 @@
 {
+    "hosting": [
+        {
+            "target": "client",
+            "public": "client/dist/care-connect",
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**"
+            ],
+            "rewrites": [
+                {
+                    "source": "**",
+                    "destination": "/index.html"
+                }
+            ]
+        },
+        {
+            "target": "marketing",
+            "public": "marketing/dist/poseidon-ng",
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**"
+            ],
+            "rewrites": [
+                {
+                    "source": "**",
+                    "destination": "/index.html"
+                }
+            ]
+        }
+    ],
     "firestore": {
         "rules": "firestore.rules"
     },

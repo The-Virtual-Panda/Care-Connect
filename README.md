@@ -25,6 +25,15 @@
 
 ## Deployment
 
+### Site
+
+Deploy using Firebase Hosting.
+
+```bash
+npm run deploy:hosting:client -- {dev/prod}
+npm run deploy:hosting:marketing -- {dev/prod}
+```
+
 ### Firebase Function
 
 Deploy the functions, from the root of the repository, run this:

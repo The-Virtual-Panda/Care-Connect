@@ -2,5 +2,27 @@
     "projects": {
         "prod": "care-connect-2f651",
         "dev": "dev-care-connect"
+    },
+    "targets": {
+        "care-connect-2f651": {
+            "hosting": {
+                "client": [
+                    "care-connect-2f651-client"
+                ],
+                "marketing": [
+                    "care-connect-2f651"
+                ]
+            }
+        },
+        "dev-care-connect": {
+            "hosting": {
+                "client": [
+                    "dev-care-connect-client"
+                ],
+                "marketing": [
+                    "dev-care-connect"
+                ]
+            }
+        }
     }
 }

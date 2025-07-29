@@ -15,11 +15,11 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "outputPath": "dist/poseidon-ng",
                         "index": "src/index.html",
-                        "browser": "src/main.ts",
+                        "main": "src/main.ts",
                         "polyfills": [
                             "zone.js"
                         ],
@@ -84,7 +84,7 @@
                         ],
                         "tsConfig": "tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
-                         "assets": [
+                        "assets": [
                             "src/favicon.ico",
                             "src/assets"
                         ],
@@ -98,6 +98,6 @@
         }
     },
     "cli": {
-      "analytics": false
+        "analytics": false
     }
 }

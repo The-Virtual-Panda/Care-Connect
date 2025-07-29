@@ -16,6 +16,8 @@ Types of changes:
 
 ## [Unreleased]
 
+## [v1.2.1] - 2025-07-29
+
 ### Fixed
 
 - Admin - Fixed the column span of the system users row expansion

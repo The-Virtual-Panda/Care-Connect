@@ -90,7 +90,7 @@ export class ProfileComponent implements OnInit {
     }
 
     fetchUserProfile() {
-        const userId = this.authService.userId;
+        const userId = this.authService.userId();
         this.userService.getUserProfile(userId).subscribe({
             next: (profile) => {
                 if (!profile) {
@@ -122,7 +122,7 @@ export class ProfileComponent implements OnInit {
             return;
         }
 
-        this.userService.uploadProfileImage(this.authService.userId, file).subscribe({
+        this.userService.uploadProfileImage(this.authService.userId(), file).subscribe({
             next: (url) => this.fetchUserProfile(),
             error: (e) => console.error('Upload failed', e)
         });
@@ -140,7 +140,7 @@ export class ProfileComponent implements OnInit {
         const formValues = this.profileForm.value;
         Logger.log('Updating profile with:', formValues);
 
-        this.userService.updateUserProfile(this.authService.userId, formValues.name.trim()).subscribe({
+        this.userService.updateUserProfile(this.authService.userId(), formValues.name.trim()).subscribe({
             next: () => {
                 this.alert?.showSuccess('Your profile has been updated');
                 this.userProfile.update((user) => (user ? { ...user, name: formValues.name.trim() } : user));

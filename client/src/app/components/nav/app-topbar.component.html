@@ -19,84 +19,86 @@
         </a>
     </div>
 
-    <div
-        class="topbar-right"
-        *ngIf="authService.isLoggedIn()">
-        <ul class="topbar-menu">
-            @if (userOrganizations.length > 1) {
-                <li class="right-sidebar-item">
-                    <div class="mr-2 flex items-center">
-                        <p-select
-                            [options]="userOrganizations"
-                            [(ngModel)]="selectedOrg"
-                            optionLabel="name"
-                            size="small"
-                            [loading]="isLoadingUserOrgs()"
-                            (onChange)="switchOrganization($event.value)">
-                            <ng-template pTemplate="selectedItem">
-                                <div
-                                    class="align-items-center flex gap-2"
-                                    *ngIf="selectedOrg">
-                                    <i class="pi pi-building"></i>
-                                    <div>{{ selectedOrg.name }}</div>
-                                </div>
-                            </ng-template>
-                        </p-select>
+    @if (authService.isLoggedIn()) {
+        <div class="topbar-right">
+            <ul class="topbar-menu">
+                @if (userOrganizations.length > 1) {
+                    <li class="right-sidebar-item">
+                        <div class="mr-2 flex items-center">
+                            <p-select
+                                [options]="userOrganizations"
+                                [(ngModel)]="selectedOrg"
+                                optionLabel="name"
+                                size="small"
+                                [loading]="isLoadingUserOrgs()"
+                                (onChange)="switchOrganization($event.value)">
+                                <ng-template pTemplate="selectedItem">
+                                    @if (selectedOrg) {
+                                        <div class="align-items-center flex gap-2">
+                                            <i class="pi pi-building"></i>
+                                            <div>{{ selectedOrg.name }}</div>
+                                        </div>
+                                    }
+                                </ng-template>
+                            </p-select>
+                        </div>
+                    </li>
+                }
+                <li class="right-sidebar-item profile-item static sm:relative">
+                    <a
+                        class="relative z-50"
+                        pStyleClass="@next"
+                        enterFromClass="hidden"
+                        enterActiveClass="animate-scalein"
+                        leaveActiveClass="animate-fadeout"
+                        leaveToClass="hidden"
+                        [hideOnOutsideClick]="true">
+                        <app-avatar
+                            [styleClass]="'!w-10 !h-10'"
+                            [userId]="authService.userId()" />
+                    </a>
+                    <div
+                        class="absolute right-0 top-auto z-[999] m-0 mt-2 hidden w-52 origin-top list-none overflow-hidden rounded-2xl border bg-surface-0 p-2 shadow-[0px_56px_16px_0px_rgba(0,0,0,0.00),0px_36px_14px_0px_rgba(0,0,0,0.01),0px_20px_12px_0px_rgba(0,0,0,0.02),0px_9px_9px_0px_rgba(0,0,0,0.03),0px_2px_5px_0px_rgba(0,0,0,0.04)] border-surface dark:bg-surface-900">
+                        <ul class="flex flex-col gap-1">
+                            <li>
+                                <p class="py-2 text-center font-medium dark:text-surface-200">{{ authService.username() }}</p>
+                            </li>
+                            @if (authService.isSystemAdmin()) {
+                                <li>
+                                    <a
+                                        routerLink="/admin"
+                                        class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
+                                        <i class="pi pi-shield"></i>
+                                        <span>Admin Center</span>
+                                    </a>
+                                </li>
+                            }
+                            <li>
+                                <a
+                                    routerLink="/settings"
+                                    class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
+                                    <i class="pi pi-cog"></i>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    (click)="logout()"
+                                    class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
+                                    <i class="pi pi-power-off"></i>
+                                    <span>Log out</span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </li>
-            }
-            <li class="right-sidebar-item profile-item static sm:relative">
-                <a
-                    class="relative z-50"
-                    pStyleClass="@next"
-                    enterFromClass="hidden"
-                    enterActiveClass="animate-scalein"
-                    leaveActiveClass="animate-fadeout"
-                    leaveToClass="hidden"
-                    [hideOnOutsideClick]="true">
-                    <app-avatar
-                        [styleClass]="'!w-10 !h-10'"
-                        [userId]="authService.userId" />
-                </a>
-                <div
-                    class="absolute right-0 top-auto z-[999] m-0 mt-2 hidden w-52 origin-top list-none overflow-hidden rounded-2xl border bg-surface-0 p-2 shadow-[0px_56px_16px_0px_rgba(0,0,0,0.00),0px_36px_14px_0px_rgba(0,0,0,0.01),0px_20px_12px_0px_rgba(0,0,0,0.02),0px_9px_9px_0px_rgba(0,0,0,0.03),0px_2px_5px_0px_rgba(0,0,0,0.04)] border-surface dark:bg-surface-900">
-                    <ul class="flex flex-col gap-1">
-                        <li>
-                            <p class="py-2 text-center font-medium dark:text-surface-200">{{ authService.username }}</p>
-                        </li>
-                        <li *ngIf="authService.isSystemAdmin()">
-                            <a
-                                routerLink="/admin"
-                                class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
-                                <i class="pi pi-shield"></i>
-                                <span>Admin Center</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                routerLink="/settings"
-                                class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
-                                <i class="pi pi-cog"></i>
-                                <span>Settings</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                (click)="logout()"
-                                class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
-                                <i class="pi pi-power-off"></i>
-                                <span>Log out</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <!-- RIGHT MENU DRAWER -->
-            <!-- <li class="right-sidebar-item">
+                <!-- RIGHT MENU DRAWER -->
+                <!-- <li class="right-sidebar-item">
                 <a tabindex="0" class="right-sidebar-button" (click)="showRightMenu()">
                     <i class="pi pi-align-right"></i>
                 </a>
             </li> -->
-        </ul>
-    </div>
+            </ul>
+        </div>
+    }
 </div>

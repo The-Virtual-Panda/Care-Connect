@@ -2,10 +2,9 @@ import { PhoneNumber } from '@/api/models/phone-number';
 import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
 import { PhonePipe } from '@/pipes/phone.pipe';
-import { Subject, combineLatest, takeUntil } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Signal, computed, effect, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { AppMenuitem } from './app.menuitem';
@@ -17,64 +16,26 @@ import { AppMenuitem } from './app.menuitem';
     providers: [PhonePipe],
     template: `
         <ul class="layout-menu">
-            <ng-container *ngFor="let item of menuItems; let i = index">
+            <ng-container *ngFor="let item of menuItems(); let i = index">
                 <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
                 <li *ngIf="item.separator" class="menu-separator"></li>
             </ng-container>
         </ul>
     `
 })
-export class AppMenu implements OnInit, OnDestroy {
+export class AppMenu implements OnInit {
     private authService = inject(AuthService);
     private phoneService = inject(PhoneService);
     private phonePipe = inject(PhonePipe);
-    private destroy$ = new Subject<void>();
 
-    menuItems: any[] = [];
-    orgPhoneNumbers: PhoneNumber[] = [];
     currentOrgId: string | null = null;
 
-    ngOnInit() {
-        const loggedIn = this.authService.isLoggedIn();
-        if (!loggedIn) {
-            console.error('Using the app menu without a logged-in user. This is not intended design.');
-        }
+    private orgPhoneNumbers = signal<PhoneNumber[]>([]);
 
-        // Subscribe to authentication state changes
-        this.authService.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
-            const isLoggedIn = !!user;
-            this.currentOrgId = this.authService.currentOrgId;
+    menuItems: Signal<any> = computed(() => {
+        const phoneNumbers = this.orgPhoneNumbers();
 
-            if (isLoggedIn && this.currentOrgId) {
-                this.phoneService
-                    .getOrgPhoneNumbers(this.currentOrgId)
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe({
-                        next: (phoneNumbers) => {
-                            this.orgPhoneNumbers = phoneNumbers;
-                            this.updateMenuItems();
-                        },
-                        error: (err) => {
-                            console.error('Error fetching organization phone numbers:', err);
-                            this.orgPhoneNumbers = [];
-                            this.updateMenuItems();
-                        }
-                    });
-            } else {
-                console.warn('User is not logged in or no org id found, clearing organization phone numbers');
-                this.currentOrgId = null;
-                this.updateMenuItems();
-            }
-        });
-    }
-
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-    }
-
-    private updateMenuItems() {
-        this.menuItems = [
+        return [
             // {
             //     label: 'Home',
             //     icon: 'pi pi-home',
@@ -96,12 +57,42 @@ export class AppMenu implements OnInit, OnDestroy {
             {
                 label: 'Phone Numbers',
                 icon: 'pi pi-phone',
-                visible: this.orgPhoneNumbers.length > 0,
-                items: this.orgPhoneNumbers.map((phone) => ({
+                visible: phoneNumbers.length > 0,
+                items: phoneNumbers.map((phone) => ({
                     label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
                     routerLink: ['/phone-numbers', phone.id, 'config']
                 }))
             }
         ];
+    });
+
+    constructor() {
+        effect(() => {
+            const user = this.authService.fireUser();
+            const orgId = this.authService.currentOrgId();
+
+            if (user && orgId) {
+                this.currentOrgId = orgId;
+                this.phoneService.getOrgPhoneNumbers(orgId).subscribe({
+                    next: (phoneNumbers) => {
+                        this.orgPhoneNumbers.set(phoneNumbers);
+                    },
+                    error: (err) => {
+                        console.error('Error fetching organization phone numbers:', err);
+                        this.orgPhoneNumbers.set([]);
+                    }
+                });
+            } else {
+                this.currentOrgId = null;
+                this.orgPhoneNumbers.set([]);
+            }
+        });
+    }
+
+    ngOnInit() {
+        const loggedIn = this.authService.isLoggedIn();
+        if (!loggedIn) {
+            console.error('Using the app menu without a logged-in user. This is not intended design.');
+        }
     }
 }

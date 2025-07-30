@@ -3,7 +3,7 @@ import { User } from '@/api/models/user';
 import { Logger } from '@/utils/logger';
 import { BehaviorSubject, Observable, catchError, first, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 
-import { Injectable, computed, inject } from '@angular/core';
+import { Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
 import {
     Auth,
     AuthError,
@@ -34,27 +34,31 @@ export interface AuthResult {
 export class AuthService {
     public static readonly USER_SESSION_KEY = 'user-session';
 
-    private auth: Auth = inject(Auth);
+    private fireAuth: Auth = inject(Auth);
     private userService = inject(UserService);
     private firestoreCollections = inject(FirestoreCollectionsService);
 
-    // Observable for auth state
-    private userSubject = new BehaviorSubject<FireUser | null>(null);
-    user$: Observable<FireUser | null> = this.userSubject.asObservable();
-
-    private _userSession: AuthResult | null = null;
     private _debugAuth = false;
+
+    fireUser: WritableSignal<FireUser | null> = signal(null);
+    userSession: WritableSignal<AuthResult | null> = signal(null);
+
+    isLoggedIn: Signal<boolean> = computed(() => this.userSession() != null);
+    isSystemAdmin: Signal<boolean> = computed(() => this.userSession()?.isSystemAdmin === true);
+    currentOrgId: Signal<string | null> = computed(() => this.userSession()?.focusedOrg?.id || null);
+    username: Signal<string | null> = computed(() => this.userSession()?.profile?.name || null);
+    userId: Signal<string | null> = computed(() => this.userSession()?.profile?.uid || null);
 
     constructor() {
         // Try to restore session from localStorage
         this.fetchUserSession();
 
-        onAuthStateChanged(this.auth, (user) => {
+        onAuthStateChanged(this.fireAuth, (user) => {
             if (this._debugAuth) Logger.log('Auth state changed:', user);
-            this.userSubject.next(user);
+            this.fireUser.set(user);
 
             // If user logged in, fetch extended profile
-            if (user && this._userSession == null) {
+            if (user && this.userSession() == null) {
                 // Load user context from Firestore
                 this.loadUserContext(user).subscribe({
                     next: (session) => {
@@ -66,21 +70,15 @@ export class AuthService {
                 });
             } else if (!user) {
                 // User logged out or session expired, clear session
-                this.deleteUserSession();
+                this.clearUserSession();
             }
         });
     }
 
-    isLoggedIn(): boolean {
-        this.fetchUserSession();
-        return this._userSession != null;
-    }
-
     login(email: string, password: string): Observable<AuthResult> {
-        return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
+        return from(signInWithEmailAndPassword(this.fireAuth, email, password)).pipe(
             switchMap((userCredential) => {
-                this.userSubject.next(userCredential.user);
-                // Load full user context and return that instead of just the Firebase user
+                this.fireUser.set(userCredential.user);
                 return this.loadUserContext(userCredential.user);
             }),
             catchError((error: AuthError | Error) => {
@@ -118,9 +116,10 @@ export class AuthService {
     }
 
     registerSelf(email: string, password: string, name: string, orgName: string): Observable<AuthResult> {
-        return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
+        return from(createUserWithEmailAndPassword(this.fireAuth, email, password)).pipe(
             switchMap((userCredential) => {
-                this.userSubject.next(userCredential.user);
+                this.fireUser.set(userCredential.user);
+
                 // Now call userService to create the user profile
                 return this.userService.createUserAndOrg(userCredential.user.uid, email, name, orgName).pipe(
                     // After creating user and org, load the full user context
@@ -157,8 +156,9 @@ export class AuthService {
     }
 
     async logout() {
-        await this.auth.signOut().then(() => {
-            this.deleteUserSession();
+        await this.fireAuth.signOut().then(() => {
+            localStorage.clear();
+            this.clearUserSession();
             window.location.href = '/';
         });
     }
@@ -169,13 +169,13 @@ export class AuthService {
      * @param newPassword – the new password
      */
     changePassword(currentPassword: string, newPassword: string): Observable<void> {
-        if (!this.auth.currentUser || !this.auth.currentUser.email) {
+        if (!this.fireAuth.currentUser || !this.fireAuth.currentUser.email) {
             return throwError(() => new Error('No user is currently signed in.'));
         }
 
-        const credential = EmailAuthProvider.credential(this.auth.currentUser.email, currentPassword);
-        return from(reauthenticateWithCredential(this.auth.currentUser, credential)).pipe(
-            switchMap(() => from(updatePassword(this.auth.currentUser!, newPassword))),
+        const credential = EmailAuthProvider.credential(this.fireAuth.currentUser.email, currentPassword);
+        return from(reauthenticateWithCredential(this.fireAuth.currentUser, credential)).pipe(
+            switchMap(() => from(updatePassword(this.fireAuth.currentUser!, newPassword))),
             map(() => undefined),
             catchError((err: any) => {
                 let msg = 'Failed to change password. Please try again.';
@@ -199,66 +199,6 @@ export class AuthService {
                     msg = err.message;
                 }
                 return throwError(() => new Error(msg));
-            })
-        );
-    }
-
-    // TODO: Refactor this out - Force people to use an observable on the org id
-    public get currentOrgId(): string | null {
-        this.fetchUserSession();
-        return this._userSession?.focusedOrg?.id || null;
-    }
-
-    public get username(): string | null {
-        this.fetchUserSession();
-        return this._userSession?.profile?.name || null;
-    }
-
-    public get userId(): string | null {
-        this.fetchUserSession();
-        return this._userSession?.profile?.uid || null;
-    }
-
-    /**
-     * Check if the current user is a system administrator
-     * Note: This only returns the stored value and doesn't verify against the latest token.
-     * Use fetchSystemAdminStatus() Observable for real-time verification.
-     * @returns boolean indicating whether the stored user session has admin privileges
-     */
-    public isSystemAdmin(): boolean {
-        this.fetchUserSession();
-        return this._userSession?.isSystemAdmin === true;
-    }
-
-    /**
-     * Fetch the system admin status from Firebase Auth token
-     * @param forceRefresh If true, will get fresh token information even if available in session
-     * @returns Observable<boolean> indicating whether the user has system admin privileges
-     */
-    public fetchSystemAdminStatus(forceRefresh = false): Observable<boolean> {
-        // First check if we have the information in the session already
-        this.fetchUserSession();
-        if (!forceRefresh && this._userSession?.isSystemAdmin !== undefined) {
-            return of(this._userSession.isSystemAdmin === true);
-        }
-
-        // Otherwise check the token directly
-        return from(this.auth.currentUser?.getIdTokenResult() || Promise.resolve(null)).pipe(
-            map((idTokenResult) => {
-                if (this._debugAuth) Logger.log('Token claims:', idTokenResult?.claims);
-                const isAdmin = !!(idTokenResult?.claims && idTokenResult.claims['systemAdmin'] === true);
-
-                // Update the session with this information
-                if (this._userSession) {
-                    this._userSession.isSystemAdmin = isAdmin;
-                    this.storeUserSession(this._userSession);
-                }
-
-                return isAdmin;
-            }),
-            catchError((error) => {
-                Logger.error('Error checking system admin status:', error);
-                return of(false);
             })
         );
     }
@@ -298,9 +238,9 @@ export class AuthService {
                     focusedOrg: orgData,
                     isSystemAdmin
                 };
-                if (this._debugAuth) {
-                    Logger.log('System admin status:', isSystemAdmin);
-                }
+
+                if (this._debugAuth) Logger.log('System admin status:', isSystemAdmin);
+
                 this.storeUserSession(sessionData);
                 return sessionData;
             }),
@@ -315,17 +255,21 @@ export class AuthService {
     private fetchUserSession() {
         const savedSession = localStorage.getItem(AuthService.USER_SESSION_KEY);
         if (savedSession) {
-            this._userSession = JSON.parse(savedSession);
-            if (this._debugAuth) Logger.log('Session restored:', this._userSession);
+            const parsedSession = JSON.parse(savedSession);
+            this.userSession.set(parsedSession);
+            if (this._debugAuth) Logger.log('Session restored:', this.userSession);
         }
     }
 
     private storeUserSession(sessionData: AuthResult) {
         localStorage.setItem(AuthService.USER_SESSION_KEY, JSON.stringify(sessionData));
+        this.userSession.set(sessionData);
+        if (this._debugAuth) Logger.log('Session stored:', sessionData);
     }
 
-    private deleteUserSession() {
+    private clearUserSession() {
         localStorage.removeItem(AuthService.USER_SESSION_KEY);
-        this._userSession = null;
+        this.userSession.set(null);
+        if (this._debugAuth) Logger.log('Session cleared');
     }
 }

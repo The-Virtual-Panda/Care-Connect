@@ -87,13 +87,13 @@ export class AppTopbar {
 
     loadUserOrganizations() {
         this.isLoadingUserOrgs.set(true);
-        this.userService.getUserOrganizations(this.authService.userId).subscribe({
+        this.userService.getUserOrganizations(this.authService.userId()).subscribe({
             next: (orgs) => {
                 this.isLoadingUserOrgs.set(false);
                 this.userOrganizations = orgs;
 
                 // Set the current organization based on focused org
-                const currentOrgId = this.authService.currentOrgId;
+                const currentOrgId = this.authService.currentOrgId();
                 const focusedOrg = orgs.find((org) => org.id === currentOrgId);
 
                 if (focusedOrg) {

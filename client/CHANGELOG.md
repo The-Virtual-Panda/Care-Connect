@@ -16,6 +16,12 @@ Types of changes:
 
 ## [Unreleased]
 
+## [v1.3.0] - 2025-07-30
+
+### Added
+
+- Added phone details to the phone configuration page
+
 ### Fixed
 
 - Multiple organizations is now fully supported

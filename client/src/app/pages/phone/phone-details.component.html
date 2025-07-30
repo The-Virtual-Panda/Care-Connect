@@ -1,7 +1,7 @@
-<p-card class="mx-auto max-w-md">
+<p-card class="mx-auto">
     <h2 class="mb-4 font-semibold text-surface-950 dark:text-surface-0">Phone Details</h2>
     @if (phoneInfo()) {
-        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4">
             <!-- Row 1 -->
             <div>
                 <div class="font-semibold text-gray-700">Label</div>
@@ -38,7 +38,7 @@
             </div>
         </div>
     } @else {
-        <div class="text-center text-gray-500">Loading phone details...</div>
+        <div class="text-gray-500">Loading phone details...</div>
     }
 </p-card>
 

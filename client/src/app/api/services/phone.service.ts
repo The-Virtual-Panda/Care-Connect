@@ -1,8 +1,8 @@
 import { Observable, from } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 
 import { Injectable, inject } from '@angular/core';
-import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
+import { addDoc, collection, deleteDoc, doc, docData, getDocs, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 
 import { PhoneNumber, phoneNumberConverter } from '../models/phone-number';
 import { Shift } from '../models/shift';
@@ -21,6 +21,16 @@ export class PhoneService {
 
         // Execute query and map results
         return from(getDocs(phoneNumbersQuery)).pipe(map((snapshot) => snapshot.docs.map((doc) => doc.data())));
+    }
+
+    public getPhoneNumber(phoneId: string | null): Observable<PhoneNumber | null> {
+        if (!phoneId) return from([null]);
+
+        const phoneRef = this.firestoreCollections.phoneNumbers.docRef(phoneId);
+        return docData(phoneRef).pipe(
+            first(),
+            map((data) => (data ? (data as PhoneNumber) : null))
+        );
     }
 
     public getPhoneShifts(phoneId: string): Observable<Shift[]> {

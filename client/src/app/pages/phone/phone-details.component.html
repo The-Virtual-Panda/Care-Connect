@@ -1,8 +1,48 @@
-<div class="card">
-    <h2>Phone Configuration</h2>
-</div>
+<p-card class="mx-auto max-w-md">
+    <h2 class="mb-4 font-semibold text-surface-950 dark:text-surface-0">Phone Details</h2>
+    @if (phoneInfo()) {
+        <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+            <!-- Row 1 -->
+            <div>
+                <div class="font-semibold text-gray-700">Label</div>
+                <div>{{ phoneInfo()?.label || '—' }}</div>
+            </div>
+
+            <div>
+                <div class="font-semibold text-gray-700">Phone Number</div>
+                <div>{{ phoneInfo()?.number | phone }}</div>
+            </div>
+
+            <div>
+                <div class="font-semibold text-gray-700">Fallback Forwarding Number</div>
+                @if (phoneInfo()?.fallbackForwardingNumber) {
+                    <div>{{ phoneInfo()?.fallbackForwardingNumber | phone }}</div>
+                } @else {
+                    <div class="text-gray-500">—</div>
+                }
+            </div>
+
+            <div>
+                <div class="font-semibold text-gray-700">Usage Type</div>
+                <div>{{ phoneInfo()?.usageType }}</div>
+            </div>
+
+            <div>
+                <div class="font-semibold text-gray-700">Date Created</div>
+                <div>{{ phoneInfo()?.dateCreated | date: 'medium' }}</div>
+            </div>
+
+            <div>
+                <div class="font-semibold text-gray-700">Date Modified</div>
+                <div>{{ phoneInfo()?.dateUpdated | date: 'medium' }}</div>
+            </div>
+        </div>
+    } @else {
+        <div class="text-center text-gray-500">Loading phone details...</div>
+    }
+</p-card>
 
 <div class="my-8">
     <h2 class="text-1xl mb-4 font-semibold text-surface-950 dark:text-surface-0">Shifts</h2>
-    <cc-shifts-master [phoneId]="phoneId!" />
+    <cc-shifts-master [phoneId]="phoneId()!" />
 </div>

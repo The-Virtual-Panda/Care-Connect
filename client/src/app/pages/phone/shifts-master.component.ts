@@ -200,11 +200,10 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
 
         switch (this.selectedTimeRange.value) {
             case 'past':
-                // Present shifts are those where the current time falls within the shift period
+                // Past shifts have already ended
                 return shifts.filter((shift) => {
-                    const startDate = new Date(shift.start);
                     const endDate = new Date(shift.end);
-                    return startDate <= now && endDate >= now;
+                    return endDate < now;
                 });
 
             case 'future':

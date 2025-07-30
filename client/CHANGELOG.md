@@ -16,6 +16,11 @@ Types of changes:
 
 ## [Unreleased]
 
+### Fixed
+
+- Multiple organizations is now fully supported
+- Fixed the "Past Shifts" filter on a phone's Shift Configuration
+
 ## [v1.2.1] - 2025-07-29
 
 ### Fixed

@@ -114,6 +114,7 @@ export class AppTopbar {
                     ...state!,
                     focusedOrg: org
                 }));
+                this.toastService.showSuccess('Switched organization', `You are now working in ${org.name}`);
                 Logger.log('Switched organization successfully:', org.name, org.id);
                 this.router.navigate(['/']);
             },

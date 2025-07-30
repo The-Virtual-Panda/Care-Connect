@@ -23,14 +23,15 @@ import { AppMenu } from './app.menu';
         <div #menuContainer class="layout-menu-container">
             <div app-menu></div>
         </div>
-        <div app-topbar *ngIf="isHorizontal() && !layoutService.isMobile()"></div>
+        @if (isHorizontal() && !layoutService.isMobile()) {
+            <div app-topbar></div>
+        }
     </div>`
 })
 export class AppSidebar {
     timeout: any = null;
 
     isHorizontal = computed(() => this.layoutService.isHorizontal());
-
     isDarkTheme = computed(() => this.layoutService.isDarkTheme());
 
     @ViewChild('menuContainer') menuContainer!: ElementRef;

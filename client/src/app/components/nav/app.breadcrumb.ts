@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterModule } from '@angular/router';
-
 import { BehaviorSubject, filter } from 'rxjs';
+
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterModule } from '@angular/router';
 
 interface Breadcrumb {
     label: string;
@@ -16,8 +16,10 @@ interface Breadcrumb {
     template: `<nav class="layout-breadcrumb">
         <ol>
             <ng-template ngFor let-item let-last="last" [ngForOf]="breadcrumbs$ | async">
-                <li class="font-medium text-surface-950 dark:text-surface-0 text-xl">{{ item.label }}</li>
-                <li *ngIf="!last" class="layout-breadcrumb-chevron">/</li>
+                <li class="text-xl font-medium text-surface-950 dark:text-surface-0">{{ item.label }}</li>
+                @if (!last) {
+                    <li class="layout-breadcrumb-chevron">/</li>
+                }
             </ng-template>
         </ol>
     </nav> `

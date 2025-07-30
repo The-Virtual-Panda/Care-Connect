@@ -17,8 +17,11 @@ import { AppMenuitem } from './app.menuitem';
     template: `
         <ul class="layout-menu">
             <ng-container *ngFor="let item of menuItems(); let i = index">
-                <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
-                <li *ngIf="item.separator" class="menu-separator"></li>
+                @if (item.separator) {
+                    <li class="menu-separator"></li>
+                } @else {
+                    <li app-menuitem [item]="item" [index]="i" [root]="true"></li>
+                }
             </ng-container>
         </ul>
     `

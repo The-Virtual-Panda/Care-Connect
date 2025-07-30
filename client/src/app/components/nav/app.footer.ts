@@ -19,8 +19,14 @@ import { MessageModule } from 'primeng/message';
             </div>
             <div class="flex items-center gap-4">
                 <span class="text-muted-color">v{{ version }}</span>
-                <p-message *ngIf="!isProd" severity="info" text="Dev"></p-message>
-                <p-message *ngIf="useEmulators" severity="info" text="Emulators"></p-message>
+
+                @if (!isProd) {
+                    <p-message severity="info" text="Dev"></p-message>
+                }
+
+                @if (useEmulators) {
+                    <p-message severity="info" text="Emulators"></p-message>
+                }
             </div>
             <span class="footer-copyright">&#169; The Virtual Panda - 2025</span>
         </div>

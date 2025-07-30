@@ -34,7 +34,9 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
                             [style]="{
                                 'background-color': primaryColor?.name === 'noir' ? 'var(--text-color)' : primaryColor?.palette?.['500']
                             }">
-                            <i *ngIf="primaryColor.name === selectedPrimaryColor()" class="pi pi-check text-white"></i>
+                            @if (primaryColor.name === selectedPrimaryColor()) {
+                                <i class="pi pi-check text-white"></i>
+                            }
                         </button>
                     }
                 </div>

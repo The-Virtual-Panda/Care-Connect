@@ -14,9 +14,12 @@
     <ng-template #header>
         <tr>
             <th>Status</th>
-            <th *ngIf="!userId">User ID</th>
-            <th *ngIf="!userId">Avatar</th>
-            <th *ngIf="!orgId">Organization ID</th>
+            @if (!userId) {
+                <th>User ID</th>
+                <th>Avatar</th>
+            } @else if (!orgId) {
+                <th>Organization ID</th>
+            }
             <th>Role</th>
             <th>Date Joined</th>
         </tr>
@@ -26,9 +29,12 @@
         let-membership>
         <tr>
             <td><app-invite-status-badge [status]="membership.inviteStatus" /></td>
-            <td *ngIf="!userId">{{ membership.userId }}</td>
-            <td *ngIf="!userId"><app-avatar [userId]="membership.userId" /></td>
-            <td *ngIf="!orgId">{{ membership.orgId }}</td>
+            @if (!userId) {
+                <td>{{ membership.userId }}</td>
+                <td><app-avatar [userId]="membership.userId" /></td>
+            } @else if (!orgId) {
+                <td>{{ membership.orgId }}</td>
+            }
             <td>{{ membership.role | OrgRole }}</td>
             <td>{{ membership.dateJoined | date: 'yyyy/MM/dd' }}</td>
         </tr>
@@ -78,9 +84,9 @@
                 <ng-template
                     #selectedItem
                     let-selectedOption>
-                    <div *ngIf="selectedOption">
+                    @if (selectedOption) {
                         <div>{{ selectedOption | OrgRole }}</div>
-                    </div>
+                    }
                 </ng-template>
                 <ng-template
                     let-role

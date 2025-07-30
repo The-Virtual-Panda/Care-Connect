@@ -1,15 +1,17 @@
-import { Timestamp, DocumentData, QueryDocumentSnapshot, SnapshotOptions, DocumentReference } from '@angular/fire/firestore';
+import { DocumentData, DocumentReference, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
+
 import { addCountryCode, removeCountryCode } from '../helpers/phone-helpers';
 import { FirestoreCollectionsService } from '../services/firestore-collections';
+import { PhoneUsageType } from './enums/phone-usage-type';
 
 export interface PhoneNumber {
     id: string;
-    number: string;  // E.164 format string (e.g., "+12025551234")
+    number: string; // E.164 format string (e.g., "+12025551234")
     fallbackForwardingNumber?: string;
     useFallbackForwardingNumber?: boolean;
     orgId: string;
     label?: string;
-    usageType: number;
+    usageType: PhoneUsageType;
     dateCreated: Date;
     dateUpdated: Date;
 }
@@ -21,7 +23,7 @@ export interface PhoneNumberDoc {
     orgId: string;
     orgRef: DocumentReference;
     label?: string;
-    usageType: number;
+    usageType: PhoneUsageType;
     dateCreated: Timestamp;
     dateUpdated: Timestamp;
 }
@@ -37,7 +39,7 @@ export function toPhoneNumber(doc: PhoneNumberDoc, id: string): PhoneNumber {
         label: doc.label,
         usageType: doc.usageType,
         dateCreated: doc.dateCreated.toDate(),
-        dateUpdated: doc.dateUpdated.toDate(),
+        dateUpdated: doc.dateUpdated.toDate()
     };
 }
 
@@ -53,7 +55,7 @@ export function fromPhoneNumber(phoneNumber: PhoneNumber, firestoreCollections: 
         label: phoneNumber.label,
         usageType: phoneNumber.usageType,
         dateCreated: Timestamp.fromDate(phoneNumber.dateCreated),
-        dateUpdated: Timestamp.fromDate(phoneNumber.dateUpdated),
+        dateUpdated: Timestamp.fromDate(phoneNumber.dateUpdated)
     };
 }
 

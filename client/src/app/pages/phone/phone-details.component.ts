@@ -1,5 +1,6 @@
 import { PhoneNumber } from '@/api/models/phone-number';
 import { PhoneService } from '@/api/services/phone.service';
+import { PhoneUsageTypeDisplayPipe } from '@/pipes/phone-usage-type.pipe';
 import { PhonePipe } from '@/pipes/phone.pipe';
 import { Logger } from '@/utils/logger';
 
@@ -15,7 +16,7 @@ import { ShiftsMasterComponent } from './shifts-master.component';
 @Component({
     selector: 'cc-phone-details',
     standalone: true,
-    imports: [CommonModule, FormsModule, ShiftsMasterComponent, CardModule, PhonePipe],
+    imports: [CommonModule, FormsModule, ShiftsMasterComponent, CardModule, PhonePipe, PhoneUsageTypeDisplayPipe],
     templateUrl: './phone-details.component.html'
 })
 export class PhoneDetailsComponent implements OnInit {

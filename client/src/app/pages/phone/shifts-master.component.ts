@@ -1,5 +1,6 @@
 import { Shift } from '@/api/models/shift';
 import { TeamMember } from '@/api/models/team-member';
+import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
 import { TeamService } from '@/api/services/team.service';
 import { AppModal } from '@/components/app-modal.component';
@@ -89,6 +90,7 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
     formBuilder = inject(FormBuilder);
     confirmationService = inject(ConfirmationService);
     private toastService = inject(ToastService);
+    private authService = inject(AuthService);
 
     @ViewChild(AppModal) modal!: AppModal;
 
@@ -158,7 +160,8 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
     }
 
     loadTeamMembers(): void {
-        this.teamSubscription = this.teamService.getTeamMembers().subscribe({
+        const orgId = this.authService.currentOrgId();
+        this.teamSubscription = this.teamService.getTeamMembers(orgId).subscribe({
             next: (members) => {
                 this.teamMembers = members;
             },

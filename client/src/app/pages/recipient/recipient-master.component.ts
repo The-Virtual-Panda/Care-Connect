@@ -1,8 +1,9 @@
+import { AuthService } from '@/api/services/auth.service';
 import { ToastService } from '@/services/toast.service';
 import { Subscription } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, Signal, ViewChild, computed, effect, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { PhonePipe } from '@app/pipes/phone.pipe';
@@ -84,6 +85,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
     formBuilder = inject(FormBuilder);
     confirmationService = inject(ConfirmationService);
     private toastService = inject(ToastService);
+    private authService = inject(AuthService);
 
     @ViewChild(AppAlert) alert: AppAlert | undefined;
     @ViewChild(AppModal) modal!: AppModal;
@@ -99,6 +101,14 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
     private subscription: Subscription | null = null;
 
     constructor() {
+        effect(() => {
+            const orgId = this.authService.currentOrgId();
+            if (orgId) {
+                Logger.log('Focused organization changed:', orgId);
+                this.reload();
+            }
+        });
+
         this.recipientForm = this.formBuilder.group({
             id: [''],
             name: ['', Validators.required],
@@ -141,7 +151,8 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         this.alert?.close();
 
-        this.subscription = this.teamService.getTeamMembers().subscribe({
+        const orgId = this.authService.currentOrgId();
+        this.subscription = this.teamService.getTeamMembers(orgId).subscribe({
             next: (members) => {
                 this.teamMembers = members;
                 this.isLoading = false;
@@ -203,7 +214,8 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         Logger.log('Saving recipient data:', recipientData);
 
         this.isLoading = true;
-        this.teamService.saveRecipient(recipientData).subscribe({
+        const orgId = this.authService.currentOrgId();
+        this.teamService.saveRecipient(orgId, recipientData).subscribe({
             next: () => {
                 this.modal.hideModal();
                 this.toastService.showSuccess('Success', 'Recipient saved successfully');
@@ -266,7 +278,8 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         const memberIds = this.selectedMembers.map((member) => member.id);
         this.isLoading = true;
 
-        this.teamService.deleteRecipients(memberIds).subscribe({
+        const orgId = this.authService.currentOrgId();
+        this.teamService.deleteRecipients(orgId, memberIds).subscribe({
             next: () => {
                 this.toastService.showSuccess('Success', 'Recipient(s) deleted successfully');
                 this.selectedMembers = [];

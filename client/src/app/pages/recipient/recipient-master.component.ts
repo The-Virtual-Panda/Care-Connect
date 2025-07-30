@@ -1,3 +1,4 @@
+import { ToastService } from '@/services/toast.service';
 import { Subscription } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
@@ -14,7 +15,7 @@ import { TeamService } from '@services/team.service';
 import { AppAlert } from '@components/app-alert.component';
 import { AppModal } from '@components/app-modal.component';
 
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -37,7 +38,6 @@ import { Skeleton } from 'primeng/skeleton';
 import { SliderModule } from 'primeng/slider';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
 
@@ -53,7 +53,6 @@ import { ToolbarModule } from 'primeng/toolbar';
         SliderModule,
         ProgressBarModule,
         ToggleButtonModule,
-        ToastModule,
         CommonModule,
         FormsModule,
         ButtonModule,
@@ -77,14 +76,14 @@ import { ToolbarModule } from 'primeng/toolbar';
     ],
     templateUrl: './recipient-master.component.html',
     standalone: true,
-    providers: [MessageService, DialogService, ConfirmationService]
+    providers: [DialogService, ConfirmationService]
 })
 export class RecipientMasterComponent implements OnInit, OnDestroy {
     teamService = inject(TeamService);
-    messageService = inject(MessageService);
     dialogService = inject(DialogService);
     formBuilder = inject(FormBuilder);
     confirmationService = inject(ConfirmationService);
+    private toastService = inject(ToastService);
 
     @ViewChild(AppAlert) alert: AppAlert | undefined;
     @ViewChild(AppModal) modal!: AppModal;
@@ -207,7 +206,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
         this.teamService.saveRecipient(recipientData).subscribe({
             next: () => {
                 this.modal.hideModal();
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient saved successfully' });
+                this.toastService.showSuccess('Success', 'Recipient saved successfully');
                 this.reload();
             },
             error: (error: Error) => {
@@ -269,7 +268,7 @@ export class RecipientMasterComponent implements OnInit, OnDestroy {
 
         this.teamService.deleteRecipients(memberIds).subscribe({
             next: () => {
-                this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Recipient(s) deleted successfully' });
+                this.toastService.showSuccess('Success', 'Recipient(s) deleted successfully');
                 this.selectedMembers = [];
                 this.reload();
             },

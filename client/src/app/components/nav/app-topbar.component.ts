@@ -2,13 +2,14 @@ import { OrgMembership } from '@/api/models/org-membership';
 import { Organization } from '@/api/models/organization';
 import { AuthService } from '@/api/services/auth.service';
 import { UserService } from '@/api/services/user.service';
-import { LayoutService } from '@/layouts/service/layout.service';
+import { LayoutService } from '@/services/layout.service';
+import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild, computed, inject, model, signal } from '@angular/core';
+import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
@@ -47,9 +48,11 @@ import { AppBreadcrumb } from './app.breadcrumb';
     ]
 })
 export class AppTopbar {
-    layoutService = inject(LayoutService);
     authService = inject(AuthService);
-    userService = inject(UserService);
+    private layoutService = inject(LayoutService);
+    private userService = inject(UserService);
+    private router = inject(Router);
+    private toastService = inject(ToastService);
 
     isDarkTheme = computed(() => this.layoutService.isDarkTheme());
     isLoadingUserOrgs = signal(false);
@@ -100,6 +103,24 @@ export class AppTopbar {
     }
 
     switchOrganization(org: Organization) {
-        throw new Error('Method not implemented.');
+        if (!org || org.id === this.authService.currentOrgId()) {
+            return; // No change needed
+        }
+
+        Logger.log('Switching organization to:', org.name, org.id);
+        this.userService.changeDefaultOrg(this.authService.userId(), org.id).subscribe({
+            next: () => {
+                this.authService.userSession.update((state) => ({
+                    ...state!,
+                    focusedOrg: org
+                }));
+                Logger.log('Switched organization successfully:', org.name, org.id);
+                this.router.navigate(['/']);
+            },
+            error: (err) => {
+                this.toastService.showError('Error switching orgs', 'Failed to switch organization. Please try again.');
+                console.error('Failed to switch organization:', err);
+            }
+        });
     }
 }

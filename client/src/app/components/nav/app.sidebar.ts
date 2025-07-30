@@ -1,5 +1,5 @@
 import { AppTopbar } from '@/components/nav/app-topbar.component';
-import { LayoutService } from '@/layouts/service/layout.service';
+import { LayoutService } from '@/services/layout.service';
 
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild, computed } from '@angular/core';

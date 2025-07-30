@@ -3,6 +3,7 @@ import { TeamMember } from '@/api/models/team-member';
 import { PhoneService } from '@/api/services/phone.service';
 import { TeamService } from '@/api/services/team.service';
 import { AppModal } from '@/components/app-modal.component';
+import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 import { Subscription } from 'rxjs';
 
@@ -10,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { DatePicker } from 'primeng/datepicker';
@@ -36,7 +37,6 @@ import { Skeleton } from 'primeng/skeleton';
 import { SliderModule } from 'primeng/slider';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
@@ -55,7 +55,6 @@ import { TooltipModule } from 'primeng/tooltip';
         SliderModule,
         ProgressBarModule,
         ToggleButtonModule,
-        ToastModule,
         CommonModule,
         FormsModule,
         ButtonModule,
@@ -79,17 +78,17 @@ import { TooltipModule } from 'primeng/tooltip';
         InputSwitchModule,
         TooltipModule
     ],
-    providers: [MessageService, DialogService, ConfirmationService]
+    providers: [DialogService, ConfirmationService]
 })
 export class ShiftsMasterComponent implements OnInit, OnDestroy {
     @Input() phoneId!: string;
 
     phoneService = inject(PhoneService);
     teamService = inject(TeamService);
-    messageService = inject(MessageService);
     dialogService = inject(DialogService);
     formBuilder = inject(FormBuilder);
     confirmationService = inject(ConfirmationService);
+    private toastService = inject(ToastService);
 
     @ViewChild(AppModal) modal!: AppModal;
 
@@ -165,11 +164,7 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
             },
             error: (error) => {
                 Logger.error('Error loading team members:', error);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to load team members.'
-                });
+                this.toastService.showError('Error', 'Failed to load team members.');
             }
         });
     }
@@ -185,11 +180,7 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
             error: (error) => {
                 this.isLoading = false;
                 Logger.error('Error loading shifts:', error);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to load shifts. Please try again later.'
-                });
+                this.toastService.showError('Error', 'Failed to load shifts. Please try again later.');
             }
         });
     }
@@ -390,21 +381,13 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
             next: () => {
                 this.isLoading = false;
                 this.modal.hideModal();
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Shift saved successfully!'
-                });
+                this.toastService.showSuccess('Shift saved', 'The shift has been successfully saved.');
                 this.reload();
             },
             error: (error: Error) => {
                 this.isLoading = false;
                 Logger.error('Error saving shift:', error);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to save shift. Please try again.'
-                });
+                this.toastService.showError('Error', 'Failed to save shift. Please try again.');
             }
         });
     }
@@ -445,22 +428,14 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
         this.phoneService.deleteShifts(this.phoneId, ids).subscribe({
             next: () => {
                 this.isLoading = false;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: `${ids.length} shift${ids.length > 1 ? 's' : ''} deleted successfully!`
-                });
+                this.toastService.showSuccess('Shifts deleted', `${ids.length} shift${ids.length > 1 ? 's' : ''} deleted successfully!`);
                 this.selectedShifts = [];
                 this.reload();
             },
             error: (error) => {
                 this.isLoading = false;
                 Logger.error('Error deleting shifts:', error);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to delete shifts. Please try again.'
-                });
+                this.toastService.showError('Error', 'Failed to delete shifts. Please try again.');
             }
         });
     }

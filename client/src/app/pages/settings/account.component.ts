@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { Component, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -38,11 +37,9 @@ import { noWhitespaceValidator } from './profile.component';
         MessageModule,
         ButtonModule,
         DividerModule
-    ],
-    providers: [MessageService]
+    ]
 })
 export class AccountComponent {
-    messageService = inject(MessageService);
     authService = inject(AuthService);
     userService = inject(UserService);
 

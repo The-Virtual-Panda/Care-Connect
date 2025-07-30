@@ -125,6 +125,18 @@ export class UserService {
     }
 
     /**
+     * Changes the user's default organization
+     * @param userId The ID of the user
+     * @param orgId The ID of the organization to set as default
+     */
+    changeDefaultOrg(userId: string | null, orgId: string): Observable<void> {
+        if (!userId || !orgId) return of();
+
+        const userRef = this.firestoreCollections.users.docRef(userId);
+        return from(updateDoc(userRef, { defaultOrgId: orgId, dateUpdated: new Date() }));
+    }
+
+    /**
      * Gets the user profile by user ID.
      * @param userId The user ID to fetch.
      * @returns Observable of the User or null if not found.

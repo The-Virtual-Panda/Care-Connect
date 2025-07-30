@@ -3,7 +3,7 @@ import { User } from '@/api/models/user';
 import { Logger } from '@/utils/logger';
 import { BehaviorSubject, Observable, catchError, first, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 
-import { Injectable, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
+import { Injectable, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import {
     Auth,
     AuthError,
@@ -71,6 +71,14 @@ export class AuthService {
             } else if (!user) {
                 // User logged out or session expired, clear session
                 this.clearUserSession();
+            }
+        });
+
+        effect(() => {
+            const session = this.userSession();
+
+            if (session) {
+                this.storeUserSession(session);
             }
         });
     }

@@ -7,6 +7,7 @@ import { AppAvatarComponent } from '@/components/app-avatar.component';
 import { AppInviteStatusBadgeComponent } from '@/components/app-invite-status-badge.component';
 import { AppModal } from '@/components/app-modal.component';
 import { OrgRoleDisplayPipe } from '@/pipes/org-role.pipe';
+import { ToastService } from '@/services/toast.service';
 import { Observable } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
@@ -15,19 +16,16 @@ import { FormsModule } from '@angular/forms';
 
 import { Organization } from '@models/organization';
 
-import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Fluid } from 'primeng/fluid';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
-import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'orgs-membership-list',
     imports: [
         TableModule,
         CommonModule,
-        ToastModule,
         SelectModule,
         AppInviteStatusBadgeComponent,
         OrgRoleDisplayPipe,
@@ -37,8 +35,7 @@ import { ToastModule } from 'primeng/toast';
         Fluid,
         AppAvatarComponent
     ],
-    templateUrl: './org-membership-list.component.html',
-    providers: [MessageService]
+    templateUrl: './org-membership-list.component.html'
 })
 export class OrgsMembershipListComponent implements OnInit {
     @Input() userId: string | null = null;
@@ -47,7 +44,7 @@ export class OrgsMembershipListComponent implements OnInit {
     @ViewChild(AppModal) modal!: AppModal;
 
     adminService = inject(AdminService);
-    messageService = inject(MessageService);
+    private toastService = inject(ToastService);
 
     orgMemberships: OrgMembership[] = [];
     isLoadingModal: boolean = false;
@@ -117,18 +114,10 @@ export class OrgsMembershipListComponent implements OnInit {
                 next: () => {
                     this.reload();
                     this.resetModal();
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: 'Membership added successfully.'
-                    });
+                    this.toastService.showSuccess('Membership added', 'The user has been successfully added to the organization.');
                 },
                 error: (err) => {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Failed to add membership.'
-                    });
+                    this.toastService.showError('Error', 'Failed to add membership.');
                     console.error('Error adding membership:', err);
                     this.isLoadingModal = false;
                 }

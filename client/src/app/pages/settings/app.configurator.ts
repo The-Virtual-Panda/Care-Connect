@@ -1,4 +1,4 @@
-import { LayoutService } from '@/layouts/service/layout.service';
+import { LayoutService } from '@/services/layout.service';
 import { KeyOfType, SurfacesType, getPresetExt, getPrimaryColors, presets } from '@/utils/theme';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
 

@@ -1,4 +1,4 @@
-import { LayoutService } from '@/layouts/service/layout.service';
+import { LayoutService } from '@/services/layout.service';
 
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';

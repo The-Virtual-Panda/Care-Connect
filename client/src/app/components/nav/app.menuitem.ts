@@ -1,4 +1,4 @@
-import { LayoutService } from '@/layouts/service/layout.service';
+import { LayoutService } from '@/services/layout.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 

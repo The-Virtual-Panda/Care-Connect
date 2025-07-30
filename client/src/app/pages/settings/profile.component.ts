@@ -10,10 +10,9 @@ import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModu
 
 import { AuthService } from '@services/auth.service';
 
-import { MessageService } from 'primeng/api';
 import { AvatarModule } from 'primeng/avatar';
-import { Button, ButtonModule } from 'primeng/button';
-import { FileUpload, FileUploadEvent, UploadEvent } from 'primeng/fileupload';
+import { ButtonModule } from 'primeng/button';
+import { FileUpload, FileUploadEvent } from 'primeng/fileupload';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -44,11 +43,9 @@ export function noWhitespaceValidator(): ValidatorFn {
         AppAlert,
         MessageModule,
         AppAvatarComponent
-    ],
-    providers: [MessageService]
+    ]
 })
 export class ProfileComponent implements OnInit {
-    messageService = inject(MessageService);
     authService = inject(AuthService);
     userService = inject(UserService);
 

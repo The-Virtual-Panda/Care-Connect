@@ -10,6 +10,7 @@ import { connectStorageEmulator, getStorage, provideStorage } from '@angular/fir
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
 
+import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 
 import { environment } from '../environments/environment';
@@ -17,6 +18,8 @@ import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
     providers: [
+        MessageService,
+
         provideRouter(
             appRoutes,
             withInMemoryScrolling({

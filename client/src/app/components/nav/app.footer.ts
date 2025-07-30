@@ -1,4 +1,4 @@
-import { LayoutService } from '@/layouts/service/layout.service';
+import { LayoutService } from '@/services/layout.service';
 import { Logger } from '@/utils/logger';
 import { environment } from 'src/environments/environment';
 

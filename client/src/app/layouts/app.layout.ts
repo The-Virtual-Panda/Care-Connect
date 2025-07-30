@@ -2,12 +2,14 @@ import { AppBreadcrumb } from '@/components/nav/app.breadcrumb';
 import { AppFooter } from '@/components/nav/app.footer';
 import { AppRightMenu } from '@/components/nav/app.rightmenu';
 import { AppSearch } from '@/components/nav/app.search';
-import { LayoutService } from '@/layouts/service/layout.service';
+import { LayoutService } from '@/services/layout.service';
 import { Subscription, filter } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
 import { Component, Renderer2, ViewChild, computed } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
+
+import { Toast } from 'primeng/toast';
 
 import { AppTopbar } from '../components/nav/app-topbar.component';
 import { AppSidebar } from '../components/nav/app.sidebar';
@@ -15,8 +17,9 @@ import { AppSidebar } from '../components/nav/app.sidebar';
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppBreadcrumb, AppFooter, AppSearch, AppRightMenu],
+    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppBreadcrumb, AppFooter, AppSearch, AppRightMenu, Toast],
     template: `
+        <p-toast key="global-toast" position="bottom-right" />
         <div class="layout-wrapper" [ngClass]="containerClass()">
             <div app-sidebar></div>
             <div class="layout-content-wrapper">

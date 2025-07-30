@@ -28,8 +28,6 @@ export class AppMenu implements OnInit {
     private phoneService = inject(PhoneService);
     private phonePipe = inject(PhonePipe);
 
-    currentOrgId: string | null = null;
-
     private orgPhoneNumbers = signal<PhoneNumber[]>([]);
 
     menuItems: Signal<any> = computed(() => {
@@ -72,7 +70,6 @@ export class AppMenu implements OnInit {
             const orgId = this.authService.currentOrgId();
 
             if (user && orgId) {
-                this.currentOrgId = orgId;
                 this.phoneService.getOrgPhoneNumbers(orgId).subscribe({
                     next: (phoneNumbers) => {
                         this.orgPhoneNumbers.set(phoneNumbers);
@@ -83,7 +80,6 @@ export class AppMenu implements OnInit {
                     }
                 });
             } else {
-                this.currentOrgId = null;
                 this.orgPhoneNumbers.set([]);
             }
         });

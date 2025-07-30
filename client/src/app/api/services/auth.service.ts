@@ -40,14 +40,14 @@ export class AuthService {
 
     private _debugAuth = false;
 
-    fireUser: WritableSignal<FireUser | null> = signal(null);
-    userSession: WritableSignal<AuthResult | null> = signal(null);
+    fireUser = signal<FireUser | null>(null);
+    userSession = signal<AuthResult | null>(null);
 
-    isLoggedIn: Signal<boolean> = computed(() => this.userSession() != null);
-    isSystemAdmin: Signal<boolean> = computed(() => this.userSession()?.isSystemAdmin === true);
-    currentOrgId: Signal<string | null> = computed(() => this.userSession()?.focusedOrg?.id || null);
-    username: Signal<string | null> = computed(() => this.userSession()?.profile?.name || null);
-    userId: Signal<string | null> = computed(() => this.userSession()?.profile?.uid || null);
+    isLoggedIn = computed<boolean>(() => this.userSession() != null);
+    isSystemAdmin = computed<boolean>(() => this.userSession()?.isSystemAdmin === true);
+    currentOrgId = computed<string | null>(() => this.userSession()?.focusedOrg?.id || null);
+    username = computed<string | null>(() => this.userSession()?.profile?.name || null);
+    userId = computed<string | null>(() => this.userSession()?.profile?.uid || null);
 
     constructor() {
         // Try to restore session from localStorage

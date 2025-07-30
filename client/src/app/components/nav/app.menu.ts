@@ -34,7 +34,7 @@ export class AppMenu implements OnInit {
 
     private orgPhoneNumbers = signal<PhoneNumber[]>([]);
 
-    menuItems: Signal<any> = computed(() => {
+    menuItems = computed<any>(() => {
         const phoneNumbers = this.orgPhoneNumbers();
 
         return [

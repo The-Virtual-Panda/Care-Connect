@@ -278,7 +278,7 @@ export class LayoutService {
             localStorage.setItem(LayoutService.STATE_KEY, JSON.stringify(this.layoutState()));
             localStorage.setItem(LayoutService.CONFIG_KEY, JSON.stringify(this.layoutConfig()));
         } catch (e) {
-            console.error('save state', e);
+            Logger.error('save state', e);
         }
     }
 
@@ -298,7 +298,7 @@ export class LayoutService {
             this.updateBodyBackground(this.layoutConfig().primary);
             this.handleDarkMode();
         } catch (e) {
-            console.error('load storage', e);
+            Logger.error('load storage', e);
         }
     }
 }

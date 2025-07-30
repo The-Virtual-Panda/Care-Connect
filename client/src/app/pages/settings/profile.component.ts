@@ -121,7 +121,7 @@ export class ProfileComponent implements OnInit {
 
         this.userService.uploadProfileImage(this.authService.userId(), file).subscribe({
             next: (url) => this.fetchUserProfile(),
-            error: (e) => console.error('Upload failed', e)
+            error: (e) => Logger.error('Upload failed', e)
         });
     }
 

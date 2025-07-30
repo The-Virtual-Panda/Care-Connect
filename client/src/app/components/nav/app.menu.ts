@@ -2,6 +2,7 @@ import { PhoneNumber } from '@/api/models/phone-number';
 import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
 import { PhonePipe } from '@/pipes/phone.pipe';
+import { Logger } from '@/utils/logger';
 
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Signal, computed, effect, inject, signal } from '@angular/core';
@@ -78,7 +79,7 @@ export class AppMenu implements OnInit {
                         this.orgPhoneNumbers.set(phoneNumbers);
                     },
                     error: (err) => {
-                        console.error('Error fetching organization phone numbers:', err);
+                        Logger.error('Error fetching organization phone numbers:', err);
                         this.orgPhoneNumbers.set([]);
                     }
                 });
@@ -91,7 +92,7 @@ export class AppMenu implements OnInit {
     ngOnInit() {
         const loggedIn = this.authService.isLoggedIn();
         if (!loggedIn) {
-            console.error('Using the app menu without a logged-in user. This is not intended design.');
+            Logger.error('Using the app menu without a logged-in user. This is not intended design.');
         }
     }
 }

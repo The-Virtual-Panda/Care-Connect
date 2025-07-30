@@ -1,3 +1,5 @@
+import { Logger } from '@/utils/logger';
+
 import { Injectable, inject } from '@angular/core';
 
 import { MessageService } from 'primeng/api';
@@ -27,7 +29,7 @@ export class ToastService {
     }
 
     showToast(summary: string, severity: string, detail?: string, life: number = 5000): void {
-        console.log('showToast', severity, summary, detail);
+        Logger.log('showToast', severity, summary, detail);
         this.messageService.add({
             key: this._TOAST_KEY,
             severity: severity,

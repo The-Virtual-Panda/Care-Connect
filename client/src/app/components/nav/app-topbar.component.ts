@@ -97,7 +97,7 @@ export class AppTopbar {
             },
             error: (err) => {
                 this.isLoadingUserOrgs.set(false);
-                console.error('Failed to load organizations:', err);
+                Logger.error('Failed to load organizations:', err);
             }
         });
     }
@@ -120,7 +120,7 @@ export class AppTopbar {
             },
             error: (err) => {
                 this.toastService.showError('Error switching orgs', 'Failed to switch organization. Please try again.');
-                console.error('Failed to switch organization:', err);
+                Logger.error('Failed to switch organization:', err);
             }
         });
     }

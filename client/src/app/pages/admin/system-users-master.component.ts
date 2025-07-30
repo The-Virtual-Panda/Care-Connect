@@ -2,6 +2,7 @@ import { User } from '@/api/models/user';
 import { AdminService } from '@/api/services/admin.service';
 import { AppAvatarComponent } from '@/components/app-avatar.component';
 import { ToastService } from '@/services/toast.service';
+import { Logger } from '@/utils/logger';
 import { Subscription } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
@@ -64,7 +65,7 @@ export class SystemUsersComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
             },
             error: (error) => {
-                console.error('Error loading users:', error);
+                Logger.error('Error loading users:', error);
                 this.toastService.showError('Error', 'Failed to load users. Please try again.');
                 this.isLoading = false;
             }

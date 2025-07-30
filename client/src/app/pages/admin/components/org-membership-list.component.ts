@@ -8,6 +8,7 @@ import { AppInviteStatusBadgeComponent } from '@/components/app-invite-status-ba
 import { AppModal } from '@/components/app-modal.component';
 import { OrgRoleDisplayPipe } from '@/pipes/org-role.pipe';
 import { ToastService } from '@/services/toast.service';
+import { Logger } from '@/utils/logger';
 import { Observable } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
@@ -118,7 +119,7 @@ export class OrgsMembershipListComponent implements OnInit {
                 },
                 error: (err) => {
                     this.toastService.showError('Error', 'Failed to add membership.');
-                    console.error('Error adding membership:', err);
+                    Logger.error('Error adding membership:', err);
                     this.isLoadingModal = false;
                 }
             });

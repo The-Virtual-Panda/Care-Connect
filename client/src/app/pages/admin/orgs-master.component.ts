@@ -1,5 +1,6 @@
 import { AdminService } from '@/api/services/admin.service';
 import { ToastService } from '@/services/toast.service';
+import { Logger } from '@/utils/logger';
 import { Subscription } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
@@ -62,7 +63,7 @@ export class OrgsComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
             },
             error: (error) => {
-                console.error('Error loading organizations:', error);
+                Logger.error('Error loading organizations:', error);
                 this.toastService.showError('Error', 'Failed to load organizations. Please try again.');
                 this.isLoading = false;
             }

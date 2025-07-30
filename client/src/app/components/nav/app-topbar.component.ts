@@ -24,12 +24,6 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { AppAvatarComponent } from '../app-avatar.component';
 import { AppBreadcrumb } from './app.breadcrumb';
 
-interface NotificationsBars {
-    id: string;
-    label: string;
-    badge?: string | any;
-}
-
 @Component({
     selector: '[app-topbar]',
     standalone: true,
@@ -71,10 +65,6 @@ export class AppTopbar {
 
     showRightMenu() {
         this.layoutService.toggleRightMenu();
-    }
-
-    onConfigButtonClick() {
-        this.layoutService.showConfigSidebar();
     }
 
     logout() {

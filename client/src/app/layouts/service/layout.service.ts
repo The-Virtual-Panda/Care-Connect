@@ -16,7 +16,6 @@ export interface layoutConfig {
 interface LayoutState {
     staticMenuDesktopInactive?: boolean;
     overlayMenuActive?: boolean;
-    configSidebarVisible: boolean;
     staticMenuMobileActive?: boolean;
     menuHoverActive?: boolean;
     sidebarActive: boolean;
@@ -50,7 +49,6 @@ export class LayoutService {
         staticMenuDesktopInactive: false,
         overlayMenuActive: false,
         rightMenuVisible: false,
-        configSidebarVisible: false,
         staticMenuMobileActive: false,
         menuHoverActive: false,
         searchBarActive: false,
@@ -207,21 +205,6 @@ export class LayoutService {
         });
     }
 
-    toggleConfigSidebar() {
-        if (this.isSidebarActive()) {
-            this.updateLayoutState({
-                overlayMenuActive: false,
-                overlaySubmenuActive: false,
-                staticMenuMobileActive: false,
-                menuHoverActive: false,
-                configSidebarVisible: false
-            });
-        }
-        this.updateLayoutState({
-            configSidebarVisible: true
-        });
-    }
-
     updateLayoutState(newState: Partial<any>) {
         this.layoutState.update((prev) => ({
             ...prev,
@@ -270,14 +253,6 @@ export class LayoutService {
 
     onOverlaySubmenuOpen() {
         this.overlayOpen.next(null);
-    }
-
-    showConfigSidebar() {
-        this.updateLayoutState({ configSidebarVisible: true });
-    }
-
-    hideConfigSidebar() {
-        this.updateLayoutState({ configSidebarVisible: false });
     }
 
     toggleRightMenu() {

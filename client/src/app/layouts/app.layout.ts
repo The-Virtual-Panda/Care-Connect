@@ -22,16 +22,20 @@ import { AppSidebar } from '../components/nav/app.sidebar';
         <p-toast key="global-toast" position="bottom-right" />
         <div class="layout-wrapper" [ngClass]="containerClass()">
             <div app-sidebar></div>
+
             <div class="layout-content-wrapper">
                 <div class="layout-content-wrapper-inside">
                     <div app-topbar></div>
+
                     <div class="layout-content">
                         <div app-breadcrumb></div>
                         <router-outlet></router-outlet>
                     </div>
+
                     <div app-footer></div>
                 </div>
             </div>
+
             <div app-search></div>
             <div app-rightmenu></div>
             <div class="layout-mask animate-fadein"></div>
@@ -72,11 +76,7 @@ export class AppLayout {
 
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
             this.hideMenu();
-
-            const container = document.querySelector('.layout-content-wrapper');
-            if (container) {
-                (container as HTMLElement).scrollTop = 0;
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 

@@ -6,6 +6,8 @@ import { Notfound } from '@/pages/global/notfound';
 import { canActivate, hasCustomClaim, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { Routes } from '@angular/router';
 
+import { ChangeBlogComponent } from './pages/change-blog/change-blog.component';
+
 const adminOnly = () => hasCustomClaim('systemAdmin');
 
 export const appRoutes: Routes = [
@@ -37,6 +39,11 @@ export const appRoutes: Routes = [
             {
                 path: 'settings',
                 loadChildren: () => import('@/routes/settings.routes').then((m) => m.settingsRoutes)
+            },
+            {
+                path: 'whats-new',
+                component: ChangeBlogComponent,
+                data: { breadcrumb: "What's New" }
             }
         ]
     },

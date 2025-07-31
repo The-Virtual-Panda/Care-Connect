@@ -1,7 +1,7 @@
 import { AuthLayout } from '@/layouts/app.authlayout';
 import { AppLayout } from '@/layouts/app.layout';
 import { Access } from '@/pages/auth/access';
-import { Notfound } from '@/pages/notfound/notfound';
+import { Notfound } from '@/pages/global/notfound';
 
 import { canActivate, hasCustomClaim, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { Routes } from '@angular/router';

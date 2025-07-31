@@ -67,8 +67,8 @@
                         [(ngModel)]="selectedDate"
                         [showButtonBar]="true"
                         appendTo="body"
-                        (onSelect)="onDateChange()"
-                        (onClear)="onDateChange()"
+                        (onSelect)="onDateFilter()"
+                        (onClear)="onDateFilter()"
                         placeholder="Filter by date"
                         dateFormat="mm/dd/yy" />
                     <button
@@ -82,15 +82,15 @@
             <div class="mt-2 flex items-center sm:mt-0">
                 <button
                     pButton
-                    label="Clear Filters"
+                    label="Reset Filters"
                     class="p-button-outlined mr-2"
                     icon="pi pi-filter-slash"
-                    (click)="clear(dt1)"></button>
+                    (click)="resetFilters(dt1)"></button>
                 <p-button
                     type="button"
                     icon="pi pi-refresh"
                     severity="secondary"
-                    (click)="reset()" />
+                    (click)="refresh()" />
             </div>
         </div>
     </ng-template>
@@ -284,6 +284,7 @@
                             [showTime]="true"
                             [stepMinute]="15"
                             hourFormat="12"
+                            [defaultDate]="shiftForm.get('start')?.value"
                             dateFormat="mm/dd/yy"
                             [appendTo]="'body'" />
                         @if (isFieldInvalid('end') && !shiftForm.hasError('endBeforeStart')) {

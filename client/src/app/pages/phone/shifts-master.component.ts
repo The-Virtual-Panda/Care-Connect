@@ -267,7 +267,7 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
     /**
      * Handle date selection change
      */
-    onDateChange(): void {
+    onDateFilter(): void {
         this.reload();
     }
 
@@ -297,12 +297,12 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
         this.reload();
     }
 
-    reset() {
+    refresh() {
         this.selectedShifts = [];
         this.reload();
     }
 
-    clear(table: Table<any>) {
+    resetFilters(table: Table<any>) {
         table.clear();
         this.selectedTimeRange = { label: 'Future Shifts', value: 'future' };
         this.selectedAssignee = null;

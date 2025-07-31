@@ -41,7 +41,7 @@ export const appRoutes: Routes = [
                 loadChildren: () => import('@/routes/settings.routes').then((m) => m.settingsRoutes)
             },
             {
-                path: 'whats-new',
+                path: 'release-notes',
                 component: ChangeBlogComponent
             }
         ]

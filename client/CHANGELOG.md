@@ -16,6 +16,10 @@ Types of changes:
 
 ## [Unreleased]
 
+### Added
+
+- What's new section for changes
+
 ### Changed
 
 - Updated visuals for the phone card - Fixes dark mode themes

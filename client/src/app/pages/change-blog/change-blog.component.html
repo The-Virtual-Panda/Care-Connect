@@ -1,20 +1,45 @@
-<div class="mx-auto flex gap-6 p-4">
+<section class="rounded-t-2xl bg-gradient-to-b from-white to-transparent">
+    <div class="mx-auto max-w-3xl px-4 py-16 text-center">
+        <p class="font-medium text-indigo-600">Stay up to date with what's new</p>
+        <h2 class="mt-2 text-4xl font-extrabold tracking-tight text-gray-900">Release Notes</h2>
+        <p class="mt-4 text-lg text-gray-500">
+            Welcome to our Release Notes! 🎉 Stay tuned for exciting updates, new features, and all the fun changes happening in Care Connect.
+        </p>
+    </div>
+</section>
+
+<div class="mx-auto mt-4 flex gap-6 p-4">
     <!-- Content area -->
-    <div class="flex flex-1 justify-center space-y-8">
+    <div class="flex flex-1 flex-col items-center space-y-8">
         @for (item of posts; track item.slug) {
-            <div class="prose">
+            <div
+                #postSection
+                id="{{ item.slug }}"
+                class="prose">
                 <markdown [data]="item.content" />
             </div>
+            @if (!$last) {
+                <p-divider />
+            }
         }
     </div>
 
     <!-- Sticky sidebar -->
-    <div class="sticky top-4 hidden h-fit w-60 self-start p-4 md:block">
-        <nav class="flex flex-col space-y-1 border-l-2 border-primary p-4">
+    <div class="sticky top-4 hidden h-fit self-start p-4 md:block">
+        <nav class="flex flex-col space-y-1 p-4">
             <ul>
                 @for (item of posts; track item.slug) {
-                    <li>
-                        <a class="py-2 pl-3 text-gray-600 hover:text-gray-800">
+                    <li
+                        class="border-l-2 p-2 pl-4"
+                        [ngClass]="{
+                            'border-surface-300': activeSlug !== item.slug,
+                            'rounded-l border-l-4 border-primary': activeSlug === item.slug
+                        }">
+                        <a
+                            href="javascript:void(0)"
+                            class="text-gray-600 hover:text-gray-800"
+                            [ngClass]="{ 'text-primary': activeSlug === item.slug }"
+                            (click)="scrollTo(item.slug, $event)">
                             {{ item.title }}
                         </a>
                     </li>

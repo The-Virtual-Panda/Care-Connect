@@ -42,8 +42,7 @@ export const appRoutes: Routes = [
             },
             {
                 path: 'whats-new',
-                component: ChangeBlogComponent,
-                data: { breadcrumb: "What's New" }
+                component: ChangeBlogComponent
             }
         ]
     },

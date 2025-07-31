@@ -1,4 +1,4 @@
-import Aura from '@primeng/themes/aura';
+import { provideMarkdown } from 'ngx-markdown';
 
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
@@ -30,6 +30,8 @@ export const appConfig: ApplicationConfig = {
         ),
         provideHttpClient(withFetch()),
         provideAnimationsAsync(),
+
+        provideMarkdown(),
 
         providePrimeNG({
             theme: {

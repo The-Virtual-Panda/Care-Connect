@@ -4,7 +4,7 @@ import PrimeUI from 'tailwindcss-primeui';
 export default {
     darkMode: ['selector', '[class*="app-dark"]'],
     content: ['./index.html', './src/**/*.{html,js,ts}', './public/**/*.json'],
-    plugins: [PrimeUI],
+    plugins: [PrimeUI, require('@tailwindcss/typography')],
     theme: {
         extend: {
             boxShadow: {

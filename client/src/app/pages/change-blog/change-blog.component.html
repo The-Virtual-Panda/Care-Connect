@@ -1,0 +1,38 @@
+<div class="mx-auto flex gap-6 p-4">
+    <!-- Content area -->
+    <div class="flex flex-1 justify-center space-y-8">
+        @for (item of posts; track item.slug) {
+            <div class="prose">
+                <markdown [data]="item.content" />
+            </div>
+        }
+    </div>
+
+    <!-- Sticky sidebar -->
+    <div class="sticky top-4 hidden h-fit w-60 self-start p-4 md:block">
+        <nav class="flex flex-col space-y-1 border-l-2 border-primary p-4">
+            <ul>
+                @for (item of posts; track item.slug) {
+                    <li>
+                        <a class="py-2 pl-3 text-gray-600 hover:text-gray-800">
+                            {{ item.title }}
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+        @if (showBackToTop) {
+            <div class="mt-6">
+                <p-button
+                    [@zoomAnimation]
+                    icon="pi pi-angle-up"
+                    [raised]="true"
+                    [rounded]="true"
+                    size="large"
+                    aria-label="Back to top"
+                    (onClick)="scrollToTop()" />
+            </div>
+        }
+    </div>
+</div>

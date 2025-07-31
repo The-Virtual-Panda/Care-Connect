@@ -16,6 +16,10 @@ Types of changes:
 
 ## [Unreleased]
 
+### Changed
+
+- Updated visuals for the phone card - Fixes dark mode themes
+
 ## [v1.3.1] - 2025-07-30
 
 ### Fixed

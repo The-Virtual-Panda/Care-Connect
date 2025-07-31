@@ -1,20 +1,20 @@
 <p-card class="mx-auto">
-    <h2 class="mb-4 font-semibold text-surface-950 dark:text-surface-0">Phone Details</h2>
+    <h2 class="mb-4 font-semibold text-surface-950 text-muted-color">Phone Details</h2>
     @if (phoneInfo()) {
         <div class="grid grid-cols-2 gap-x-6 gap-y-4">
             <!-- Row 1 -->
             <div>
-                <div class="font-semibold text-gray-700">Label</div>
+                <div class="font-semibold text-gray-700 text-muted-color">Label</div>
                 <div>{{ phoneInfo()?.label || '—' }}</div>
             </div>
 
             <div>
-                <div class="font-semibold text-gray-700">Phone Number</div>
+                <div class="font-semibold text-gray-700 text-muted-color">Phone Number</div>
                 <div>{{ phoneInfo()?.number | phone }}</div>
             </div>
 
             <div>
-                <div class="font-semibold text-gray-700">Fallback Forwarding Number</div>
+                <div class="font-semibold text-gray-700 text-muted-color">Fallback Forwarding Number</div>
                 @if (phoneInfo()?.fallbackForwardingNumber) {
                     <div>{{ phoneInfo()?.fallbackForwardingNumber | phone }}</div>
                 } @else {
@@ -23,17 +23,17 @@
             </div>
 
             <div>
-                <div class="font-semibold text-gray-700">Usage Type</div>
+                <div class="font-semibold text-gray-700 text-muted-color">Usage Type</div>
                 <div>{{ phoneInfo()?.usageType | PhoneUsageType }}</div>
             </div>
 
             <div>
-                <div class="font-semibold text-gray-700">Date Created</div>
+                <div class="font-semibold text-gray-700 text-muted-color">Date Created</div>
                 <div>{{ phoneInfo()?.dateCreated | date: 'medium' }}</div>
             </div>
 
             <div>
-                <div class="font-semibold text-gray-700">Date Modified</div>
+                <div class="font-semibold text-gray-700 text-muted-color">Date Modified</div>
                 <div>{{ phoneInfo()?.dateUpdated | date: 'medium' }}</div>
             </div>
         </div>
@@ -43,6 +43,6 @@
 </p-card>
 
 <div class="my-8">
-    <h2 class="text-1xl mb-4 font-semibold text-surface-950 dark:text-surface-0">Shifts</h2>
+    <h2 class="text-1xl mb-4 font-semibold text-surface-950 text-muted-color">Shifts</h2>
     <cc-shifts-master [phoneId]="phoneId()!" />
 </div>

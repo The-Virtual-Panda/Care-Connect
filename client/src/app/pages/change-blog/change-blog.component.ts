@@ -21,8 +21,8 @@ export class ChangeBlogComponent {
 
     private changeBlogService = inject(ChangeBlogService);
 
-    @HostListener('window:scroll', ['$event'])
-    onWindowScroll(event: Event) {
+    @HostListener('window:scroll')
+    onWindowScroll() {
         this.showBackToTop = window.pageYOffset > 0;
     }
 

@@ -16,6 +16,12 @@ Types of changes:
 
 ## [Unreleased]
 
+## [v1.3.1] - 2025-07-30
+
+### Fixed
+
+- Usability fix for the end date of shift entry to default to selected start date
+
 ## [v1.3.0] - 2025-07-30
 
 ### Added

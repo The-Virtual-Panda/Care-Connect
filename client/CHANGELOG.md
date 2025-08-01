@@ -16,6 +16,8 @@ Types of changes:
 
 ## [Unreleased]
 
+## [v1.4.0] - 2025-07-31
+
 ### Added
 
 - Release Notes pages for tracking changes, located in nav bar

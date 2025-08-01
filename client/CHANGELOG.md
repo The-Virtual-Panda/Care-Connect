@@ -16,7 +16,7 @@ Types of changes:
 
 ## [Unreleased]
 
-## [v1.4.0] - 2025-07-31
+## [v1.4.0] - 2025-08-01
 
 ### Added
 

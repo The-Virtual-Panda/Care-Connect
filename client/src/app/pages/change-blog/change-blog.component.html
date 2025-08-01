@@ -1,12 +1,17 @@
-<section class="rounded-t-2xl bg-gradient-to-b from-white to-transparent">
-    <div class="mx-auto max-w-3xl px-4 py-16 text-center">
-        <p class="font-medium text-indigo-600">Stay up to date with what's new</p>
-        <h2 class="mt-2 text-4xl font-extrabold tracking-tight text-gray-900">Release Notes</h2>
-        <p class="mt-4 text-lg text-gray-500">
-            Welcome to our Release Notes! 🎉 Stay tuned for exciting updates, new features, and all the fun changes happening in Care Connect.
+<section class="rounded-t-2xl bg-gradient-to-b from-surface-0 to-transparent dark:from-surface-900">
+    <div class="mx-auto max-w-3xl px-4 py-8 text-center">
+        <p class="font-medium text-indigo-600 dark:text-indigo-400">Stay up to date with what's new</p>
+        <h2 class="mt-2 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Release Notes</h2>
+        <p class="mt-4 text-lg text-gray-500 dark:text-gray-300">
+            🎉 Stay tuned for exciting updates, new features, and all the quick-paced changes happening in Care Connect. You can opt in or out of notifications
+            for these updates at any time in account settings or just below.
         </p>
     </div>
 </section>
+
+<div class="flex justify-center">
+    <app-change-blog-opt />
+</div>
 
 <div class="mx-auto flex gap-6 p-4">
     <!-- Content area -->
@@ -27,20 +32,18 @@
     <!-- Sticky sidebar -->
     <div class="sticky top-4 hidden h-fit self-start p-4 md:block">
         <nav class="flex flex-col space-y-1 p-4">
-            <ul>
+            <ul class="m-0 hidden list-none flex-col justify-start p-0 lg:flex">
                 @for (item of posts; track item.slug) {
                     <li
-                        class="border-l-2 p-2 pl-4"
+                        class="-ml-[2px] border-l-2 transition-colors hover:border-primary hover:text-primary dark:border-surface-700"
                         [ngClass]="{
-                            'border-surface-300': activeSlug !== item.slug,
-                            'rounded-l border-l-4 border-primary': activeSlug === item.slug
+                            'border-l-3 rounded-l border-primary text-primary dark:border-primary': activeSlug === item.slug,
+                            'border-surface-200 text-surface-700 dark:text-surface-200': activeSlug !== item.slug
                         }">
                         <a
-                            href="javascript:void(0)"
-                            class="text-gray-600 hover:text-gray-800"
-                            [ngClass]="{ 'text-primary': activeSlug === item.slug }"
+                            class="flex cursor-pointer items-center px-4 py-3 font-medium"
                             (click)="scrollTo(item.slug, $event)">
-                            {{ item.title }}
+                            <span>{{ item.title }}</span>
                         </a>
                     </li>
                 }

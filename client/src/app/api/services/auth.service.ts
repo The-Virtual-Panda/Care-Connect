@@ -48,6 +48,7 @@ export class AuthService {
     username = computed<string | null>(() => this.userSession()?.profile?.name || null);
     userId = computed<string | null>(() => this.userSession()?.profile?.uid || null);
     lastReadChangeBlog = computed<string | null>(() => this.userSession()?.profile?.lastChangeBlogRead || null);
+    notifyNewChangeBlogs = computed<boolean>(() => this.userSession()?.profile?.notifyNewChangeBlogs != false);
 
     constructor() {
         // Try to restore session from localStorage

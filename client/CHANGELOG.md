@@ -19,6 +19,7 @@ Types of changes:
 ### Added
 
 - Release Notes pages for tracking changes, located in nav bar
+- New account setting to opt-out of new updates
 
 ### Changed
 

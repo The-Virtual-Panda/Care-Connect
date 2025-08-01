@@ -11,11 +11,12 @@ import { Component, ElementRef, HostListener, QueryList, ViewChildren, inject } 
 import { Button } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 
+import { ChangeBlogOptComponent } from '../settings/change-blog-opt.component';
 import { ZOOM_ANIMATION } from './change-blog.animations';
 
 @Component({
     selector: 'app-change-blog',
-    imports: [MarkdownComponent, Button, DividerModule, CommonModule],
+    imports: [MarkdownComponent, Button, DividerModule, CommonModule, ChangeBlogOptComponent],
     animations: [ZOOM_ANIMATION],
     templateUrl: './change-blog.component.html'
 })

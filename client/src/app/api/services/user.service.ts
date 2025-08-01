@@ -212,4 +212,11 @@ export class UserService {
         const userRef = this.firestoreCollections.users.docRef(userId);
         return from(updateDoc(userRef, { lastChangeBlogRead: slug, dateUpdated: new Date() }));
     }
+
+    public updateChangeBlogNotificationPreference(userId: string | null, notify: boolean): Observable<void> {
+        if (!userId) return of();
+
+        const userRef = this.firestoreCollections.users.docRef(userId);
+        return from(updateDoc(userRef, { notifyNewChangeBlogs: notify, dateUpdated: new Date() }));
+    }
 }

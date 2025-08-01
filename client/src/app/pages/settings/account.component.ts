@@ -14,6 +14,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { TextareaModule } from 'primeng/textarea';
 
+import { ChangeBlogOptComponent } from './change-blog-opt.component';
 import { noWhitespaceValidator } from './profile.component';
 
 @Component({
@@ -36,7 +37,8 @@ import { noWhitespaceValidator } from './profile.component';
         AppAlert,
         MessageModule,
         ButtonModule,
-        DividerModule
+        DividerModule,
+        ChangeBlogOptComponent
     ]
 })
 export class AccountComponent {

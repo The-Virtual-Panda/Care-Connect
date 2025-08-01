@@ -9,6 +9,13 @@ export interface User {
     avatarUrl?: string | null;
     dateAvatarUpdated?: Date | null;
     lastChangeBlogRead?: string;
+
+    /**
+     * Whether the user wants to be notified of new change blogs in the application
+     * This is a user preference that can be toggled in settings.
+     */
+    notifyNewChangeBlogs?: boolean;
+
     dateUpdated: Date;
     dateCreated: Date;
 }
@@ -21,6 +28,7 @@ export interface UserDoc {
     avatarUrl?: string | null;
     dateAvatarUpdated?: Timestamp | null;
     lastChangeBlogRead?: string;
+    notifyNewChangeBlogs?: boolean;
     dateCreated: Timestamp;
     dateUpdated: Timestamp;
 }

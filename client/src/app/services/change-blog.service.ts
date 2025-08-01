@@ -22,8 +22,6 @@ export class ChangeBlogService {
 
     hasUnreadBlogs = computed<boolean>(() => {
         const lastRead = this.authService.lastReadChangeBlog();
-        if (!lastRead) return false;
-
         return lastRead !== environment.lastestBlogSlug;
     });
 

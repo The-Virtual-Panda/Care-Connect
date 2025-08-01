@@ -37,6 +37,8 @@ export class UserService {
             email,
             name: name,
             defaultOrgId: orgId,
+            lastChangeBlogRead: null,
+            notifyNewChangeBlogs: true,
             lastLogin: now,
             dateCreated: now,
             dateUpdated: now

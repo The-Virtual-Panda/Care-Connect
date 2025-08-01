@@ -48,7 +48,7 @@ export class AuthService {
     username = computed<string | null>(() => this.userSession()?.profile?.name || null);
     userId = computed<string | null>(() => this.userSession()?.profile?.uid || null);
     lastReadChangeBlog = computed<string | null>(() => this.userSession()?.profile?.lastChangeBlogRead || null);
-    notifyNewChangeBlogs = computed<boolean>(() => this.userSession()?.profile?.notifyNewChangeBlogs != false);
+    notifyNewChangeBlogs = computed<boolean>(() => this.userSession()?.profile?.notifyNewChangeBlogs !== false);
 
     constructor() {
         // Try to restore session from localStorage
@@ -228,6 +228,7 @@ export class AuthService {
                         if (!orgData) {
                             throw new Error('Organization not found');
                         }
+                        Logger.log('Loaded user profile and organization:', userProfile, orgData);
                         return { userProfile, orgData };
                     })
                 );
@@ -250,7 +251,7 @@ export class AuthService {
 
                 if (this._debugAuth) Logger.log('System admin status:', isSystemAdmin);
 
-                this.storeUserSession(sessionData);
+                this.userSession.set(sessionData);
                 return sessionData;
             }),
             catchError((err) => {
@@ -266,13 +267,12 @@ export class AuthService {
         if (savedSession) {
             const parsedSession = JSON.parse(savedSession);
             this.userSession.set(parsedSession);
-            if (this._debugAuth) Logger.log('Session restored:', this.userSession);
+            if (this._debugAuth) Logger.log('Session restored:', this.userSession());
         }
     }
 
     private storeUserSession(sessionData: AuthResult) {
         localStorage.setItem(AuthService.USER_SESSION_KEY, JSON.stringify(sessionData));
-        this.userSession.set(sessionData);
         if (this._debugAuth) Logger.log('Session stored:', sessionData);
     }
 

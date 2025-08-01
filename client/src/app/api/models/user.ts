@@ -8,13 +8,13 @@ export interface User {
     lastLogin: Date | null;
     avatarUrl?: string | null;
     dateAvatarUpdated?: Date | null;
-    lastChangeBlogRead?: string;
 
     /**
      * Whether the user wants to be notified of new change blogs in the application
      * This is a user preference that can be toggled in settings.
      */
-    notifyNewChangeBlogs?: boolean;
+    notifyNewChangeBlogs: boolean;
+    lastChangeBlogRead: string | null;
 
     dateUpdated: Date;
     dateCreated: Date;
@@ -42,6 +42,8 @@ export function toUser(uid: string, doc: UserDoc): User {
         lastLogin: doc.lastLogin ? doc.lastLogin.toDate() : null,
         avatarUrl: doc.avatarUrl || null,
         dateAvatarUpdated: doc.dateAvatarUpdated ? doc.dateAvatarUpdated.toDate() : null,
+        lastChangeBlogRead: doc.lastChangeBlogRead || null,
+        notifyNewChangeBlogs: doc.notifyNewChangeBlogs !== false,
         dateUpdated: doc.dateUpdated.toDate(),
         dateCreated: doc.dateCreated.toDate()
     };
@@ -55,6 +57,8 @@ export function fromUser(user: User): UserDoc {
         lastLogin: user.lastLogin ? Timestamp.fromDate(user.lastLogin) : null,
         avatarUrl: user.avatarUrl || null,
         dateAvatarUpdated: user.dateAvatarUpdated ? Timestamp.fromDate(user.dateAvatarUpdated) : null,
+        lastChangeBlogRead: user.lastChangeBlogRead || undefined,
+        notifyNewChangeBlogs: user.notifyNewChangeBlogs,
         dateCreated: Timestamp.fromDate(user.dateCreated),
         dateUpdated: Timestamp.fromDate(user.dateUpdated)
     };

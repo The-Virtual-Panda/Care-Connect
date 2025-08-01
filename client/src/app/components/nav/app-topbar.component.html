@@ -47,7 +47,7 @@
                 <li class="right-sidebar-item">
                     <button
                         class="app-config-button"
-                        [class.show-spinner]="this.changeBlogService.hasUnreadBlogs()"
+                        [class.show-spinner]="this.authService.notifyNewChangeBlogs() && this.changeBlogService.hasUnreadBlogs()"
                         pTooltip="Release Notes"
                         tooltipPosition="bottom"
                         routerLink="/release-notes">

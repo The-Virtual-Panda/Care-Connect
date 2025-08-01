@@ -16,6 +16,12 @@ Types of changes:
 
 ## [Unreleased]
 
+## [v1.4.1] - 2025-08-01
+
+### Fixed
+
+- Fixed the detection for opt-out of the change blog
+
 ## [v1.4.0] - 2025-08-01
 
 ### Added

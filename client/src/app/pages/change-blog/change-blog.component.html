@@ -20,7 +20,7 @@
             <div
                 #postSection
                 id="{{ item.slug }}"
-                class="prose">
+                class="prose dark:prose-invert">
                 <markdown [data]="item.content" />
             </div>
             @if (!$last) {

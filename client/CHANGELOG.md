@@ -18,7 +18,7 @@ Types of changes:
 
 ### Added
 
-- What's new section for changes
+- Release Notes pages for tracking changes, located in nav bar
 
 ### Changed
 

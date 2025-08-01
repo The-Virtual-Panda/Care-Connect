@@ -2,6 +2,7 @@ import { OrgMembership } from '@/api/models/org-membership';
 import { Organization } from '@/api/models/organization';
 import { AuthService } from '@/api/services/auth.service';
 import { UserService } from '@/api/services/user.service';
+import { ChangeBlogService } from '@/services/change-blog.service';
 import { LayoutService } from '@/services/layout.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
@@ -21,6 +22,7 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { RippleModule } from 'primeng/ripple';
 import { Select } from 'primeng/select';
 import { StyleClassModule } from 'primeng/styleclass';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { AppAvatarComponent } from '../app-avatar.component';
 import { AppBreadcrumb } from './app.breadcrumb';
@@ -44,11 +46,13 @@ import { AppBreadcrumb } from './app.breadcrumb';
         OverlayBadgeModule,
         AvatarModule,
         Select,
+        TooltipModule,
         AppAvatarComponent
     ]
 })
 export class AppTopbar {
     authService = inject(AuthService);
+    changeBlogService = inject(ChangeBlogService);
     private layoutService = inject(LayoutService);
     private userService = inject(UserService);
     private router = inject(Router);

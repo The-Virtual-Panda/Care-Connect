@@ -1,9 +1,9 @@
 import { Organization } from '@/api/models/organization';
 import { User } from '@/api/models/user';
 import { Logger } from '@/utils/logger';
-import { BehaviorSubject, Observable, catchError, first, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, first, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 
-import { Injectable, Signal, WritableSignal, computed, effect, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import {
     Auth,
     AuthError,
@@ -12,7 +12,6 @@ import {
     createUserWithEmailAndPassword,
     onAuthStateChanged,
     reauthenticateWithCredential,
-    sendPasswordResetEmail,
     signInWithEmailAndPassword,
     updatePassword
 } from '@angular/fire/auth';
@@ -23,9 +22,9 @@ import { UserService } from './user.service';
 
 // Extended user context with more than just Firebase auth user
 export interface AuthResult {
-    profile: User | null;
-    focusedOrg: Organization | null;
-    isSystemAdmin?: boolean | null;
+    profile?: User;
+    focusedOrg?: Organization;
+    isSystemAdmin?: boolean;
 }
 
 @Injectable({
@@ -48,6 +47,7 @@ export class AuthService {
     currentOrgId = computed<string | null>(() => this.userSession()?.focusedOrg?.id || null);
     username = computed<string | null>(() => this.userSession()?.profile?.name || null);
     userId = computed<string | null>(() => this.userSession()?.profile?.uid || null);
+    lastReadChangeBlog = computed<string | null>(() => this.userSession()?.profile?.lastChangeBlogRead || null);
 
     constructor() {
         // Try to restore session from localStorage

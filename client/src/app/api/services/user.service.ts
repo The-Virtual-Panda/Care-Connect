@@ -205,4 +205,11 @@ export class UserService {
         const i = name.lastIndexOf('.');
         return i >= 0 ? name.substring(i + 1) : 'jpg';
     }
+
+    public markLatestChangeBlogRead(userId: string | null, slug: string): Observable<void> {
+        if (!userId || !slug) return of();
+
+        const userRef = this.firestoreCollections.users.docRef(userId);
+        return from(updateDoc(userRef, { lastChangeBlogRead: slug, dateUpdated: new Date() }));
+    }
 }

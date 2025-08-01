@@ -44,6 +44,16 @@
                         </div>
                     </li>
                 }
+                <li class="right-sidebar-item">
+                    <button
+                        class="app-config-button"
+                        [class.show-spinner]="this.changeBlogService.hasUnreadBlogs()"
+                        pTooltip="Release Notes"
+                        tooltipPosition="bottom"
+                        routerLink="/release-notes">
+                        <i class="pi pi-bell"></i>
+                    </button>
+                </li>
                 <li class="right-sidebar-item profile-item static sm:relative">
                     <a
                         class="relative z-50"

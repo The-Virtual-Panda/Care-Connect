@@ -8,6 +8,7 @@ export interface User {
     lastLogin: Date | null;
     avatarUrl?: string | null;
     dateAvatarUpdated?: Date | null;
+    lastChangeBlogRead?: string;
     dateUpdated: Date;
     dateCreated: Date;
 }
@@ -19,6 +20,7 @@ export interface UserDoc {
     lastLogin: Timestamp | null;
     avatarUrl?: string | null;
     dateAvatarUpdated?: Timestamp | null;
+    lastChangeBlogRead?: string;
     dateCreated: Timestamp;
     dateUpdated: Timestamp;
 }

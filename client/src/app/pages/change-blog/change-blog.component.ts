@@ -1,6 +1,9 @@
+import { AuthService } from '@/api/services/auth.service';
+import { UserService } from '@/api/services/user.service';
 import { ChangeBlogService, Post } from '@/services/change-blog.service';
 import { Logger } from '@/utils/logger';
 import { MarkdownComponent } from 'ngx-markdown';
+import { environment } from 'src/environments/environment';
 
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, QueryList, ViewChildren, inject } from '@angular/core';
@@ -18,6 +21,8 @@ import { ZOOM_ANIMATION } from './change-blog.animations';
 })
 export class ChangeBlogComponent {
     private changeBlogService = inject(ChangeBlogService);
+    private userService = inject(UserService);
+    private authService = inject(AuthService);
 
     @ViewChildren('postSection') sections!: QueryList<ElementRef>;
 
@@ -50,6 +55,27 @@ export class ChangeBlogComponent {
                     (post as any).content = md;
                 });
             });
+        });
+
+        const userId = this.authService.userId();
+        this.userService.markLatestChangeBlogRead(userId, environment.lastestBlogSlug).subscribe({
+            next: () => {
+                const session = this.authService.userSession();
+
+                if (!session || !session.profile) return;
+
+                const updatedProfile = {
+                    ...session.profile,
+                    lastChangeBlogRead: environment.lastestBlogSlug
+                };
+
+                this.authService.userSession.update((state) => ({
+                    ...state,
+                    profile: updatedProfile
+                }));
+                Logger.log('Marked latest change blog as read');
+            },
+            error: (err) => Logger.error('Error marking change blog as read', err)
         });
     }
 

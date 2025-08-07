@@ -1,7 +1,8 @@
 {
     "projects": {
         "prod": "care-connect-2f651",
-        "dev": "dev-care-connect"
+        "dev": "dev-care-connect",
+        "local": "demo-care-connect"
     },
     "targets": {
         "care-connect-2f651": {
@@ -21,6 +22,16 @@
                 ],
                 "marketing": [
                     "dev-care-connect"
+                ]
+            }
+        },
+        "demo-care-connect": {
+            "hosting": {
+                "client": [
+                    "demo-care-connect-client"
+                ],
+                "marketing": [
+                    "demo-care-connect"
                 ]
             }
         }

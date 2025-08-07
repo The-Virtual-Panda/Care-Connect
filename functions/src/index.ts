@@ -5,7 +5,7 @@ dotenv.config({ path: './.env' });
 // ! Uncomment for debugging
 // console.log(process.env);
 
-export * from './twillio-functions';
+export * from './api/twillio';
 export * from './local/retrieval-tests';
 export * from './local/twilio-testing';
 export * from './local/grant-role';

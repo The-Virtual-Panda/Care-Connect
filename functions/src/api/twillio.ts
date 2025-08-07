@@ -1,8 +1,8 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
 
-import { FirestoreService } from './services/firestore-service';
-import { TwilioService } from './services/twilio-service';
+import { FirestoreService } from '../services/firestore-service';
+import { TwilioService } from '../services/twilio-service';
 
 export const handleCall = onRequest(async (request, response) => {
     try {

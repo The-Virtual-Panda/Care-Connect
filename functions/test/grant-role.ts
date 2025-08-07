@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-dotenv.config({ path: './.env.local' });
+dotenv.config({ path: './.env.prod' });
 
 import { auth } from '../src/firebase-config';
 import * as readline from 'readline';

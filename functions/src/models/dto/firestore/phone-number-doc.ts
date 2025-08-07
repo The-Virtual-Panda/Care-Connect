@@ -1,7 +1,13 @@
-import { DocumentReference, FirestoreDataConverter, QueryDocumentSnapshot, Timestamp, WithFieldValue } from "firebase-admin/firestore";
-import { fireDb } from "../../../firebase-config";
-import { PhoneNumber } from "../../domain/phone-number";
-import { FirestoreCollections } from "../../../services/firestore-service";
+import {
+    DocumentReference,
+    FirestoreDataConverter,
+    QueryDocumentSnapshot,
+    Timestamp,
+    WithFieldValue,
+} from 'firebase-admin/firestore';
+import { PhoneNumber } from '../../domain/phone-number';
+import { FirestoreCollections } from '../../../services/firestore-service';
+import { fireDb } from '../../../configs';
 
 export interface PhoneNumberDoc {
     number: string;
@@ -18,13 +24,21 @@ export interface PhoneNumberDoc {
 /**
  * Convert Domain → Firestore
  */
-export function toPhoneNumberDoc(p: WithFieldValue<PhoneNumber>): PhoneNumberDoc {
-    const orgRef = fireDb.collection(FirestoreCollections.organizations.root).doc(p.orgId as string) as DocumentReference;
+export function toPhoneNumberDoc(
+    p: WithFieldValue<PhoneNumber>
+): PhoneNumberDoc {
+    const orgRef = fireDb
+        .collection(FirestoreCollections.organizations.root)
+        .doc(p.orgId as string) as DocumentReference;
 
     return {
         number: p.number as string,
-        fallbackForwardingNumber: p.fallbackForwardingNumber as string | undefined,
-        useFallbackForwardingNumber: p.useFallbackForwardingNumber as boolean | undefined,
+        fallbackForwardingNumber: p.fallbackForwardingNumber as
+            | string
+            | undefined,
+        useFallbackForwardingNumber: p.useFallbackForwardingNumber as
+            | boolean
+            | undefined,
         label: p.label as string | undefined,
         orgId: p.orgId as string,
         orgRef,
@@ -37,7 +51,10 @@ export function toPhoneNumberDoc(p: WithFieldValue<PhoneNumber>): PhoneNumberDoc
 /**
  * Convert Firestore → Domain
  */
-export function fromPhoneNumberDoc(doc: PhoneNumberDoc, id: string): PhoneNumber {
+export function fromPhoneNumberDoc(
+    doc: PhoneNumberDoc,
+    id: string
+): PhoneNumber {
     return {
         id,
         number: doc.number,

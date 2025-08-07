@@ -1,25 +1,28 @@
-import { logger } from "firebase-functions";
-import { fireDb } from "../firebase-config";
-import { organizationConverter } from "../models/dto/firestore/organization-doc";
-import { phoneNumberConverter } from "../models/dto/firestore/phone-number-doc";
-import { Organization, OrganizationWithTeamMembers } from "../models/domain/organization";
-import { PhoneNumber } from "../models/domain/phone-number";
-import { teamMemberConverter } from "../models/dto/firestore/team-member-doc";
-import { TeamMember } from "../models/domain/team-member";
-import { ScheduledRule } from "../models/domain/scheduled-rule";
-import { scheduledRuleConverter } from "../models/dto/firestore/scheduled-rule-doc";
-import { Shift } from "../models/domain/shift";
-import { shiftConverter } from "../models/dto/firestore/shift-doc";
+import { logger } from 'firebase-functions';
+import { organizationConverter } from '../models/dto/firestore/organization-doc';
+import { phoneNumberConverter } from '../models/dto/firestore/phone-number-doc';
+import {
+    Organization,
+    OrganizationWithTeamMembers,
+} from '../models/domain/organization';
+import { PhoneNumber } from '../models/domain/phone-number';
+import { teamMemberConverter } from '../models/dto/firestore/team-member-doc';
+import { TeamMember } from '../models/domain/team-member';
+import { ScheduledRule } from '../models/domain/scheduled-rule';
+import { scheduledRuleConverter } from '../models/dto/firestore/scheduled-rule-doc';
+import { Shift } from '../models/domain/shift';
+import { shiftConverter } from '../models/dto/firestore/shift-doc';
+import { fireDb } from '../configs';
 
 export const FirestoreCollections = {
     organizations: {
-        root: "organizations",
-        teamMembers: "teamMembers",
+        root: 'organizations',
+        teamMembers: 'teamMembers',
     },
     phoneNumbers: {
-        root: "phoneNumbers",
-        scheduledRules: "scheduledRules",
-        shifts: "shifts",
+        root: 'phoneNumbers',
+        scheduledRules: 'scheduledRules',
+        shifts: 'shifts',
     },
 };
 
@@ -28,8 +31,11 @@ export class FirestoreService {
      * Fetch a single organization and its team members by organization ID.
      * Returns the organization with its team members, or null if not found.
      */
-    async getOrganizationWithTeamMembersById(organizationId: string): Promise<OrganizationWithTeamMembers | null> {
-        const orgRef = fireDb.collection(FirestoreCollections.organizations.root)
+    async getOrganizationWithTeamMembersById(
+        organizationId: string
+    ): Promise<OrganizationWithTeamMembers | null> {
+        const orgRef = fireDb
+            .collection(FirestoreCollections.organizations.root)
             .doc(organizationId)
             .withConverter(organizationConverter);
 
@@ -38,41 +44,51 @@ export class FirestoreService {
 
         const orgData = orgDoc.data();
         if (!orgData) {
-            logger.error(`Organization data not found for ID: ${organizationId}`);
+            logger.error(
+                `Organization data not found for ID: ${organizationId}`
+            );
             return null;
         }
 
-        const teamMembers: TeamMember[] = await this.getTeamMembersForOrganization(organizationId);
+        const teamMembers: TeamMember[] =
+            await this.getTeamMembersForOrganization(organizationId);
 
         // Return the organization data along with its team members
         const fullOrg: OrganizationWithTeamMembers = {
             ...orgData,
             id: orgDoc.id,
-            teamMembers
-        }
+            teamMembers,
+        };
 
         return fullOrg;
     }
 
     async getOrganizations(): Promise<Organization[]> {
-        const orgsSnap = await fireDb.collection(FirestoreCollections.organizations.root)
-            .withConverter(organizationConverter).get();
+        const orgsSnap = await fireDb
+            .collection(FirestoreCollections.organizations.root)
+            .withConverter(organizationConverter)
+            .get();
 
-        const organizations: Organization[] = orgsSnap.docs.map(doc => ({
-            ...doc.data()
+        const organizations: Organization[] = orgsSnap.docs.map((doc) => ({
+            ...doc.data(),
         }));
 
         return organizations;
     }
 
-    async findOrgByTwilioAccountSid(accountSid: string): Promise<Organization | null> {
-        const orgsSnap = await fireDb.collection(FirestoreCollections.organizations.root)
+    async findOrgByTwilioAccountSid(
+        accountSid: string
+    ): Promise<Organization | null> {
+        const orgsSnap = await fireDb
+            .collection(FirestoreCollections.organizations.root)
             .withConverter(organizationConverter)
-            .where("twilioAccountSid", "==", accountSid)
+            .where('twilioAccountSid', '==', accountSid)
             .get();
 
         if (orgsSnap.empty) {
-            logger.warn(`No organization found for Twilio Account SID: ${accountSid}`);
+            logger.warn(
+                `No organization found for Twilio Account SID: ${accountSid}`
+            );
             return null;
         }
 
@@ -85,11 +101,15 @@ export class FirestoreService {
      * Returns an array of objects with the phone number (document ID) and its data.
      */
     async getAllPhoneNumbers(): Promise<PhoneNumber[]> {
-        const phoneNumbersSnap = await fireDb.collection(FirestoreCollections.phoneNumbers.root)
-            .withConverter(phoneNumberConverter).get();
-        const phoneNumbers: PhoneNumber[] = phoneNumbersSnap.docs.map(doc => ({
-            ...doc.data(),
-        }));
+        const phoneNumbersSnap = await fireDb
+            .collection(FirestoreCollections.phoneNumbers.root)
+            .withConverter(phoneNumberConverter)
+            .get();
+        const phoneNumbers: PhoneNumber[] = phoneNumbersSnap.docs.map(
+            (doc) => ({
+                ...doc.data(),
+            })
+        );
         return phoneNumbers;
     }
 
@@ -98,7 +118,8 @@ export class FirestoreService {
      * Returns the phone number document data, or null if not found.
      */
     async getPhoneNumber(phoneNumberId: string): Promise<PhoneNumber | null> {
-        const phoneDoc = await fireDb.collection(FirestoreCollections.phoneNumbers.root)
+        const phoneDoc = await fireDb
+            .collection(FirestoreCollections.phoneNumbers.root)
             .withConverter(phoneNumberConverter)
             .doc(phoneNumberId)
             .get();
@@ -115,7 +136,9 @@ export class FirestoreService {
      * Fetch all scheduled rules for a specific phone number by its ID.
      * Returns an array of rule documents, or an empty array if none found.
      */
-    async getScheduledRulesForPhoneNumber(phoneNumberId: string): Promise<ScheduledRule[] | null> {
+    async getScheduledRulesForPhoneNumber(
+        phoneNumberId: string
+    ): Promise<ScheduledRule[] | null> {
         const rulesSnap = await fireDb
             .collection(FirestoreCollections.phoneNumbers.root)
             .doc(phoneNumberId)
@@ -124,11 +147,13 @@ export class FirestoreService {
             .get();
 
         if (rulesSnap.empty) {
-            logger.warn(`No scheduled rules found for phone number: ${phoneNumberId}`);
+            logger.warn(
+                `No scheduled rules found for phone number: ${phoneNumberId}`
+            );
             return null;
         }
 
-        return rulesSnap.docs.map(doc => ({
+        return rulesSnap.docs.map((doc) => ({
             ...doc.data(),
         }));
     }
@@ -137,7 +162,9 @@ export class FirestoreService {
      * Fetch all shifts for a specific phone number by its ID.
      * Returns an array of Shift objects, or an empty array if none found.
      */
-    async getShiftsForPhoneNumber(phoneNumberId: string): Promise<Shift[] | null> {
+    async getShiftsForPhoneNumber(
+        phoneNumberId: string
+    ): Promise<Shift[] | null> {
         const shiftsSnap = await fireDb
             .collection(FirestoreCollections.phoneNumbers.root)
             .doc(phoneNumberId)
@@ -150,7 +177,7 @@ export class FirestoreService {
             return null;
         }
 
-        return shiftsSnap.docs.map(doc => ({
+        return shiftsSnap.docs.map((doc) => ({
             ...doc.data(),
         }));
     }
@@ -159,14 +186,19 @@ export class FirestoreService {
      * Fetch a specific organization document by its ID.
      * Returns the organization document data, or null if not found.
      */
-    async getOrganizationById(organizationId: string): Promise<Organization | null> {
-        const orgDoc = await fireDb.collection(FirestoreCollections.organizations.root)
+    async getOrganizationById(
+        organizationId: string
+    ): Promise<Organization | null> {
+        const orgDoc = await fireDb
+            .collection(FirestoreCollections.organizations.root)
             .withConverter(organizationConverter)
             .doc(organizationId)
             .get();
 
         if (!orgDoc.exists) {
-            logger.warn(`No organization document found for: ${organizationId}`);
+            logger.warn(
+                `No organization document found for: ${organizationId}`
+            );
             return null;
         }
 
@@ -177,7 +209,9 @@ export class FirestoreService {
      * Fetch all team members for a specific organization by organization ID.
      * Returns an array of TeamMember objects, or an empty array if none found.
      */
-    async getTeamMembersForOrganization(organizationId: string): Promise<TeamMember[]> {
+    async getTeamMembersForOrganization(
+        organizationId: string
+    ): Promise<TeamMember[]> {
         const teamMembersSnap = await fireDb
             .collection(FirestoreCollections.organizations.root)
             .doc(organizationId)
@@ -185,15 +219,19 @@ export class FirestoreService {
             .withConverter(teamMemberConverter)
             .get();
 
-        return teamMembersSnap.docs.map(doc => doc.data());
+        return teamMembersSnap.docs.map((doc) => doc.data());
     }
 
     /**
      * Fetch a specific team member by their ID.
      * Returns the TeamMember document data, or null if not found.
      */
-    async getTeamMemberById(organizationId: string, teamMemberId: string): Promise<TeamMember | null> {
-        const teamMemberDoc = await fireDb.collection(FirestoreCollections.organizations.root)
+    async getTeamMemberById(
+        organizationId: string,
+        teamMemberId: string
+    ): Promise<TeamMember | null> {
+        const teamMemberDoc = await fireDb
+            .collection(FirestoreCollections.organizations.root)
             .doc(organizationId)
             .collection(FirestoreCollections.organizations.teamMembers)
             .withConverter(teamMemberConverter)
@@ -213,9 +251,13 @@ export class FirestoreService {
      * The phoneNumbers collection contains docs with a reference to the organization.
      * Returns the organization with its team members, or null if not found.
      */
-    async getOrganizationByPhoneNumber(phoneNumber: string): Promise<Organization | null> {
+    async getOrganizationByPhoneNumber(
+        phoneNumber: string
+    ): Promise<Organization | null> {
         // Normalize phone number: remove leading '+' if present
-        logger.info(`Looking up an organization tied to phone number: ${phoneNumber}`);
+        logger.info(
+            `Looking up an organization tied to phone number: ${phoneNumber}`
+        );
 
         const number = await this.getPhoneNumber(phoneNumber);
         if (!number) {
@@ -236,7 +278,10 @@ export class FirestoreService {
      * Inserts a single shift into the shifts sub-collection for a given phone number.
      * Returns the created Shift document's ID.
      */
-    async addShiftToPhoneNumber(phoneNumberId: string, shift: Shift): Promise<string> {
+    async addShiftToPhoneNumber(
+        phoneNumberId: string,
+        shift: Shift
+    ): Promise<string> {
         const shiftsRef = fireDb
             .collection(FirestoreCollections.phoneNumbers.root)
             .doc(phoneNumberId)
@@ -244,8 +289,9 @@ export class FirestoreService {
             .withConverter(shiftConverter);
 
         const docRef = await shiftsRef.add(shift);
-        logger.info(`Added shift ${docRef.id} to phone number ${phoneNumberId}`);
+        logger.info(
+            `Added shift ${docRef.id} to phone number ${phoneNumberId}`
+        );
         return docRef.id;
     }
 }
-

@@ -1,4 +1,4 @@
-import { auth } from '../firebase-config';
+import { auth } from '../configs';
 import { localOnRequest } from './local-on-request';
 import { logger } from 'firebase-functions';
 

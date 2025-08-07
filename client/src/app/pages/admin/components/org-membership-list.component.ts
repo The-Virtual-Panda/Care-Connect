@@ -104,7 +104,7 @@ export class OrgsMembershipListComponent implements OnInit {
 
         if (this.userId && this.selectedOrg) {
             // Add selected organization to user
-            submissionObservable = this.adminService.addUserToOrg(this.userId, this.selectedOrg.id, OrgRole.Admin);
+            submissionObservable = this.adminService.addUserToOrg(this.userId, this.selectedOrg.id!, OrgRole.Admin);
         } else if (this.orgId && this.selectedUser) {
             // Add selected user to organization
             submissionObservable = this.adminService.addUserToOrg(this.selectedUser.uid, this.orgId, OrgRole.Admin);

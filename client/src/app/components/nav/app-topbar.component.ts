@@ -112,7 +112,7 @@ export class AppTopbar {
         }
 
         Logger.log('Switching organization to:', org.name, org.id);
-        this.userService.changeDefaultOrg(this.authService.userId(), org.id).subscribe({
+        this.userService.changeDefaultOrg(this.authService.userId(), org.id!).subscribe({
             next: () => {
                 this.authService.userSession.update((state) => ({
                     ...state!,

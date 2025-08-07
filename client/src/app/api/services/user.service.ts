@@ -48,9 +48,7 @@ export class UserService {
             id: orgId,
             name: orgName,
             dateCreated: now,
-            dateUpdated: now,
-            twilioAccountSid: null,
-            twilioAuthToken: null
+            dateUpdated: now
         };
 
         // Create membership object using the model interface
@@ -110,8 +108,7 @@ export class UserService {
                         snapshot.forEach((doc) => {
                             const org = doc.data();
 
-                            const membership = membershipMap.get(org.id);
-
+                            const membership = membershipMap.get(org.id!);
                             if (membership) {
                                 orgs.push({
                                     ...org,

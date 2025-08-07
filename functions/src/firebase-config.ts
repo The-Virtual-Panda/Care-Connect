@@ -38,7 +38,7 @@ export const fireDb = getFirestore();
 export const auth = getAuth();
 
 // Connect to Firestore emulator if USE_EMULATOR is true and FIRESTORE_EMULATOR_HOST is set
-if (useEmulator && process.env.FIRESTORE_EMULATOR_HOST) {
+if (useEmulator && process.env.FIRESTORE_EMULATOR_HOST && !targetProdOverride) {
     logger.info(
         'Connecting to Firestore emulators at:',
         process.env.FIRESTORE_EMULATOR_HOST

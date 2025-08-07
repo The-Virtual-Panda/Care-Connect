@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
-dotenv.config({ path: './.env.prod' });
+dotenv.config({ path: './.env.override' });
 
-import { auth } from '../src/firebase-config';
 import * as readline from 'readline';
+import { auth } from '../src/configs';
 
 /**
  * Creates an interface for reading input from the command line

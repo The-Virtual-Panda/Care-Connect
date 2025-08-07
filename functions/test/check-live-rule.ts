@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-dotenv.config({ path: './.env.local-prod' });
+dotenv.config({ path: './.env.override' });
 
 import { FirestoreService } from '../src/services/firestore-service';
 import { DateTime } from 'luxon';

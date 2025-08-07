@@ -1,12 +1,15 @@
 import { PhoneNumber } from '@/api/models/phone-number';
 import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
+import { StripeService } from '@/api/services/stripe.service';
 import { PhonePipe } from '@/pipes/phone.pipe';
 import { Logger } from '@/utils/logger';
 
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, Signal, computed, effect, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
+
+import { MenuItem } from 'primeng/api';
 
 import { AppMenuitem } from './app.menuitem';
 
@@ -30,11 +33,12 @@ import { AppMenuitem } from './app.menuitem';
 export class AppMenu implements OnInit {
     private authService = inject(AuthService);
     private phoneService = inject(PhoneService);
+    private stripeService = inject(StripeService);
     private phonePipe = inject(PhonePipe);
 
     private orgPhoneNumbers = signal<PhoneNumber[]>([]);
 
-    menuItems = computed<any>(() => {
+    menuItems = computed<MenuItem[]>(() => {
         const phoneNumbers = this.orgPhoneNumbers();
 
         return [
@@ -52,6 +56,13 @@ export class AppMenu implements OnInit {
                         label: 'Recipients',
                         icon: 'pi pi-users',
                         routerLink: 'recipients'
+                    },
+                    {
+                        label: 'Billing Portal',
+                        icon: 'pi pi-credit-card',
+                        command: () => {
+                            this.stripeService.navigateToBillingPortal();
+                        }
                     }
                 ]
             },

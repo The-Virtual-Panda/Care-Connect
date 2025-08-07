@@ -1,4 +1,4 @@
-import { TeamMember } from "./team-member";
+import { TeamMember } from './team-member';
 
 /** An organization (your customer) in pure domain terms */
 export interface Organization {
@@ -6,6 +6,7 @@ export interface Organization {
     name: string;
     dateCreated: Date;
     dateUpdated: Date;
+    stripeCustomerId?: string;
     twilioAccountSid?: string;
     twilioAuthToken?: string;
 }

@@ -1,13 +1,13 @@
-import { firstValueFrom } from 'rxjs';
+import { AuthService } from '@/api/services/auth.service';
+import { AuthResult } from '@/api/services/auth.service';
+import { AppAlert } from '@/components/app-alert.component';
+import { OrgContextService } from '@/services/org-context.service';
+import { Logger } from '@/utils/logger';
 
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-
-import { AuthService } from '@/api/services/auth.service';
-import { AppAlert } from '@/components/app-alert.component';
-import { Logger } from '@/utils/logger';
 
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -22,6 +22,7 @@ import { InputTextModule } from 'primeng/inputtext';
 export class Login {
     private authService = inject(AuthService);
     private router = inject(Router);
+    private orgContextService = inject(OrgContextService);
 
     @ViewChild(AppAlert) alert!: AppAlert;
 
@@ -37,8 +38,17 @@ export class Login {
         }
 
         this.authService.login(this.email, this.password).subscribe({
-            next: () => {
-                this.router.navigateByUrl('/');
+            next: (authResult: AuthResult) => {
+                const defaultOrgId = authResult.profile?.defaultOrgId;
+
+                if (!defaultOrgId) {
+                    // TODO: Need to navigate to the no-org onboarding page
+                    this.alert.showError('No default organization found.', 'Login Error');
+                    this.router.navigateByUrl('/');
+                    return;
+                }
+
+                this.orgContextService.switch(defaultOrgId);
             },
             error: (error: Error) => {
                 // Use the AppAlert component to show the error

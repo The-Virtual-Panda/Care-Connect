@@ -4,6 +4,7 @@ import { OrgRolesMasterComponent } from '@/pages/org/roles/roles-master.componen
 import { Routes } from '@angular/router';
 
 export const orgRoutes: Routes = [
+    { path: '', pathMatch: 'full', redirectTo: 'recipients' },
     {
         path: 'recipients',
         component: OrgRecipientsMasterComponent,
@@ -13,5 +14,10 @@ export const orgRoutes: Routes = [
         path: 'roles',
         component: OrgRolesMasterComponent,
         data: { breadcrumb: 'Roles & Permissions' }
+    },
+    {
+        path: 'phone',
+        loadChildren: () => import('@/routes/phone.routes').then((m) => m.phoneRoutes),
+        data: { breadcrumb: 'Phone' }
     }
 ];

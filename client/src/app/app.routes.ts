@@ -3,12 +3,34 @@ import { AppLayout } from '@/layouts/app.layout';
 import { Access } from '@/pages/auth/access';
 import { Notfound } from '@/pages/global/notfound';
 
+import { Injectable, inject } from '@angular/core';
 import { canActivate, hasCustomClaim, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
-import { Routes } from '@angular/router';
+import { CanActivate, Router, Routes, UrlTree } from '@angular/router';
 
 import { ChangeBlogComponent } from './pages/change-blog/change-blog.component';
+import { OrgContextService } from './services/org-context.service';
+import { Logger } from './utils/logger';
 
 const adminOnly = () => hasCustomClaim('systemAdmin');
+
+@Injectable({ providedIn: 'root' })
+class OrgRedirectGuard implements CanActivate {
+    private router = inject(Router);
+    private orgContextService = inject(OrgContextService);
+
+    async canActivate(): Promise<boolean | UrlTree> {
+        const defaultOrgId = await this.orgContextService.navOrgId();
+
+        // Route to a saved navigation
+        if (!defaultOrgId) {
+            // TODO: Query the default organization for the user, and if still empty, no-orgs!
+            Logger.log('No default organization found for user');
+            return this.router.createUrlTree(['/no-org']);
+        }
+
+        return this.router.createUrlTree(['/organization', defaultOrgId]);
+    }
+}
 
 export const appRoutes: Routes = [
     {
@@ -18,18 +40,14 @@ export const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: '/organization/recipients',
+                redirectTo: '/organization',
                 pathMatch: 'full'
             },
+            // Hit /organization → bounce to user's default org
+            { path: 'organization', canActivate: [OrgRedirectGuard], pathMatch: 'full', children: [] },
             {
-                path: 'organization',
-                loadChildren: () => import('@/routes/org.routes').then((m) => m.orgRoutes),
-                data: { breadcrumb: 'Organization' }
-            },
-            {
-                path: 'phone-numbers',
-                loadChildren: () => import('@/routes/phone.routes').then((m) => m.phoneRoutes),
-                data: { breadcrumb: 'Phone' }
+                path: 'organization/:orgId',
+                loadChildren: () => import('@/routes/org.routes').then((m) => m.orgRoutes)
             },
             {
                 path: 'admin',

@@ -4,6 +4,7 @@ import { PhoneService } from '@/api/services/phone.service';
 import { StripeService } from '@/api/services/stripe.service';
 import { PhonePipe } from '@/pipes/phone.pipe';
 import { AppLoadingService } from '@/services/app-loading.service';
+import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 
@@ -39,6 +40,7 @@ export class AppMenu implements OnInit {
     private loadingService = inject(AppLoadingService);
     private toastService = inject(ToastService);
     private phonePipe = inject(PhonePipe);
+    private orgContextService = inject(OrgContextService);
 
     private orgPhoneNumbers = signal<PhoneNumber[]>([]);
 
@@ -74,12 +76,12 @@ export class AppMenu implements OnInit {
                     {
                         label: 'Roles & Permissions',
                         icon: 'pi pi-sitemap',
-                        routerLink: '/organization/roles'
+                        routerLink: this.orgContextService.link(['roles'])
                     },
                     {
                         label: 'Recipients',
                         icon: 'pi pi-users',
-                        routerLink: '/organization/recipients'
+                        routerLink: this.orgContextService.link(['recipients'])
                     }
                 ]
             },
@@ -90,8 +92,8 @@ export class AppMenu implements OnInit {
                 visible: phoneNumbers.length > 0,
                 items: phoneNumbers.map((phone) => ({
                     label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
-                    routerLink: ['/phone-numbers', phone.id, 'config'],
-                    icon: 'pi pi-mobile'
+                    icon: 'pi pi-mobile',
+                    routerLink: this.orgContextService.link(['phone', phone.id, 'call-flow'])
                 }))
             },
             { separator: true, visible: this.authService.isSystemAdmin() },

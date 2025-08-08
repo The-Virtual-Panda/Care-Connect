@@ -13,6 +13,7 @@ import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScroll
 
 import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
+import { DialogService } from 'primeng/dynamicdialog';
 
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
@@ -20,6 +21,7 @@ import { appRoutes } from './app.routes';
 export const appConfig: ApplicationConfig = {
     providers: [
         MessageService,
+        DialogService,
 
         provideRouter(
             appRoutes,

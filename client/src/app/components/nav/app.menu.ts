@@ -3,6 +3,8 @@ import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
 import { StripeService } from '@/api/services/stripe.service';
 import { PhonePipe } from '@/pipes/phone.pipe';
+import { AppLoadingService } from '@/services/app-loading.service';
+import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 
 import { CommonModule } from '@angular/common';
@@ -34,6 +36,8 @@ export class AppMenu implements OnInit {
     private authService = inject(AuthService);
     private phoneService = inject(PhoneService);
     private stripeService = inject(StripeService);
+    private loadingService = inject(AppLoadingService);
+    private toastService = inject(ToastService);
     private phonePipe = inject(PhonePipe);
 
     private orgPhoneNumbers = signal<PhoneNumber[]>([]);
@@ -53,10 +57,18 @@ export class AppMenu implements OnInit {
                 icon: 'pi pi-building',
                 items: [
                     {
-                        label: 'Billing Portal',
+                        label: 'Stripe Billing Portal',
                         icon: 'pi pi-credit-card',
                         command: () => {
-                            this.stripeService.navigateToBillingPortal();
+                            this.loadingService.showBlockingLoader('Redirecting to Stripe...');
+                            this.stripeService.getBillingPortalUrl().subscribe({
+                                next: (url) => (window.location.href = url),
+                                error: (err) => {
+                                    Logger.error('Error creating redirect url:', err);
+                                    this.loadingService.hideBlockingLoader();
+                                    this.toastService.showError('Error creating redirect url', 'Could not navigate to billing portal. Please try again later.');
+                                }
+                            });
                         }
                     },
                     {

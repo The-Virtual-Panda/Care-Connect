@@ -1,4 +1,4 @@
-import { PhoneNumber } from '@/api/models/phone-number';
+import { PhoneNumber } from '@/api/models/entity/phone-number';
 import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
 import { StripeService } from '@/api/services/stripe.service';
@@ -53,16 +53,16 @@ export class AppMenu implements OnInit {
                 icon: 'pi pi-building',
                 items: [
                     {
-                        label: 'Recipients',
-                        icon: 'pi pi-users',
-                        routerLink: 'recipients'
-                    },
-                    {
                         label: 'Billing Portal',
                         icon: 'pi pi-credit-card',
                         command: () => {
                             this.stripeService.navigateToBillingPortal();
                         }
+                    },
+                    {
+                        label: 'Recipients',
+                        icon: 'pi pi-users',
+                        routerLink: 'recipients'
                     }
                 ]
             },

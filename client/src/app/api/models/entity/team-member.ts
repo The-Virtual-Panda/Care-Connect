@@ -1,5 +1,6 @@
-import { Timestamp, DocumentData, QueryDocumentSnapshot, SnapshotOptions } from '@angular/fire/firestore';
-import { addCountryCode, removeCountryCode } from '../helpers/phone-helpers';
+import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
+
+import { addCountryCode, removeCountryCode } from '../../helpers/phone-helpers';
 
 /** Domain model */
 export interface TeamMember {
@@ -25,7 +26,7 @@ export function toTeamMember(id: string, doc: TeamMemberDoc): TeamMember {
         name: doc.name,
         phoneNumber: removeCountryCode(doc.phoneNumber),
         dateCreated: doc.dateCreated.toDate(),
-        dateUpdated: doc.dateUpdated.toDate(),
+        dateUpdated: doc.dateUpdated.toDate()
     };
 }
 
@@ -34,7 +35,7 @@ export function fromTeamMember(member: TeamMember): TeamMemberDoc {
         name: member.name,
         phoneNumber: addCountryCode(member.phoneNumber),
         dateCreated: Timestamp.fromDate(member.dateCreated),
-        dateUpdated: Timestamp.fromDate(member.dateUpdated),
+        dateUpdated: Timestamp.fromDate(member.dateUpdated)
     };
 }
 

@@ -1,4 +1,4 @@
-import { User } from '@/api/models/user';
+import { User } from '@/api/models/entity/user';
 import { AdminService } from '@/api/services/admin.service';
 import { AppAvatarComponent } from '@/components/app-avatar.component';
 import { ToastService } from '@/services/toast.service';

@@ -1,3 +1,4 @@
+import { Organization } from '@/api/models/entity/organization';
 import { AdminService } from '@/api/services/admin.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
@@ -6,8 +7,6 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-import { Organization } from '@models/organization';
 
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';

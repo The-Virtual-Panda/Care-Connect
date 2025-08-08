@@ -1,5 +1,5 @@
-import { Organization } from '@/api/models/organization';
-import { User } from '@/api/models/user';
+import { Organization } from '@/api/models/entity/organization';
+import { User } from '@/api/models/entity/user';
 import { Logger } from '@/utils/logger';
 import { Observable, catchError, first, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 

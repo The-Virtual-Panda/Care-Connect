@@ -1,3 +1,4 @@
+import { TeamMember } from '@/api/models/entity/team-member';
 import { AuthService } from '@/api/services/auth.service';
 import { ToastService } from '@/services/toast.service';
 import { Subscription } from 'rxjs';
@@ -8,8 +9,6 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 
 import { PhonePipe } from '@app/pipes/phone.pipe';
 import { Logger } from '@app/utils/logger';
-
-import { TeamMember } from '@models/team-member';
 
 import { TeamService } from '@services/team.service';
 

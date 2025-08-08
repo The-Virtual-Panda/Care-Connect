@@ -1,8 +1,8 @@
 import { DocumentData, DocumentReference, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
 
-import { addCountryCode, removeCountryCode } from '../helpers/phone-helpers';
-import { FirestoreCollectionsService } from '../services/firestore-collections';
-import { PhoneUsageType } from './enums/phone-usage-type';
+import { addCountryCode, removeCountryCode } from '../../helpers/phone-helpers';
+import { FirestoreCollectionsService } from '../../services/firestore-collections';
+import { PhoneUsageType } from '../enums/phone-usage-type';
 
 export interface PhoneNumber {
     id: string;

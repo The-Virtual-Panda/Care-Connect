@@ -1,6 +1,7 @@
-import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from "@angular/fire/firestore";
-import { InviteStatus } from "./enums/invite-status";
-import { OrgRole } from "./enums/org-role";
+import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
+
+import { InviteStatus } from '../enums/invite-status';
+import { OrgRole } from '../enums/org-role';
 
 export interface OrgMembership {
     id: string;
@@ -26,7 +27,7 @@ export function toOrgMembership(id: string, doc: OrgMembershipDoc): OrgMembershi
         orgId: doc.orgId,
         role: doc.role,
         dateJoined: doc.dateJoined.toDate(),
-        inviteStatus: doc.inviteStatus,
+        inviteStatus: doc.inviteStatus
     };
 }
 
@@ -36,7 +37,7 @@ export function fromOrgMembership(m: OrgMembership): OrgMembershipDoc {
         orgId: m.orgId,
         role: m.role,
         dateJoined: Timestamp.fromDate(m.dateJoined),
-        inviteStatus: m.inviteStatus,
+        inviteStatus: m.inviteStatus
     };
 }
 

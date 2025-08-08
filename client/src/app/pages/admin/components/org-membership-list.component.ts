@@ -1,7 +1,8 @@
+import { OrgMembership } from '@/api/models/entity/org-membership';
+import { Organization } from '@/api/models/entity/organization';
+import { User } from '@/api/models/entity/user';
 import { InviteStatus } from '@/api/models/enums/invite-status';
 import { OrgRole } from '@/api/models/enums/org-role';
-import { OrgMembership } from '@/api/models/org-membership';
-import { User } from '@/api/models/user';
 import { AdminService } from '@/api/services/admin.service';
 import { AppAvatarComponent } from '@/components/app-avatar.component';
 import { AppInviteStatusBadgeComponent } from '@/components/app-invite-status-badge.component';
@@ -14,8 +15,6 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-import { Organization } from '@models/organization';
 
 import { Button } from 'primeng/button';
 import { Fluid } from 'primeng/fluid';

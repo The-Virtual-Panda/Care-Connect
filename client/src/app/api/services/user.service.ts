@@ -1,9 +1,9 @@
 // src/app/services/user.service.ts
+import { OrgMembership } from '@/api/models/entity/org-membership';
+import { Organization } from '@/api/models/entity/organization';
+import { User } from '@/api/models/entity/user';
 import { InviteStatus } from '@/api/models/enums/invite-status';
 import { OrgRole } from '@/api/models/enums/org-role';
-import { OrgMembership } from '@/api/models/org-membership';
-import { Organization } from '@/api/models/organization';
-import { User } from '@/api/models/user';
 import { Observable, forkJoin, from, map, of, switchMap } from 'rxjs';
 
 import { Injectable, Pipe, inject } from '@angular/core';

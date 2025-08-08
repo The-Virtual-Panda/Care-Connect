@@ -1,5 +1,5 @@
-import { Shift } from '@/api/models/shift';
-import { TeamMember } from '@/api/models/team-member';
+import { Shift } from '@/api/models/entity/shift';
+import { TeamMember } from '@/api/models/entity/team-member';
 import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
 import { TeamService } from '@/api/services/team.service';

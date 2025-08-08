@@ -4,8 +4,8 @@ import { first, map } from 'rxjs/operators';
 import { Injectable, inject } from '@angular/core';
 import { addDoc, collection, deleteDoc, doc, docData, getDocs, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 
-import { PhoneNumber, phoneNumberConverter } from '../models/phone-number';
-import { Shift } from '../models/shift';
+import { PhoneNumber, phoneNumberConverter } from '../models/entity/phone-number';
+import { Shift } from '../models/entity/shift';
 import { FirestoreCollectionsService } from './firestore-collections';
 
 @Injectable({ providedIn: 'root' })

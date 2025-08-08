@@ -1,5 +1,5 @@
-import { OrgMembership } from '@/api/models/org-membership';
-import { Organization } from '@/api/models/organization';
+import { OrgMembership } from '@/api/models/entity/org-membership';
+import { Organization } from '@/api/models/entity/organization';
 import { AuthService } from '@/api/services/auth.service';
 import { UserService } from '@/api/services/user.service';
 import { ChangeBlogService } from '@/services/change-blog.service';

@@ -1,5 +1,5 @@
-import { Organization } from '@/api/models/organization';
-import { User } from '@/api/models/user';
+import { Organization } from '@/api/models/entity/organization';
+import { User } from '@/api/models/entity/user';
 import { FirestoreCollectionsService } from '@/api/services/firestore-collections';
 import { Observable, forkJoin, from } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -7,9 +7,9 @@ import { map } from 'rxjs/operators';
 import { Injectable, inject } from '@angular/core';
 import { getDocs, setDoc } from '@angular/fire/firestore';
 
+import { OrgMembership } from '../models/entity/org-membership';
 import { InviteStatus } from '../models/enums/invite-status';
 import { OrgRole } from '../models/enums/org-role';
-import { OrgMembership } from '../models/org-membership';
 
 @Injectable({
     providedIn: 'root'

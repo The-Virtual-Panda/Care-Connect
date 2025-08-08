@@ -1,13 +1,13 @@
+import { OrgMembership, orgMembershipConverter } from '@/api/models/entity/org-membership';
+import { Organization, orgConverter } from '@/api/models/entity/organization';
+import { teamMemberConverter } from '@/api/models/entity/team-member';
+import { User, userConverter } from '@/api/models/entity/user';
+
 import { Injectable, inject } from '@angular/core';
 import { CollectionReference, DocumentReference, Firestore, FirestoreDataConverter, collection, doc } from '@angular/fire/firestore';
 
-import { OrgMembership, orgMembershipConverter } from '@/api/models/org-membership';
-import { Organization, orgConverter } from '@/api/models/organization';
-import { teamMemberConverter } from '@/api/models/team-member';
-import { User, userConverter } from '@/api/models/user';
-
-import { phoneNumberConverter } from '../models/phone-number';
-import { shiftConverter } from '../models/shift';
+import { phoneNumberConverter } from '../models/entity/phone-number';
+import { shiftConverter } from '../models/entity/shift';
 
 @Injectable({
     providedIn: 'root'

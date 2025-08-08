@@ -1,4 +1,4 @@
-import { PhoneNumber } from '@/api/models/phone-number';
+import { PhoneNumber } from '@/api/models/entity/phone-number';
 import { PhoneService } from '@/api/services/phone.service';
 import { PhoneUsageTypeDisplayPipe } from '@/pipes/phone-usage-type.pipe';
 import { PhonePipe } from '@/pipes/phone.pipe';

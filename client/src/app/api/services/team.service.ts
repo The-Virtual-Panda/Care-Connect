@@ -1,4 +1,4 @@
-import { TeamMember } from '@/api/models/team-member';
+import { TeamMember } from '@/api/models/entity/team-member';
 import { Observable, from, map, of } from 'rxjs';
 
 import { Injectable, inject } from '@angular/core';

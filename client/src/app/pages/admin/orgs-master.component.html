@@ -58,6 +58,12 @@
                     <p-sortIcon field="twilioAccountSid"></p-sortIcon>
                 </div>
             </th>
+            <th pSortableColumn="stripeCustomerId">
+                <div class="flex items-center gap-2">
+                    Stripe Customer ID
+                    <p-sortIcon field="stripeCustomerId"></p-sortIcon>
+                </div>
+            </th>
             <th pSortableColumn="dateModified">
                 <div class="flex items-center gap-2">
                     Last Modified
@@ -91,6 +97,7 @@
             <td>{{ org.id }}</td>
             <td>{{ org.name }}</td>
             <td>{{ org.twilioAccountSid }}</td>
+            <td>{{ org.stripeCustomerId }}</td>
             <td>{{ org.dateUpdated | date: 'yyyy/MM/dd' }}</td>
             <td>{{ org.dateCreated | date: 'yyyy/MM/dd' }}</td>
             <td></td>
@@ -100,7 +107,7 @@
         #expandedrow
         let-org>
         <tr>
-            <td colspan="7">
+            <td colspan="8">
                 <div class="p-4">
                     <orgs-membership-list [orgId]="org.id" />
                 </div>
@@ -120,19 +127,22 @@
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><p-skeleton></p-skeleton></td>
-            <td><p-skeleton></p-skeleton></td>
-            <td><p-skeleton></p-skeleton></td>
-            <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td></td>
         </tr>
         <tr>
             <td></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td><p-skeleton></p-skeleton></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>
             <td><p-skeleton></p-skeleton></td>

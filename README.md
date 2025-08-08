@@ -6,17 +6,6 @@
 
 <https://sprucehealth.com/>
 
-## TODO Plan
-
-1. Get Call forwarding up
-2. Build team structure
-3. ?
-
-## Planned Features
-
-* Call Forwarding
-* Add team
-
 ## Testing Twilio
 
 1. `ngrok http 5001`

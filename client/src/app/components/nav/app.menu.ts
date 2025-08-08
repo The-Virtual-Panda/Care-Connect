@@ -85,13 +85,13 @@ export class AppMenu implements OnInit {
             },
             { separator: true },
             {
-                label: 'Phone Numbers',
+                label: 'Phone',
                 icon: 'pi pi-phone',
                 visible: phoneNumbers.length > 0,
                 items: phoneNumbers.map((phone) => ({
                     label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
                     routerLink: ['/phone-numbers', phone.id, 'config'],
-                    icon: 'pi pi-phone'
+                    icon: 'pi pi-mobile'
                 }))
             },
             { separator: true, visible: this.authService.isSystemAdmin() },

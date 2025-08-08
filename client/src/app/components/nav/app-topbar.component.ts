@@ -15,6 +15,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -47,7 +48,8 @@ import { AppBreadcrumb } from './app.breadcrumb';
         AvatarModule,
         Select,
         TooltipModule,
-        AppAvatarComponent
+        AppAvatarComponent,
+        DividerModule
     ]
 })
 export class AppTopbar {

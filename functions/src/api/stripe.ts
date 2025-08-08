@@ -114,10 +114,11 @@ exports.createStripeCustomer = onDocumentWritten(
                 return;
             }
             const organization = snapshot.after.data() as Organization;
+            const organizationId = event.params.docId;
 
             if (organization.stripeCustomerId) {
                 logger.info('Stripe customer already exists for organization', {
-                    organizationId: organization.id,
+                    organizationId: organizationId,
                     organizationName: organization.name,
                     stripeCustomerId: organization.stripeCustomerId,
                 });
@@ -125,14 +126,14 @@ exports.createStripeCustomer = onDocumentWritten(
             }
 
             logger.info('Creating Stripe customer for organization', {
-                organizationId: organization.id,
+                organizationId: organizationId,
                 organizationName: organization.name,
             });
 
             const customer = await stripeClient.customers.create({
                 name: organization.name,
                 metadata: {
-                    organizationId: organization.id,
+                    organizationId: organizationId,
                 },
             });
 
@@ -141,7 +142,7 @@ exports.createStripeCustomer = onDocumentWritten(
             );
 
             const firestoreService = new FirestoreService();
-            await firestoreService.updateOrganization(organization.id, {
+            await firestoreService.updateOrganization(organizationId, {
                 stripeCustomerId: customer.id,
             });
         } catch (error) {

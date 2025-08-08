@@ -87,6 +87,24 @@ export class AppMenu implements OnInit {
                     label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
                     routerLink: ['/phone-numbers', phone.id, 'config']
                 }))
+            },
+            { separator: true, visible: this.authService.isSystemAdmin() },
+            {
+                label: 'System Admin',
+                icon: 'pi pi-shield',
+                visible: this.authService.isSystemAdmin(),
+                items: [
+                    {
+                        label: 'Organizations',
+                        icon: 'pi pi-building',
+                        routerLink: '/admin/organizations'
+                    },
+                    {
+                        label: 'System Users',
+                        icon: 'pi pi-users',
+                        routerLink: '/admin/system-users'
+                    }
+                ]
             }
         ];
     });

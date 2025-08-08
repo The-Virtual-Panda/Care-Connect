@@ -34,7 +34,8 @@ export const appRoutes: Routes = [
             {
                 path: 'admin',
                 ...canActivate(adminOnly),
-                loadChildren: () => import('@/routes/admin.routes').then((m) => m.adminRoutes)
+                loadChildren: () => import('@/routes/admin.routes').then((m) => m.adminRoutes),
+                data: { breadcrumb: 'Admin' }
             },
             {
                 path: 'settings',

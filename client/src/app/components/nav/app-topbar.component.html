@@ -73,16 +73,6 @@
                             <li>
                                 <p class="py-2 text-center font-medium dark:text-surface-200">{{ authService.username() }}</p>
                             </li>
-                            @if (authService.isSystemAdmin()) {
-                                <li>
-                                    <a
-                                        routerLink="/admin"
-                                        class="label-small flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-emphasis dark:text-surface-400">
-                                        <i class="pi pi-shield"></i>
-                                        <span>Admin Center</span>
-                                    </a>
-                                </li>
-                            }
                             <li>
                                 <a
                                     routerLink="/settings"

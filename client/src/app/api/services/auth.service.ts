@@ -46,7 +46,7 @@ export class AuthService {
     isSystemAdmin = computed<boolean>(() => this.userSession()?.isSystemAdmin === true);
     currentOrgId = computed<string | null>(() => this.userSession()?.focusedOrg?.id || null);
     username = computed<string | null>(() => this.userSession()?.profile?.name || null);
-    userId = computed<string | null>(() => this.userSession()?.profile?.uid || null);
+    userId = computed<string | null>(() => this.userSession()?.profile?.id || null);
     lastReadChangeBlog = computed<string | null>(() => this.userSession()?.profile?.lastChangeBlogRead || null);
     notifyNewChangeBlogs = computed<boolean>(() => this.userSession()?.profile?.notifyNewChangeBlogs !== false);
 
@@ -222,7 +222,9 @@ export class AuthService {
                 if (!userProfile) {
                     return throwError(() => new Error('User profile not found'));
                 }
-                return docData(this.firestoreCollections.organizations.docRef(userProfile.defaultOrgId)).pipe(
+
+                // TODO: Replace this via routing - route to the default org, no need to query the user context
+                return docData(this.firestoreCollections.organizations.docRef(userProfile.defaultOrgId!)).pipe(
                     first(),
                     map((orgData: Organization | undefined) => {
                         if (!orgData) {

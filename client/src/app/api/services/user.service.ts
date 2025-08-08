@@ -19,7 +19,6 @@ export class UserService {
 
     createUserAndOrg(uid: string, email: string, name: string, orgName: string): Observable<{ userId: string; orgId: string }> {
         // Generate a new organization ID
-
         const orgCol = this.firestoreCollections.organizations.collection();
         const orgRef = doc(orgCol);
         const orgId = orgRef.id;
@@ -33,12 +32,10 @@ export class UserService {
 
         // Create user object using the model interface
         const userData: User = {
-            uid: uid,
+            id: uid,
             email,
             name: name,
             defaultOrgId: orgId,
-            lastChangeBlogRead: null,
-            notifyNewChangeBlogs: true,
             lastLogin: now,
             dateCreated: now,
             dateUpdated: now

@@ -1,73 +1,76 @@
 import { DocumentData, QueryDocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
 
 export interface User {
-    uid: string;
+    // Required fields
+    id: string;
     email: string;
     name: string;
-    defaultOrgId: string;
-    lastLogin: Date | null;
-    avatarUrl?: string | null;
-    dateAvatarUpdated?: Date | null;
-
-    /**
-     * Whether the user wants to be notified of new change blogs in the application
-     * This is a user preference that can be toggled in settings.
-     */
-    notifyNewChangeBlogs: boolean;
-    lastChangeBlogRead: string | null;
-
     dateUpdated: Date;
     dateCreated: Date;
+
+    // Can be null but must be intentionally null
+    defaultOrgId: string | null;
+
+    // Can be ignored in instantiation
+    lastLogin?: Date | null;
+    avatarUrl?: string | null;
+    dateAvatarUpdated?: Date | null;
+    notifyNewChangeBlogs?: boolean;
+    lastChangeBlogRead?: string | null;
 }
 
-export interface UserDoc {
+interface UserFireDoc {
+    // Required - Guaranteed
     email: string;
     name: string;
-    defaultOrgId: string;
-    lastLogin: Timestamp | null;
-    avatarUrl?: string | null;
-    dateAvatarUpdated?: Timestamp | null;
-    lastChangeBlogRead?: string;
-    notifyNewChangeBlogs?: boolean;
     dateCreated: Timestamp;
     dateUpdated: Timestamp;
+
+    // Optional Fields
+    lastLogin: Timestamp | null;
+    defaultOrgId: string | null;
+    avatarUrl: string | null;
+    dateAvatarUpdated: Timestamp | null;
+    lastChangeBlogRead: string | null;
+    notifyNewChangeBlogs: boolean | null;
 }
 
-export function toUser(uid: string, doc: UserDoc): User {
+function fromFireDoc(uid: string, doc: UserFireDoc): User {
     return {
-        uid: uid,
+        id: uid,
         email: doc.email,
         name: doc.name,
-        defaultOrgId: doc.defaultOrgId,
-        lastLogin: doc.lastLogin ? doc.lastLogin.toDate() : null,
-        avatarUrl: doc.avatarUrl || null,
-        dateAvatarUpdated: doc.dateAvatarUpdated ? doc.dateAvatarUpdated.toDate() : null,
-        lastChangeBlogRead: doc.lastChangeBlogRead || null,
-        notifyNewChangeBlogs: doc.notifyNewChangeBlogs !== false,
         dateUpdated: doc.dateUpdated.toDate(),
-        dateCreated: doc.dateCreated.toDate()
+        dateCreated: doc.dateCreated.toDate(),
+
+        defaultOrgId: doc.defaultOrgId ?? null,
+        lastLogin: doc.lastLogin ? doc.lastLogin.toDate() : null,
+        avatarUrl: doc.avatarUrl ?? null,
+        dateAvatarUpdated: doc.dateAvatarUpdated ? doc.dateAvatarUpdated.toDate() : null,
+        lastChangeBlogRead: doc.lastChangeBlogRead ?? null,
+        notifyNewChangeBlogs: doc.notifyNewChangeBlogs ?? true
     };
 }
 
-export function fromUser(user: User): UserDoc {
+function toFireDoc(user: User): UserFireDoc {
     return {
         email: user.email,
         name: user.name,
-        defaultOrgId: user.defaultOrgId,
+        defaultOrgId: user.defaultOrgId ?? null,
+        dateCreated: Timestamp.fromDate(user.dateCreated),
+        dateUpdated: Timestamp.fromDate(user.dateUpdated),
         lastLogin: user.lastLogin ? Timestamp.fromDate(user.lastLogin) : null,
         avatarUrl: user.avatarUrl || null,
         dateAvatarUpdated: user.dateAvatarUpdated ? Timestamp.fromDate(user.dateAvatarUpdated) : null,
-        lastChangeBlogRead: user.lastChangeBlogRead || undefined,
-        notifyNewChangeBlogs: user.notifyNewChangeBlogs,
-        dateCreated: Timestamp.fromDate(user.dateCreated),
-        dateUpdated: Timestamp.fromDate(user.dateUpdated)
+        lastChangeBlogRead: user.lastChangeBlogRead || null,
+        notifyNewChangeBlogs: user.notifyNewChangeBlogs ?? true
     };
 }
 
 export const userConverter = {
-    toFirestore: (user: User) => fromUser(user),
+    toFirestore: (user: User) => toFireDoc(user),
     fromFirestore: (snapshot: QueryDocumentSnapshot<DocumentData>, options: SnapshotOptions) => {
-        const data = snapshot.data(options) as UserDoc;
-        return toUser(snapshot.id, data);
+        const data = snapshot.data(options) as UserFireDoc;
+        return fromFireDoc(snapshot.id, data);
     }
 };

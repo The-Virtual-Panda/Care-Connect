@@ -1,5 +1,6 @@
 import { Organization } from '@/api/models/entity/organization';
 import { AdminService } from '@/api/services/admin.service';
+import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 import { Subscription } from 'rxjs';
@@ -39,6 +40,7 @@ import { OrgsMembershipListComponent } from './components/org-membership-list.co
 export class OrgsComponent implements OnInit, OnDestroy {
     private adminService = inject(AdminService);
     private toastService = inject(ToastService);
+    orgContextService = inject(OrgContextService);
 
     orgs: Organization[] = [];
     isLoading = true;

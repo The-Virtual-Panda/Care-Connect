@@ -94,7 +94,11 @@
                     [rounded]="true"
                     [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             </td>
-            <td>{{ org.id }}</td>
+            <td
+                (click)="this.orgContextService.switch(org.id)"
+                class="cursor-pointer text-blue-500 underline hover:text-blue-700">
+                {{ org.id }}
+            </td>
             <td>{{ org.name }}</td>
             <td>{{ org.twilioAccountSid }}</td>
             <td>{{ org.stripeCustomerId }}</td>

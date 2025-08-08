@@ -18,13 +18,13 @@ export const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: 'recipients',
+                redirectTo: '/organization/recipients',
                 pathMatch: 'full'
             },
             {
-                path: 'recipients',
-                loadComponent: () => import('@/pages/recipient/recipient-master.component').then((c) => c.RecipientMasterComponent),
-                data: { breadcrumb: 'Recipients' }
+                path: 'organization',
+                loadChildren: () => import('@/routes/org.routes').then((m) => m.orgRoutes),
+                data: { breadcrumb: 'Organization' }
             },
             {
                 path: 'phone-numbers',

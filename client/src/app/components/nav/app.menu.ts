@@ -72,9 +72,14 @@ export class AppMenu implements OnInit {
                         }
                     },
                     {
+                        label: 'Roles & Permissions',
+                        icon: 'pi pi-sitemap',
+                        routerLink: '/organization/roles'
+                    },
+                    {
                         label: 'Recipients',
                         icon: 'pi pi-users',
-                        routerLink: 'recipients'
+                        routerLink: '/organization/recipients'
                     }
                 ]
             },

@@ -74,11 +74,11 @@ import { ToolbarModule } from 'primeng/toolbar';
         ConfirmDialog,
         PhonePipe
     ],
-    templateUrl: './recipient-master.component.html',
+    templateUrl: './recipients-master.component.html',
     standalone: true,
     providers: [DialogService, ConfirmationService]
 })
-export class RecipientMasterComponent implements OnInit, OnDestroy {
+export class OrgRecipientsMasterComponent implements OnInit, OnDestroy {
     teamService = inject(TeamService);
     dialogService = inject(DialogService);
     formBuilder = inject(FormBuilder);

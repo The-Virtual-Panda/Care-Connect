@@ -3,8 +3,8 @@
     [value]="systemUsers"
     sortField="dateCreated"
     [sortOrder]="-1"
-    dataKey="uid"
-    [globalFilterFields]="['uid', 'email', 'name']"
+    dataKey="id"
+    [globalFilterFields]="['id', 'email', 'name']"
     [rows]="10"
     [loading]="isLoading"
     [showLoader]="false"
@@ -44,7 +44,7 @@
         <tr>
             <th style="width: 5rem"></th>
             <th>
-                <div class="flex items-center gap-2">UID</div>
+                <div class="flex items-center gap-2">Firebase ID</div>
             </th>
             <th>
                 <div class="flex items-center gap-2">Avatar</div>
@@ -91,9 +91,9 @@
                     [rounded]="true"
                     [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
             </td>
-            <td>{{ user.uid }}</td>
+            <td>{{ user.id }}</td>
             <td>
-                <app-avatar [userId]="user.uid" />
+                <app-avatar [userId]="user.id" />
             </td>
             <td>{{ user.email }}</td>
             <td>{{ user.name }}</td>
@@ -108,7 +108,7 @@
         <tr>
             <td colspan="8">
                 <div class="p-4">
-                    <orgs-membership-list [userId]="user.uid" />
+                    <orgs-membership-list [userId]="user.id" />
                 </div>
             </td>
         </tr>

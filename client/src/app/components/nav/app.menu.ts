@@ -90,7 +90,7 @@ export class AppMenu implements OnInit {
             },
             { separator: true, visible: this.authService.isSystemAdmin() },
             {
-                label: 'System Admin',
+                label: 'Admin Center',
                 icon: 'pi pi-shield',
                 visible: this.authService.isSystemAdmin(),
                 items: [

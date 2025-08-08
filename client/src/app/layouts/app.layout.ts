@@ -44,13 +44,10 @@ import { AppSidebar } from '../components/nav/app.sidebar';
 })
 export class AppLayout {
     overlayMenuOpenSubscription: Subscription;
-
     menuOutsideClickListener: any;
-
     menuScrollListener: any;
 
     @ViewChild(AppSidebar) appSidebar!: AppSidebar;
-
     @ViewChild(AppTopbar) appTopBar!: AppTopbar;
 
     constructor(

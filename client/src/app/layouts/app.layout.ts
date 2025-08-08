@@ -38,7 +38,7 @@ import { AppSidebar } from '../components/nav/app.sidebar';
             <div app-search></div>
             <div app-rightmenu></div>
             <div class="layout-mask animate-fadein"></div>
-            <p-toast key="global-toast" position="bottom-right" />
+            <p-toast key="global-toast" [position]="this.layoutService.isMobile() ? 'bottom-center' : 'bottom-right'" />
         </div>
     `
 })

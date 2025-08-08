@@ -16,6 +16,11 @@ Types of changes:
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed visual bug on mobile not showing sidebar correctly
+- Aligned popup messages to the bottom-center of the screen on mobile
+
 ## [v1.4.1] - 2025-08-01
 
 ### Fixed

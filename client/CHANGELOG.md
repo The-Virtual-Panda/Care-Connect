@@ -16,6 +16,14 @@ Types of changes:
 
 ## [Unreleased]
 
+### Added
+
+- Added a billing portal link to the organization dropdown. Navigates to Stripe.
+  - Manage payment methods
+  - Manage billing info
+  - Download invoices
+- Create stripe customer during registration
+
 ### Fixed
 
 - Fixed visual bug on mobile not showing sidebar correctly

@@ -34,37 +34,39 @@ export enum OrgPermission {
     PhoneContacts = 'phone.contacts',
     PhoneCallHistory = 'phone.callHistory',
     PhoneVoicemails = 'phone.voicemails',
-    PhoneManagement = 'phone.management',
+    PhoneCallFlow = 'phone.callFlow',
 
     // Observe
     ObserveSystemLogs = 'observe.systemLogs',
     ObserveUsageMetrics = 'observe.usageMetrics'
 }
 
-export const PermissionMeta: Record<OrgPermission, { group: OrgPermissionGroup; label: string; implies?: OrgPermission[] }> = {
+export const PermissionMeta: Record<OrgPermission, { group: OrgPermissionGroup; label: string; isAvailable: boolean; implies?: OrgPermission[] }> = {
     // Org
-    [OrgPermission.OrgGeneral]: { group: OrgPermissionGroup.Org, label: 'General Details' },
-    [OrgPermission.OrgBilling]: { group: OrgPermissionGroup.Org, label: 'Billing' },
-    [OrgPermission.OrgRoles]: { group: OrgPermissionGroup.Org, label: 'Roles & Permissions' },
-    [OrgPermission.OrgTeamMembers]: { group: OrgPermissionGroup.Org, label: 'Team Members' },
-    [OrgPermission.OrgPhoneNumbers]: { group: OrgPermissionGroup.Org, label: 'Phone Numbers' },
+    [OrgPermission.OrgGeneral]: { group: OrgPermissionGroup.Org, label: 'General Details', isAvailable: false },
+    [OrgPermission.OrgBilling]: { group: OrgPermissionGroup.Org, label: 'Billing', isAvailable: true },
+    [OrgPermission.OrgRoles]: { group: OrgPermissionGroup.Org, label: 'Roles & Permissions', isAvailable: true },
+    [OrgPermission.OrgTeamMembers]: { group: OrgPermissionGroup.Org, label: 'Team Members', isAvailable: true },
+    [OrgPermission.OrgPhoneNumbers]: { group: OrgPermissionGroup.Org, label: 'Phone Numbers', isAvailable: false },
 
     // Observe
-    [OrgPermission.ObserveSystemLogs]: { group: OrgPermissionGroup.Observe, label: 'System Logs' },
-    [OrgPermission.ObserveUsageMetrics]: { group: OrgPermissionGroup.Observe, label: 'Usage Metrics' },
+    [OrgPermission.ObserveSystemLogs]: { group: OrgPermissionGroup.Observe, label: 'System Logs', isAvailable: false },
+    [OrgPermission.ObserveUsageMetrics]: { group: OrgPermissionGroup.Observe, label: 'Usage Metrics', isAvailable: false },
 
     // Phone
     [OrgPermission.PhoneInbox]: {
         group: OrgPermissionGroup.Phone,
         label: 'Inbox',
+        isAvailable: false,
         implies: [OrgPermission.PhoneContacts]
     },
-    [OrgPermission.PhoneContacts]: { group: OrgPermissionGroup.Phone, label: 'Contacts' },
-    [OrgPermission.PhoneCallHistory]: { group: OrgPermissionGroup.Phone, label: 'Call History' },
-    [OrgPermission.PhoneVoicemails]: { group: OrgPermissionGroup.Phone, label: 'Voicemails' },
-    [OrgPermission.PhoneManagement]: {
+    [OrgPermission.PhoneContacts]: { group: OrgPermissionGroup.Phone, label: 'Contacts', isAvailable: false },
+    [OrgPermission.PhoneCallHistory]: { group: OrgPermissionGroup.Phone, label: 'Call History', isAvailable: false },
+    [OrgPermission.PhoneVoicemails]: { group: OrgPermissionGroup.Phone, label: 'Voicemails', isAvailable: false },
+    [OrgPermission.PhoneCallFlow]: {
         group: OrgPermissionGroup.Phone,
-        label: 'Management',
+        label: 'Call Flow',
+        isAvailable: true,
         implies: [OrgPermission.PhoneInbox, OrgPermission.PhoneContacts, OrgPermission.PhoneCallHistory, OrgPermission.PhoneVoicemails]
     }
 };
@@ -74,6 +76,10 @@ export namespace OrgPermission {
 
     export function display(perm: OrgPermission): string {
         return PermissionMeta[perm]?.label ?? perm;
+    }
+
+    export function isAvailable(permission: OrgPermission): boolean {
+        return PermissionMeta[permission]?.isAvailable ?? false;
     }
 
     export function groupOf(perm: OrgPermission): OrgPermissionGroup {

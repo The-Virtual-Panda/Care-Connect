@@ -6,6 +6,7 @@ import { User, userConverter } from '@/api/models/entity/user';
 import { Injectable, inject } from '@angular/core';
 import { CollectionReference, DocumentReference, Firestore, FirestoreDataConverter, collection, doc } from '@angular/fire/firestore';
 
+import { orgRoleConverter } from '../models/entity/organization-role';
 import { phoneNumberConverter } from '../models/entity/phone-number';
 import { shiftConverter } from '../models/entity/shift';
 
@@ -60,7 +61,8 @@ export class FirestoreCollectionsService {
     public organizations = {
         ...this.createCollectionHelpers<Organization>('organizations', orgConverter),
         users: this.createSubcollectionHelpers<OrgMembership>((orgId) => `organizations/${orgId}/users`, orgMembershipConverter),
-        teamMembers: this.createSubcollectionHelpers((orgId) => `organizations/${orgId}/teamMembers`, teamMemberConverter)
+        teamMembers: this.createSubcollectionHelpers((orgId) => `organizations/${orgId}/teamMembers`, teamMemberConverter),
+        roles: this.createSubcollectionHelpers((orgId) => `organizations/${orgId}/roles`, orgRoleConverter)
     };
 
     public phoneNumbers = {

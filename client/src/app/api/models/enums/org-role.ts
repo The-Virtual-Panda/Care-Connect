@@ -1,3 +1,4 @@
+// TODO: Will become Member Type
 export enum OrgRole {
     Admin = 'admin'
 }

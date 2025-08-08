@@ -1,8 +1,17 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
+import {
+    FirestoreCollections,
+    FirestoreService,
+} from '../services/firestore-service';
+import { onDocumentWritten } from 'firebase-functions/firestore';
+import Stripe from 'stripe';
+import { Organization } from '../models/domain/organization';
 
-import { FirestoreService } from '../services/firestore-service';
-import { publicAppUrl, stripeClient } from '../configs';
+const publicAppUrl = process.env.PUBLIC_APP_URL || '';
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-07-30.basil', // ? Maybe I need to be more aware here?
+});
 
 // Callable function from the application to create a Stripe customer portal session
 exports.createStripeCustomerPortalSession = onCall(
@@ -88,6 +97,55 @@ exports.createStripeCustomerPortalSession = onCall(
                 'internal',
                 'An error occurred while creating the customer portal session.'
             );
+        }
+    }
+);
+
+exports.createStripeCustomer = onDocumentWritten(
+    `${FirestoreCollections.organizations.root}/{docId}`,
+    async (event) => {
+        try {
+            // Extract the document snapshot from the event
+            const snapshot = event.data;
+            if (!snapshot) {
+                logger.warn(
+                    'No data associated with the organization creation event'
+                );
+                return;
+            }
+            const organization = snapshot.after.data() as Organization;
+
+            if (organization.stripeCustomerId) {
+                logger.info('Stripe customer already exists for organization', {
+                    organizationId: organization.id,
+                    organizationName: organization.name,
+                    stripeCustomerId: organization.stripeCustomerId,
+                });
+                return;
+            }
+
+            logger.info('Creating Stripe customer for organization', {
+                organizationId: organization.id,
+                organizationName: organization.name,
+            });
+
+            const customer = await stripeClient.customers.create({
+                name: organization.name,
+                metadata: {
+                    organizationId: organization.id,
+                },
+            });
+
+            logger.info(
+                `Stripe customer created successfully: ${organization.name} / ${customer.id}`
+            );
+
+            const firestoreService = new FirestoreService();
+            await firestoreService.updateOrganization(organization.id, {
+                stripeCustomerId: customer.id,
+            });
+        } catch (error) {
+            logger.error('Error creating Stripe customer', { error });
         }
     }
 );

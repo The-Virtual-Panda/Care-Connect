@@ -3,7 +3,6 @@ import { getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { logger } from 'firebase-functions';
-import Stripe from 'stripe';
 
 // Detect if running locally with emulator
 const useEmulator = process.env.USE_EMULATOR === 'true';
@@ -12,11 +11,6 @@ const targetProdOverride = process.env.TARGET === 'prod';
 // Logging
 logger.info('Is using emulator:', useEmulator);
 logger.info('Is targeting production:', targetProdOverride);
-
-export const publicAppUrl = process.env.PUBLIC_APP_URL || '';
-export const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-07-30.basil', // ? Maybe I need to be more aware here?
-});
 
 // Initialize the default app *once*
 if (!getApps().length) {

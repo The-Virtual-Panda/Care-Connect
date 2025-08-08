@@ -205,6 +205,22 @@ export class FirestoreService {
         return orgDoc.data() as Organization;
     }
 
+    async updateOrganization(
+        organizationId: string,
+        updates: Partial<Organization>
+    ): Promise<void> {
+        const orgRef = fireDb
+            .collection(FirestoreCollections.organizations.root)
+            .doc(organizationId);
+
+        await orgRef.update(updates);
+        logger.info(
+            `Updated organization ${organizationId} with fields: ${Object.keys(
+                updates
+            ).join(', ')}`
+        );
+    }
+
     /**
      * Fetch all team members for a specific organization by organization ID.
      * Returns an array of TeamMember objects, or an empty array if none found.

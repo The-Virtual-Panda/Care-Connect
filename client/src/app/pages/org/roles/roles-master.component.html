@@ -1,1 +1,194 @@
-<p>roles works!</p>
+<p class="mb-4">Roles define what users in your organization are allowed to do.</p>
+
+<app-alert />
+
+<p-confirmdialog />
+
+<div class="mb-4">
+    <p-toolbar>
+        <ng-template #end>
+            <p-button
+                label="New Role"
+                icon="pi pi-plus"
+                class="mr-2"
+                (onClick)="addRole()" />
+            <p-button
+                severity="danger"
+                label="Delete Role(s)"
+                icon="pi pi-trash"
+                outlined
+                (onClick)="confirmDelete()"
+                [disabled]="!selectedRoles || !selectedRoles.length" />
+        </ng-template>
+    </p-toolbar>
+</div>
+
+<p-table
+    #dt
+    [value]="roles"
+    sortField="dateCreated"
+    [sortOrder]="-1"
+    dataKey="id"
+    [rows]="10"
+    [loading]="isLoading"
+    showLoader="false"
+    [(selection)]="selectedRoles"
+    [rowHover]="true"
+    [paginator]="true"
+    [globalFilterFields]="['name']"
+    stripedRows
+    responsiveLayout="scroll">
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <span class="text-xl font-semibold">Your Organization's Roles</span>
+            <div class="mt-2 flex items-center sm:mt-0">
+                <p-button
+                    variant="outlined"
+                    icon="pi pi-filter-slash"
+                    label="Clear Filters"
+                    class="ml-auto mr-2"
+                    (click)="clearFilters(dt)" />
+                <p-button
+                    type="button"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    (click)="reload()" />
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+            <th pSortableColumn="name">
+                <div class="flex items-center gap-2">
+                    Name
+                    <p-sortIcon field="name" />
+                </div>
+            </th>
+            <th style="min-width: 16rem">Assigned Permissions</th>
+            <th pSortableColumn="dateUpdated">
+                <div class="flex items-center gap-2">
+                    Date Updated
+                    <p-sortIcon field="dateUpdated" />
+                </div>
+            </th>
+            <th pSortableColumn="dateCreated">
+                <div class="flex items-center gap-2">
+                    Date Created
+                    <p-sortIcon field="dateCreated" />
+                </div>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template
+        #body
+        let-role>
+        <tr>
+            <td (click)="$event.stopPropagation()">
+                <p-tableCheckbox [value]="role" />
+            </td>
+            <td
+                (click)="editRole(role)"
+                class="cursor-pointer text-blue-500 underline hover:text-blue-700">
+                {{ role.name }}
+            </td>
+            <td>
+                <span class="whitespace-pre-wrap">{{ displayPerms(role.permissions) }}</span>
+            </td>
+            <td>{{ role.dateUpdated | date: 'yyyy/MM/dd' }}</td>
+            <td>{{ role.dateCreated | date: 'yyyy/MM/dd' }}</td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="8">No roles found in your organization</td>
+        </tr>
+    </ng-template>
+    <ng-template #loadingbody>
+        <tr>
+            <td></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<app-modal
+    [closeOnSubmit]="false"
+    size="medium"
+    (submit)="onSubmitRole()">
+    <ng-template #body>
+        <p-fluid>
+            <form
+                [formGroup]="roleForm"
+                (ngSubmit)="onSubmitRole()">
+                <div class="mb-4">
+                    <p-floatlabel variant="on">
+                        <input
+                            pInputText
+                            id="name"
+                            formControlName="name"
+                            autocomplete="off"
+                            [ngClass]="{ 'ng-invalid ng-dirty': isFieldInvalid('name') }" />
+                        <label for="name">Role Name</label>
+                    </p-floatlabel>
+                    @if (isFieldInvalid('name')) {
+                        <p-message
+                            severity="error"
+                            size="small"
+                            variant="simple"
+                            >Name is required.</p-message
+                        >
+                    }
+                </div>
+
+                <h3 class="mb-4 text-lg font-semibold">Assign Permissions</h3>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    @for (g of permissionGroups; track g) {
+                        <div class="col-span-1">
+                            <h4 class="mb-2 text-sm font-semibold">{{ groupLabel(g) }}</h4>
+                            <div class="flex flex-col gap-2">
+                                @for (p of permsByGroup(g); track p) {
+                                    <div
+                                        class="flex items-center gap-2"
+                                        showDelay="500"
+                                        tooltipPosition="top"
+                                        [pTooltip]="isPermAvailable(p) ? '' : 'In construction...'">
+                                        <p-checkbox
+                                            [binary]="true"
+                                            [disabled]="!isPermAvailable(p)"
+                                            [inputId]="'perm-' + p"
+                                            [ngModelOptions]="{ standalone: true }"
+                                            [ngModel]="isPermSelected(p)"
+                                            (ngModelChange)="onPermToggle(p, $event)" />
+                                        <label
+                                            class="cursor-pointer"
+                                            [for]="'perm-' + p"
+                                            >{{ permLabel(p) }}</label
+                                        >
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </form>
+        </p-fluid>
+    </ng-template>
+</app-modal>

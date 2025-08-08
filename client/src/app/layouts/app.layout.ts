@@ -19,7 +19,6 @@ import { AppSidebar } from '../components/nav/app.sidebar';
     standalone: true,
     imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppBreadcrumb, AppFooter, AppSearch, AppRightMenu, Toast],
     template: `
-        <p-toast key="global-toast" position="bottom-right" />
         <div class="layout-wrapper" [ngClass]="containerClass()">
             <div app-sidebar></div>
 
@@ -39,6 +38,7 @@ import { AppSidebar } from '../components/nav/app.sidebar';
             <div app-search></div>
             <div app-rightmenu></div>
             <div class="layout-mask animate-fadein"></div>
+            <p-toast key="global-toast" position="bottom-right" />
         </div>
     `
 })
@@ -62,6 +62,7 @@ export class AppLayout {
             if (!this.menuOutsideClickListener) {
                 this.menuOutsideClickListener = this.renderer.listen('document', 'click', (event) => this.outsideClickListener(event));
             }
+
             if ((this.layoutService.isHorizontal() || this.layoutService.isSlim() || this.layoutService.isCompact()) && !this.menuScrollListener) {
                 this.menuScrollListener = this.renderer.listen(this.appSidebar.menuContainer.nativeElement, 'scroll', (event) => {
                     if (this.layoutService.isDesktop()) {
@@ -69,6 +70,7 @@ export class AppLayout {
                     }
                 });
             }
+
             if (this.layoutService.layoutState().staticMenuMobileActive) {
                 this.blockBodyScroll();
             }

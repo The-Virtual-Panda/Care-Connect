@@ -23,7 +23,6 @@ import { UserService } from './user.service';
 // Extended user context with more than just Firebase auth user
 export interface AuthResult {
     profile?: User;
-    focusedOrg?: Organization;
     isSystemAdmin?: boolean;
 }
 
@@ -44,7 +43,6 @@ export class AuthService {
 
     isLoggedIn = computed<boolean>(() => this.userSession() != null);
     isSystemAdmin = computed<boolean>(() => this.userSession()?.isSystemAdmin === true);
-    currentOrgId = computed<string | null>(() => this.userSession()?.focusedOrg?.id || null);
     username = computed<string | null>(() => this.userSession()?.profile?.name || null);
     userId = computed<string | null>(() => this.userSession()?.profile?.id || null);
     lastReadChangeBlog = computed<string | null>(() => this.userSession()?.profile?.lastChangeBlogRead || null);
@@ -216,24 +214,11 @@ export class AuthService {
     private loadUserContext(fireUser: FireUser): Observable<AuthResult> {
         const userRef = this.firestoreCollections.users.docRef(fireUser.uid);
 
-        const userPlusOrg$ = docData(userRef).pipe(
+        const user$ = docData(userRef).pipe(
             first(),
-            switchMap((userProfile: User | undefined) => {
-                if (!userProfile) {
-                    return throwError(() => new Error('User profile not found'));
-                }
-
-                // TODO: Replace this via routing - route to the default org, no need to query the user context
-                return docData(this.firestoreCollections.organizations.docRef(userProfile.defaultOrgId!)).pipe(
-                    first(),
-                    map((orgData: Organization | undefined) => {
-                        if (!orgData) {
-                            throw new Error('Organization not found');
-                        }
-                        Logger.log('Loaded user profile and organization:', userProfile, orgData);
-                        return { userProfile, orgData };
-                    })
-                );
+            map((userProfile: User | undefined) => {
+                if (!userProfile) throw new Error('User profile not found');
+                return { userProfile };
             })
         );
 
@@ -242,12 +227,11 @@ export class AuthService {
             catchError(() => of({}))
         );
 
-        return forkJoin([userPlusOrg$, claims$]).pipe(
-            map(([{ userProfile, orgData }, claims]) => {
+        return forkJoin([user$, claims$]).pipe(
+            map(([{ userProfile }, claims]) => {
                 const isSystemAdmin = Boolean((claims as any)?.systemAdmin);
                 const sessionData: AuthResult = {
                     profile: userProfile,
-                    focusedOrg: orgData,
                     isSystemAdmin
                 };
 

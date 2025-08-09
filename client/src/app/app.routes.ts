@@ -19,7 +19,7 @@ class OrgRedirectGuard implements CanActivate {
     private orgContextService = inject(OrgContextService);
 
     async canActivate(): Promise<boolean | UrlTree> {
-        const defaultOrgId = await this.orgContextService.navOrgId();
+        const defaultOrgId = await this.orgContextService.routeOrgId();
 
         // Route to a saved navigation
         if (!defaultOrgId) {

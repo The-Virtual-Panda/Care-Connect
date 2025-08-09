@@ -13,16 +13,16 @@ export class OrgContextService {
     private destroyRef = inject(DestroyRef);
 
     // Store orgId as a Signal, update it on navigation
-    navOrgId = signal<string | null>(null);
+    routeOrgId = signal<string | null>(null);
 
     constructor() {
         // set initial value from current snapshot
-        this.navOrgId.set(this.findOrgId(this.router.routerState.snapshot.root));
+        this.routeOrgId.set(this.findOrgId(this.router.routerState.snapshot.root));
 
         // fallback to stored value if route didn’t provide one
-        if (this.navOrgId() === null) {
+        if (this.routeOrgId() === null) {
             const stored = this.readStoredOrgId();
-            if (stored) this.navOrgId.set(stored);
+            if (stored) this.routeOrgId.set(stored);
         }
 
         // update on every nav end (and immediately once)
@@ -37,16 +37,16 @@ export class OrgContextService {
 
                 if (id === null) {
                     // don't update the org on null
-                    Logger.log('Preserving known org in context: ' + this.navOrgId());
+                    Logger.log('Preserving known org in context: ' + this.routeOrgId());
                     return;
-                } else if (id !== this.navOrgId()) {
-                    this.navOrgId.set(id);
+                } else if (id !== this.routeOrgId()) {
+                    this.routeOrgId.set(id);
                 }
             });
 
         // Effect: persist orgId changes to localStorage
         effect(() => {
-            const id = this.navOrgId();
+            const id = this.routeOrgId();
             try {
                 if (id) {
                     localStorage.setItem(OrgContextService.CURRENT_ORG_KEY, id);
@@ -78,7 +78,7 @@ export class OrgContextService {
 
     /** Build a UrlTree under the current org prefix */
     link(commands: any[], extras?: NavigationExtras): UrlTree {
-        const id = this.navOrgId();
+        const id = this.routeOrgId();
         if (!id) throw new Error('No orgId in route');
         return this.router.createUrlTree(['/organization', id, ...commands], extras);
     }

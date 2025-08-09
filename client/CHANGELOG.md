@@ -16,6 +16,10 @@ Types of changes:
 
 ## [Unreleased]
 
+### Changed
+
+- Site routing now supports organizational identifiers, making navigation easier and better in multiple orgs
+
 ### Added
 
 - Added a billing portal link to the organization dropdown. Navigates to Stripe.
@@ -23,6 +27,7 @@ Types of changes:
   - Manage billing info
   - Download invoices
 - Create stripe customer during registration
+- Added Roles and permisssion page
 
 ### Fixed
 

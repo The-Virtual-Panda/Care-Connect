@@ -4,6 +4,7 @@ import { AuthService } from '@/api/services/auth.service';
 import { PhoneService } from '@/api/services/phone.service';
 import { TeamService } from '@/api/services/team.service';
 import { AppModal } from '@/components/app-modal.component';
+import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 import { Subscription } from 'rxjs';
@@ -91,6 +92,7 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
     confirmationService = inject(ConfirmationService);
     private toastService = inject(ToastService);
     private authService = inject(AuthService);
+    private orgContextService = inject(OrgContextService);
 
     @ViewChild(AppModal) modal!: AppModal;
 
@@ -160,7 +162,7 @@ export class ShiftsMasterComponent implements OnInit, OnDestroy {
     }
 
     loadTeamMembers(): void {
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         this.teamSubscription = this.teamService.getTeamMembers(orgId).subscribe({
             next: (members) => {
                 this.teamMembers = members;

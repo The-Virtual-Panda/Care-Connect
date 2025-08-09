@@ -120,7 +120,7 @@ export class AppMenu implements OnInit {
     constructor() {
         effect(() => {
             const user = this.authService.fireUser();
-            const orgId = this.authService.currentOrgId();
+            const orgId = this.orgContextService.routeOrgId();
 
             if (user && orgId) {
                 this.phoneService.getOrgPhoneNumbers(orgId).subscribe({

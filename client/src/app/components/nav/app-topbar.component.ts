@@ -4,6 +4,7 @@ import { AuthService } from '@/api/services/auth.service';
 import { UserService } from '@/api/services/user.service';
 import { ChangeBlogService } from '@/services/change-blog.service';
 import { LayoutService } from '@/services/layout.service';
+import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 
@@ -59,6 +60,7 @@ export class AppTopbar {
     private userService = inject(UserService);
     private router = inject(Router);
     private toastService = inject(ToastService);
+    private orgContextService = inject(OrgContextService);
 
     isDarkTheme = computed(() => this.layoutService.isDarkTheme());
     isLoadingUserOrgs = signal(false);
@@ -92,7 +94,7 @@ export class AppTopbar {
                 this.userOrganizations = orgs;
 
                 // Set the current organization based on focused org
-                const currentOrgId = this.authService.currentOrgId();
+                const currentOrgId = this.orgContextService.routeOrgId();
                 const focusedOrg = orgs.find((org) => org.id === currentOrgId);
 
                 if (focusedOrg) {
@@ -109,7 +111,9 @@ export class AppTopbar {
     }
 
     switchOrganization(org: Organization) {
-        if (!org || org.id === this.authService.currentOrgId()) {
+        const currentOrgId = this.orgContextService.routeOrgId();
+
+        if (!org || org.id === currentOrgId) {
             return; // No change needed
         }
 

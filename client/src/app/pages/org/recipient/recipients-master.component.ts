@@ -1,5 +1,6 @@
 import { TeamMember } from '@/api/models/entity/team-member';
 import { AuthService } from '@/api/services/auth.service';
+import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Subscription } from 'rxjs';
 
@@ -85,6 +86,7 @@ export class OrgRecipientsMasterComponent implements OnInit, OnDestroy {
     confirmationService = inject(ConfirmationService);
     private toastService = inject(ToastService);
     private authService = inject(AuthService);
+    private orgContextService = inject(OrgContextService);
 
     @ViewChild(AppAlert) alert: AppAlert | undefined;
     @ViewChild(AppModal) modal!: AppModal;
@@ -101,7 +103,7 @@ export class OrgRecipientsMasterComponent implements OnInit, OnDestroy {
 
     constructor() {
         effect(() => {
-            const orgId = this.authService.currentOrgId();
+            const orgId = this.orgContextService.routeOrgId();
             if (orgId) {
                 Logger.log('Focused organization changed:', orgId);
                 this.reload();
@@ -150,7 +152,7 @@ export class OrgRecipientsMasterComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         this.alert?.close();
 
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         this.subscription = this.teamService.getTeamMembers(orgId).subscribe({
             next: (members) => {
                 this.teamMembers = members;
@@ -213,7 +215,7 @@ export class OrgRecipientsMasterComponent implements OnInit, OnDestroy {
         Logger.log('Saving recipient data:', recipientData);
 
         this.isLoading = true;
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         this.teamService.saveRecipient(orgId, recipientData).subscribe({
             next: () => {
                 this.modal.hideModal();
@@ -277,7 +279,7 @@ export class OrgRecipientsMasterComponent implements OnInit, OnDestroy {
         const memberIds = this.selectedMembers.map((member) => member.id);
         this.isLoading = true;
 
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         this.teamService.deleteRecipients(orgId, memberIds).subscribe({
             next: () => {
                 this.toastService.showSuccess('Success', 'Recipient(s) deleted successfully');

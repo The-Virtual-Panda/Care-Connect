@@ -4,6 +4,7 @@ import { AuthService } from '@/api/services/auth.service';
 import { OrgService } from '@/api/services/org.service';
 import { AppAlert } from '@/components/app-alert.component';
 import { AppModal } from '@/components/app-modal.component';
+import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Subscription } from 'rxjs';
 
@@ -59,6 +60,7 @@ export class OrgRolesMasterComponent implements OnInit, OnDestroy {
     private confirmationService = inject(ConfirmationService);
     private formBuilder = inject(FormBuilder);
     private orgService = inject(OrgService);
+    private orgContextService = inject(OrgContextService);
 
     @ViewChild(AppAlert) alert: AppAlert | undefined;
     @ViewChild(AppModal) modal!: AppModal;
@@ -135,7 +137,7 @@ export class OrgRolesMasterComponent implements OnInit, OnDestroy {
     reload(): void {
         this.isLoading = true;
         this.alert?.close();
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         this.subscription = this.orgService.getRoles(orgId).subscribe({
             next: (roles) => {
                 this.roles = roles;
@@ -190,7 +192,7 @@ export class OrgRolesMasterComponent implements OnInit, OnDestroy {
         if (this.roleForm.invalid) return;
         const roleData = this.roleForm.value as Partial<OrganizationRole>;
         this.isLoading = true;
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         this.orgService.saveRole(orgId, roleData).subscribe({
             next: () => {
                 this.modal.hideModal();
@@ -225,7 +227,7 @@ export class OrgRolesMasterComponent implements OnInit, OnDestroy {
         if (!this.selectedRoles?.length) return;
         const ids = this.selectedRoles.map((r) => r.id);
         this.isLoading = true;
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         this.orgService.deleteRoles(orgId, ids).subscribe({
             next: () => {
                 this.toastService.showSuccess('Success', 'Role(s) deleted successfully');

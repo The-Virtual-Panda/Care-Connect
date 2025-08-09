@@ -1,3 +1,4 @@
+import { OrgContextService } from '@/services/org-context.service';
 import { Logger } from '@/utils/logger';
 import { Observable, catchError, from, map, throwError } from 'rxjs';
 
@@ -5,17 +6,16 @@ import { Injectable, inject } from '@angular/core';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 
 import { StripeBillingPortalRequestDto } from '../models/dto/stripe-billing-portal-request';
-import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class StripeService {
     private functions = inject(Functions);
-    private authService = inject(AuthService);
+    private orgContextService = inject(OrgContextService);
 
     getBillingPortalUrl(): Observable<string> {
-        const orgId = this.authService.currentOrgId();
+        const orgId = this.orgContextService.routeOrgId();
         if (!orgId) {
             Logger.error('No organization ID found. Cannot navigate to billing portal.');
             return throwError(() => new Error('No organization ID found.'));

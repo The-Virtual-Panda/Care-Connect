@@ -16,6 +16,12 @@ Types of changes:
 
 ## [Unreleased]
 
+### Added
+
+- Added Roles and permisssion page
+
+## [v1.5.0] - 2025-08-14
+
 ### Changed
 
 - Site routing now supports organizational identifiers, making navigation easier and better in multiple orgs
@@ -27,7 +33,6 @@ Types of changes:
   - Manage billing info
   - Download invoices
 - Create stripe customer during registration
-- Added Roles and permisssion page
 
 ### Fixed
 

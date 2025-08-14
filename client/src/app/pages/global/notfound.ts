@@ -1,3 +1,5 @@
+import { AuthService } from '@/api/services/auth.service';
+
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -294,9 +296,18 @@ import { RouterModule } from '@angular/router';
                     <h2 class="mt-8 text-center text-4xl font-semibold text-surface-950 lg:text-6xl dark:text-surface-0">Page not found</h2>
                     <p class="mt-4 text-center text-surface-500 lg:text-xl dark:text-white/64">Something gone wrong!</p>
                     <a routerLink="/" class="button-primary mt-8">Go to Dashboard</a>
+                    @if (authService.isLoggedIn()) {
+                        <button class="button-secondary mt-4" (click)="logout()">Logout</button>
+                    }
                 </div>
             </div>
         </div>
     </section>`
 })
-export class Notfound {}
+export class Notfound {
+    authService = inject(AuthService);
+
+    logout() {
+        this.authService.logout();
+    }
+}

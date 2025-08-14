@@ -20,6 +20,12 @@ Types of changes:
 
 - Added Roles and permisssion page
 
+## [v1.5.1] - 2025-08-14
+
+### Fixed
+
+- Added loggout option to the not found page
+
 ## [v1.5.0] - 2025-08-14
 
 ### Changed

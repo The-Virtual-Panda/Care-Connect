@@ -15,7 +15,10 @@ const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 // Callable function from the application to create a Stripe customer portal session
 exports.createStripeCustomerPortalSession = onCall(
-    { cors: [/firebase\.com$/, publicAppUrl] },
+    {
+        invoker: 'public',
+        cors: [/firebase\.com$/, publicAppUrl],
+    },
     async (request: any) => {
         logger.info('Received request for createStripeCustomerPortalSession');
 

@@ -15,3 +15,4 @@ export * from './api/stripe';
 export * from './local/retrieval-tests';
 export * from './local/twilio-testing';
 export * from './local/grant-role';
+export * from './local/email-test';

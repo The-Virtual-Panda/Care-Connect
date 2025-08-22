@@ -12,7 +12,7 @@
 
     <ng-template #footer>
         @if (footerTemplate) {
-            <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
+            <ng-container *ngTemplateOutlet="footerTemplate" />
         } @else {
             <p-button
                 [label]="cancelText"

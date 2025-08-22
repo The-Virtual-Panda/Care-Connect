@@ -8,7 +8,6 @@ import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -35,7 +34,6 @@ import { AppBreadcrumb } from './app.breadcrumb';
     templateUrl: './app-topbar.component.html',
     imports: [
         RouterModule,
-        CommonModule,
         FormsModule,
         StyleClassModule,
         AppBreadcrumb,

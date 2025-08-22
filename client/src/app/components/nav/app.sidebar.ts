@@ -1,7 +1,6 @@
 import { AppTopbar } from '@/components/nav/app-topbar.component';
 import { LayoutService } from '@/services/layout.service';
 
-import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -10,7 +9,7 @@ import { AppMenu } from './app.menu';
 @Component({
     selector: '[app-sidebar]',
     standalone: true,
-    imports: [CommonModule, AppMenu, RouterModule, AppTopbar],
+    imports: [AppMenu, RouterModule, AppTopbar],
     template: ` <div class="layout-sidebar" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
         <div class="sidebar-header">
             <a class="logo" [routerLink]="['/']">

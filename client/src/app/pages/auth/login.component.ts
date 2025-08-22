@@ -4,7 +4,6 @@ import { AppAlert } from '@/components/app-alert.component';
 import { OrgContextService } from '@/services/org-context.service';
 import { Logger } from '@/utils/logger';
 
-import { CommonModule } from '@angular/common';
 import { Component, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -16,7 +15,7 @@ import { InputTextModule } from 'primeng/inputtext';
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [CommonModule, RouterModule, InputTextModule, FormsModule, CheckboxModule, ButtonModule, AppAlert],
+    imports: [RouterModule, InputTextModule, FormsModule, CheckboxModule, ButtonModule, AppAlert],
     templateUrl: './login.component.html'
 })
 export class Login {

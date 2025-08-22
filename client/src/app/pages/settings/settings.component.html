@@ -41,17 +41,17 @@
                 </div>
             </div>
             <div class="col-span-12 lg:col-span-10">
-                <ng-container [ngSwitch]="selectedTab">
-                    <ng-container *ngSwitchCase="0">
+                @switch (selectedTab) {
+                    @case (0) {
                         <app-profile />
-                    </ng-container>
-                    <ng-container *ngSwitchCase="1">
+                    }
+                    @case (1) {
                         <app-account />
-                    </ng-container>
-                    <ng-container *ngSwitchCase="2">
+                    }
+                    @case (2) {
                         <app-configurator />
-                    </ng-container>
-                </ng-container>
+                    }
+                }
             </div>
         </div>
     </div>

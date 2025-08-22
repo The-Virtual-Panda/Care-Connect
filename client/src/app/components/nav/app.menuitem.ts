@@ -81,9 +81,9 @@ import { TooltipModule } from 'primeng/tooltip';
 
             @if (item.items && item.visible !== false) {
                 <ul #submenu class="layout-root-submenulist !z-50" [@children]="submenuAnimation" (@children.done)="onSubmenuAnimated($event)">
-                    <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
+                    @for (child of item.items; track child; let i = $index) {
                         <li app-menuitem [item]="child" [index]="i" [parentKey]="key" [class]="child['badgeClass']"></li>
-                    </ng-template>
+                    }
                 </ul>
             }
         </ng-container>

@@ -8,7 +8,6 @@ import { OrgContextService } from '@/services/org-context.service';
 import { ToastService } from '@/services/toast.service';
 import { Logger } from '@/utils/logger';
 
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, Signal, computed, effect, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -19,17 +18,17 @@ import { AppMenuitem } from './app.menuitem';
 @Component({
     selector: '[app-menu]',
     standalone: true,
-    imports: [CommonModule, AppMenuitem, RouterModule],
+    imports: [AppMenuitem, RouterModule],
     providers: [PhonePipe],
     template: `
         <ul class="layout-menu">
-            <ng-container *ngFor="let item of menuItems(); let i = index">
+            @for (item of menuItems(); track item; let i = $index) {
                 @if (item.separator) {
                     <li class="menu-separator"></li>
                 } @else {
                     <li app-menuitem [item]="item" [index]="i" [root]="true"></li>
                 }
-            </ng-container>
+            }
         </ul>
     `
 })

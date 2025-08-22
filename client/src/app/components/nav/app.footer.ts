@@ -2,7 +2,6 @@ import { LayoutService } from '@/services/layout.service';
 import { Logger } from '@/utils/logger';
 import { environment } from 'src/environments/environment';
 
-import { CommonModule } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 
 import { MessageModule } from 'primeng/message';
@@ -10,7 +9,7 @@ import { MessageModule } from 'primeng/message';
 @Component({
     selector: '[app-footer]',
     standalone: true,
-    imports: [CommonModule, MessageModule],
+    imports: [MessageModule],
     template: `
         <div class="layout-footer">
             <div class="footer-logo-container">

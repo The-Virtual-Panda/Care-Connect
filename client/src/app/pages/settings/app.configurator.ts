@@ -2,7 +2,7 @@ import { LayoutService } from '@/services/layout.service';
 import { KeyOfType, SurfacesType, getPresetExt, getPrimaryColors, presets } from '@/utils/theme';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
 
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 @Component({
     selector: 'app-configurator',
     standalone: true,
-    imports: [CommonModule, FormsModule, SelectButtonModule, DrawerModule, ToggleSwitchModule, RadioButtonModule],
+    imports: [FormsModule, SelectButtonModule, DrawerModule, ToggleSwitchModule, RadioButtonModule],
     template: `
         <div class="mb-4 flex flex-col gap-2">
             <div class="text-lg font-semibold leading-tight text-surface-900 dark:text-surface-0">Appearance</div>

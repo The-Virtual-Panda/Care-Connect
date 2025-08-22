@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MessageModule } from 'primeng/message';
 
 export enum AlertSeverity {
@@ -8,14 +8,14 @@ export enum AlertSeverity {
     Warn = 'warn',
     Error = 'error',
     Secondary = 'secondary',
-    Contrast = 'contrast',
+    Contrast = 'contrast'
 }
 
 @Component({
     selector: 'app-alert',
     templateUrl: './app-alert.component.html',
     standalone: true,
-    imports: [CommonModule, MessageModule],
+    imports: [MessageModule]
 })
 export class AppAlert {
     @Input() severity: AlertSeverity = AlertSeverity.Info;

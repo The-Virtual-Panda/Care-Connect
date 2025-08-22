@@ -42,6 +42,8 @@ import { noWhitespaceValidator } from './profile.component';
     ]
 })
 export class AccountComponent {
+    private fb = inject(FormBuilder);
+
     authService = inject(AuthService);
     userService = inject(UserService);
 
@@ -63,7 +65,7 @@ export class AccountComponent {
         return false;
     });
 
-    constructor(private fb: FormBuilder) {
+    constructor() {
         this.passwordForm = this.fb.group(
             {
                 currentPassword: ['', [Validators.required, noWhitespaceValidator()]],

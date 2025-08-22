@@ -46,6 +46,8 @@ export function noWhitespaceValidator(): ValidatorFn {
     ]
 })
 export class ProfileComponent implements OnInit {
+    private fb = inject(FormBuilder);
+
     authService = inject(AuthService);
     userService = inject(UserService);
 
@@ -69,7 +71,7 @@ export class ProfileComponent implements OnInit {
         return false;
     });
 
-    constructor(private fb: FormBuilder) {
+    constructor() {
         this.profileForm = this.fb.group({
             name: ['', [Validators.required, noWhitespaceValidator()]]
         });

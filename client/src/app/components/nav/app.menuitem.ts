@@ -4,7 +4,7 @@ import { filter } from 'rxjs/operators';
 
 import { AnimationEvent, animate, state, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild, computed, effect } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild, computed, effect, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 
 import { DomHandler } from 'primeng/dom';
@@ -119,12 +119,12 @@ import { TooltipModule } from 'primeng/tooltip';
     ]
 })
 export class AppMenuitem implements OnInit, OnDestroy {
+    layoutService = inject(LayoutService);
+    router = inject(Router);
+
     @Input() item: any;
-
     @Input() index!: number;
-
     @Input() @HostBinding('class.layout-root-menuitem') root!: boolean;
-
     @Input() parentKey!: string;
 
     @ViewChild('submenu') submenu!: ElementRef;
@@ -135,11 +135,8 @@ export class AppMenuitem implements OnInit, OnDestroy {
     }
 
     active = false;
-
     menuSourceSubscription: Subscription;
-
     menuResetSubscription: Subscription;
-
     key: string = '';
 
     get submenuAnimation() {
@@ -149,9 +146,7 @@ export class AppMenuitem implements OnInit, OnDestroy {
     }
 
     isSlim = computed(() => this.layoutService.isSlim());
-
     isCompact = computed(() => this.layoutService.isCompact());
-
     isHorizontal = computed(() => this.layoutService.isHorizontal());
 
     get isDesktop() {
@@ -162,10 +157,7 @@ export class AppMenuitem implements OnInit, OnDestroy {
         return this.layoutService.isMobile();
     }
 
-    constructor(
-        public layoutService: LayoutService,
-        public router: Router
-    ) {
+    constructor() {
         this.menuSourceSubscription = this.layoutService.menuSource$.subscribe((value) => {
             Promise.resolve(null).then(() => {
                 if (value.routeEvent) {

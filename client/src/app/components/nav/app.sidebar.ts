@@ -1,7 +1,7 @@
 import { AppTopbar } from '@/components/nav/app-topbar.component';
 import { LayoutService } from '@/services/layout.service';
 
-import { Component, ElementRef, ViewChild, computed } from '@angular/core';
+import { Component, ElementRef, ViewChild, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { AppMenu } from './app.menu';
@@ -28,17 +28,15 @@ import { AppMenu } from './app.menu';
     </div>`
 })
 export class AppSidebar {
+    layoutService = inject(LayoutService);
+    el = inject(ElementRef);
+
     timeout: any = null;
 
     isHorizontal = computed(() => this.layoutService.isHorizontal());
     isDarkTheme = computed(() => this.layoutService.isDarkTheme());
 
     @ViewChild('menuContainer') menuContainer!: ElementRef;
-
-    constructor(
-        public layoutService: LayoutService,
-        public el: ElementRef
-    ) {}
 
     onMouseEnter() {
         if (!this.layoutService.layoutState().anchored) {

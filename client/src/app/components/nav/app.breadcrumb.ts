@@ -1,7 +1,7 @@
 import { BehaviorSubject, filter } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterModule } from '@angular/router';
 
 interface Breadcrumb {
@@ -25,11 +25,13 @@ interface Breadcrumb {
     </nav>`
 })
 export class AppBreadcrumb {
+    private router = inject(Router);
+
     private readonly _breadcrumbs$ = new BehaviorSubject<Breadcrumb[]>([]);
 
     readonly breadcrumbs$ = this._breadcrumbs$.asObservable();
 
-    constructor(private router: Router) {
+    constructor() {
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event) => {
             const root = this.router.routerState.snapshot.root;
             const breadcrumbs: Breadcrumb[] = [];

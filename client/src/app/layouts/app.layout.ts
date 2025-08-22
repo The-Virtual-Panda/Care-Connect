@@ -6,7 +6,7 @@ import { LayoutService } from '@/services/layout.service';
 import { Subscription, filter } from 'rxjs';
 
 import { CommonModule } from '@angular/common';
-import { Component, Renderer2, ViewChild, computed } from '@angular/core';
+import { Component, Renderer2, ViewChild, computed, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 
 import { Toast } from 'primeng/toast';
@@ -43,6 +43,10 @@ import { AppSidebar } from '../components/nav/app.sidebar';
     `
 })
 export class AppLayout {
+    layoutService = inject(LayoutService);
+    renderer = inject(Renderer2);
+    router = inject(Router);
+
     overlayMenuOpenSubscription: Subscription;
     menuOutsideClickListener: any;
     menuScrollListener: any;
@@ -50,11 +54,7 @@ export class AppLayout {
     @ViewChild(AppSidebar) appSidebar!: AppSidebar;
     @ViewChild(AppTopbar) appTopBar!: AppTopbar;
 
-    constructor(
-        public layoutService: LayoutService,
-        public renderer: Renderer2,
-        public router: Router
-    ) {
+    constructor() {
         this.overlayMenuOpenSubscription = this.layoutService.overlayOpen$.subscribe(() => {
             if (!this.menuOutsideClickListener) {
                 this.menuOutsideClickListener = this.renderer.listen('document', 'click', (event) => this.outsideClickListener(event));

@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 
@@ -17,6 +17,9 @@ import { InputTextModule } from 'primeng/inputtext';
     templateUrl: './register.component.html'
 })
 export class Register {
+    private authService = inject(AuthService);
+    private router = inject(Router);
+
     @ViewChild(AppAlert) alert!: AppAlert;
 
     orgName = '';
@@ -25,11 +28,6 @@ export class Register {
     password = '';
     confirmPassword = '';
     checkbox = false;
-
-    constructor(
-        private authService: AuthService,
-        private router: Router
-    ) {}
 
     async register() {
         if (!this.email || !this.password || !this.confirmPassword) {

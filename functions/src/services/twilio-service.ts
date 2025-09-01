@@ -3,6 +3,7 @@ import { matchShiftRule } from './scheduling-service';
 import { twiml as Twiml, validateRequest } from 'twilio';
 import { logger } from 'firebase-functions';
 import {
+    CallResource,
     TwilioCallListResponse,
     TwilioCallSearchOptions,
 } from '../models/dto/twilio/twilio-calls';
@@ -181,14 +182,39 @@ export class TwilioService {
             }),
         };
 
+        logger.debug('Twilio API call parameters:', { queryParams });
+
         const callsPage = await twilioClient.calls.page(queryParams);
 
-        // Log available properties for debugging
-        console.log('CallPage properties:', Object.keys(callsPage));
-
-        // Create a response that conforms to TwilioPagedResponse interface
         return {
-            calls: callsPage.instances,
+            calls: callsPage.instances.map(
+                (call): CallResource => ({
+                    sid: call.sid,
+                    dateCreated: call.dateCreated.toUTCString(),
+                    dateUpdated: call.dateUpdated.toUTCString(),
+                    parentCallSid: call.parentCallSid,
+                    accountSid: call.accountSid,
+                    to: call.to,
+                    toFormatted: call.toFormatted,
+                    from: call.from,
+                    fromFormatted: call.fromFormatted,
+                    phoneNumberSid: call.phoneNumberSid,
+                    status: call.status,
+                    startTime: call.startTime.toUTCString(),
+                    endTime: call.endTime.toUTCString(),
+                    duration: call.duration,
+                    price: call.price,
+                    priceUnit: call.priceUnit,
+                    direction: call.direction,
+                    answeredBy: call.answeredBy,
+                    apiVersion: call.apiVersion,
+                    forwardedFrom: call.forwardedFrom,
+                    groupSid: call.groupSid,
+                    callerName: call.callerName,
+                    queueTime: call.queueTime,
+                    trunkSid: call.trunkSid,
+                })
+            ),
             nextPageUri: callsPage.nextPageUrl ?? null,
             previousPageUri: callsPage.previousPageUrl ?? null,
             page: options.pageNumber || 0,

@@ -93,6 +93,7 @@ export const searchTwilioCalls = onCall(
 
             // Set defaults if not provided
             const options: TwilioCallSearchOptions = {
+                orgId: searchOptions.orgId,
                 pageSize: searchOptions.pageSize || 50,
                 pageNumber: searchOptions.pageNumber || 0,
                 startDate: searchOptions.startDate,
@@ -141,6 +142,8 @@ export const searchTwilioCalls = onCall(
             logger.info('Successfully retrieved Twilio calls', {
                 callCount: result.calls.length,
             });
+
+            logger.debug('Twilio call search result', { result });
 
             return result;
         } catch (error: any) {

@@ -10,8 +10,8 @@ if (process.env.USERNAME === 'brent') {
     //console.log(process.env);
 }
 
-export * from './api/twillio';
-export * from './api/stripe';
+export * from './api/twillio-controller';
+export * from './api/stripe-controller';
 export * from './local/retrieval-tests';
 export * from './local/twilio-testing';
 export * from './local/grant-role';

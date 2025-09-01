@@ -4,7 +4,7 @@ import {
     FirestoreCollections,
     FirestoreService,
 } from '../services/firestore-service';
-import { onDocumentWritten } from 'firebase-functions/firestore';
+import { onDocumentCreated } from 'firebase-functions/firestore';
 import Stripe from 'stripe';
 import { Organization } from '../models/domain/organization';
 
@@ -104,7 +104,7 @@ exports.createStripeCustomerPortalSession = onCall(
     }
 );
 
-exports.createStripeCustomer = onDocumentWritten(
+exports.createStripeCustomer = onDocumentCreated(
     `${FirestoreCollections.organizations.root}/{docId}`,
     async (event) => {
         try {
@@ -116,7 +116,7 @@ exports.createStripeCustomer = onDocumentWritten(
                 );
                 return;
             }
-            const organization = snapshot.after.data() as Organization;
+            const organization = snapshot.data() as Organization;
             const organizationId = event.params.docId;
 
             if (organization.stripeCustomerId) {

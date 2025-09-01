@@ -1,0 +1,172 @@
+<p class="mb-4">View and manage your organization's call history.</p>
+
+<app-alert />
+
+<div class="mb-4">
+    <p-toolbar>
+        <ng-template #end>
+            <p-button
+                label="Refresh"
+                icon="pi pi-refresh"
+                (onClick)="reload()" />
+        </ng-template>
+    </p-toolbar>
+</div>
+
+<p-table
+    #dt
+    [value]="calls"
+    sortField="startTime"
+    [sortOrder]="1"
+    dataKey="sid"
+    [rows]="10"
+    [loading]="isLoading"
+    showLoader="false"
+    [rowHover]="true"
+    [paginator]="true"
+    [globalFilterFields]="['sid', 'startTime', 'status', 'direction', 'from', 'to', 'cost']"
+    stripedRows
+    responsiveLayout="scroll">
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <span class="text-xl font-semibold">Call History</span>
+            <div class="mt-2 flex items-center sm:mt-0">
+                <span class="p-input-icon-left mr-2">
+                    <i class="pi pi-search"></i>
+                    <input
+                        pInputText
+                        type="text"
+                        placeholder="Search calls..."
+                        (input)="onGlobalFilter(dt, $event)" />
+                </span>
+                <p-button
+                    variant="outlined"
+                    icon="pi pi-filter-slash"
+                    label="Clear Filters"
+                    class="mr-2"
+                    (click)="clearFilters(dt)" />
+                <p-button
+                    type="button"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    (click)="reload()" />
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th pSortableColumn="startTime">
+                <div class="flex items-center gap-2">
+                    Date/Time
+                    <p-sortIcon field="startTime" />
+                </div>
+            </th>
+            <th pSortableColumn="status">
+                <div class="flex items-center gap-2">
+                    Status
+                    <p-sortIcon field="status" />
+                </div>
+            </th>
+            <th pSortableColumn="direction">
+                <div class="flex items-center gap-2">
+                    Direction
+                    <p-sortIcon field="direction" />
+                </div>
+            </th>
+            <th pSortableColumn="from">
+                <div class="flex items-center gap-2">
+                    From
+                    <p-sortIcon field="from" />
+                </div>
+            </th>
+            <th pSortableColumn="to">
+                <div class="flex items-center gap-2">
+                    To
+                    <p-sortIcon field="to" />
+                </div>
+            </th>
+            <th pSortableColumn="duration">
+                <div class="flex items-center gap-2">
+                    Duration
+                    <p-sortIcon field="duration" />
+                </div>
+            </th>
+            <th pSortableColumn="price">
+                <div class="flex items-center gap-2">
+                    Cost
+                    <p-sortIcon field="price" />
+                </div>
+            </th>
+            <th pSortableColumn="sid">
+                <div class="flex items-center gap-2">
+                    ID
+                    <p-sortIcon field="sid" />
+                </div>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template
+        #body
+        let-call>
+        <tr>
+            <td>{{ call.startTime | date: 'MMM d, y h:mm a' }}</td>
+            <td>
+                <p-tag
+                    [value]="call.status"
+                    [severity]="getStatusSeverity(call.status)"></p-tag>
+            </td>
+            <td>
+                <span [ngClass]="getDirectionClass(call.direction)">
+                    <i
+                        [class]="getDirectionIcon(call.direction)"
+                        class="mr-2"></i>
+                    {{ formatDirection(call.direction) }}
+                </span>
+            </td>
+            <td>{{ call.fromFormatted || call.from }}</td>
+            <td>{{ call.toFormatted || call.to }}</td>
+            <td>{{ formatDuration(call.duration) }}</td>
+            <td>
+                {{ formatPrice(call.price) }}
+            </td>
+            <td>{{ call.sid }}</td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="8">No call history found for your organization</td>
+        </tr>
+    </ng-template>
+    <ng-template #loadingbody>
+        <tr>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+        <tr>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+        <tr>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+            <td><p-skeleton /></td>
+        </tr>
+    </ng-template>
+</p-table>

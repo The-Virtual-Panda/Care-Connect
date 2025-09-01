@@ -61,7 +61,7 @@ export const PermissionMeta: Record<OrgPermission, { group: OrgPermissionGroup; 
         implies: [OrgPermission.PhoneContacts]
     },
     [OrgPermission.PhoneContacts]: { group: OrgPermissionGroup.Phone, label: 'Contacts', isAvailable: false },
-    [OrgPermission.PhoneCallHistory]: { group: OrgPermissionGroup.Phone, label: 'Call History', isAvailable: false },
+    [OrgPermission.PhoneCallHistory]: { group: OrgPermissionGroup.Phone, label: 'Call History', isAvailable: true },
     [OrgPermission.PhoneVoicemails]: { group: OrgPermissionGroup.Phone, label: 'Voicemails', isAvailable: false },
     [OrgPermission.PhoneCallFlow]: {
         group: OrgPermissionGroup.Phone,

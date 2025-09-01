@@ -88,7 +88,6 @@ export class AppMenu implements OnInit {
             {
                 label: 'Phone',
                 icon: 'pi pi-phone',
-                visible: phoneNumbers.length > 0,
                 items: [
                     {
                         label: 'Call History',

@@ -6,13 +6,15 @@ import { InviteStatus } from '@/api/models/enums/invite-status';
 import { OrgRole } from '@/api/models/enums/org-role';
 import { Observable, forkJoin, from, map, of, switchMap } from 'rxjs';
 
-import { Injectable, Pipe, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { collectionData, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { Storage, getDownloadURL, ref, uploadBytesResumable } from '@angular/fire/storage';
 
 import { FirestoreCollectionsService } from './firestore-collections';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+    providedIn: 'root' // Used in AuthService.
+})
 export class UserService {
     private firestoreCollections = inject(FirestoreCollectionsService);
     private storage = inject(Storage);

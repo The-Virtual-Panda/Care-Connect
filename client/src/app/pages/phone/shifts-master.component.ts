@@ -80,7 +80,7 @@ import { TooltipModule } from 'primeng/tooltip';
         InputSwitchModule,
         TooltipModule
     ],
-    providers: [DialogService, ConfirmationService]
+    providers: [DialogService, ConfirmationService, PhoneService, TeamService]
 })
 export class ShiftsMasterComponent implements OnInit, OnDestroy {
     @Input() phoneId!: string;

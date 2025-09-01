@@ -35,7 +35,8 @@ import { OrgsMembershipListComponent } from './components/org-membership-list.co
         TooltipModule,
         IconFieldModule,
         OrgsMembershipListComponent
-    ]
+    ],
+    providers: [AdminService]
 })
 export class OrgsComponent implements OnInit, OnDestroy {
     private adminService = inject(AdminService);

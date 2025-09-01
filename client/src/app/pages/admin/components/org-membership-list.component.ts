@@ -35,7 +35,8 @@ import { TableModule } from 'primeng/table';
         Fluid,
         AppAvatarComponent
     ],
-    templateUrl: './org-membership-list.component.html'
+    templateUrl: './org-membership-list.component.html',
+    providers: [AdminService]
 })
 export class OrgsMembershipListComponent implements OnInit {
     @Input() userId: string | null = null;

@@ -6,9 +6,7 @@ import { collectionData, deleteDoc, doc, setDoc } from '@angular/fire/firestore'
 
 import { FirestoreCollectionsService } from './firestore-collections';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class TeamService {
     private firestoreCollections = inject(FirestoreCollectionsService);
 

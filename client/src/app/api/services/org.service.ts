@@ -6,9 +6,7 @@ import { collectionData, deleteDoc, doc, setDoc } from '@angular/fire/firestore'
 import { OrganizationRole } from '../models/entity/organization-role';
 import { FirestoreCollectionsService } from './firestore-collections';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class OrgService {
     private firestoreCollections = inject(FirestoreCollectionsService);
 

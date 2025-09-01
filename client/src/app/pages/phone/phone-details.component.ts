@@ -17,7 +17,8 @@ import { ShiftsMasterComponent } from './shifts-master.component';
     selector: 'cc-phone-details',
     standalone: true,
     imports: [CommonModule, FormsModule, ShiftsMasterComponent, CardModule, PhonePipe, PhoneUsageTypeDisplayPipe],
-    templateUrl: './phone-details.component.html'
+    templateUrl: './phone-details.component.html',
+    providers: [PhoneService]
 })
 export class PhoneDetailsComponent implements OnInit {
     private router = inject(Router);

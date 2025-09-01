@@ -19,7 +19,7 @@ import { AppMenuitem } from './app.menuitem';
     selector: '[app-menu]',
     standalone: true,
     imports: [AppMenuitem, RouterModule],
-    providers: [PhonePipe],
+    providers: [PhonePipe, PhoneService, StripeService],
     template: `
         <ul class="layout-menu">
             @for (item of menuItems(); track item; let i = $index) {
@@ -89,11 +89,18 @@ export class AppMenu implements OnInit {
                 label: 'Phone',
                 icon: 'pi pi-phone',
                 visible: phoneNumbers.length > 0,
-                items: phoneNumbers.map((phone) => ({
-                    label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
-                    icon: 'pi pi-mobile',
-                    routerLink: this.orgContextService.link(['phone', phone.id, 'call-flow'])
-                }))
+                items: [
+                    {
+                        label: 'Call History',
+                        icon: 'pi pi-history',
+                        routerLink: this.orgContextService.link(['phone', 'call-history'])
+                    },
+                    ...phoneNumbers.map((phone) => ({
+                        label: phone.label ? `${phone.label} ${this.phonePipe.transform(phone.number)}` : this.phonePipe.transform(phone.number),
+                        icon: 'pi pi-mobile',
+                        routerLink: this.orgContextService.link(['phone', phone.id, 'call-flow'])
+                    }))
+                ]
             },
             { separator: true, visible: this.authService.isSystemAdmin() },
             {

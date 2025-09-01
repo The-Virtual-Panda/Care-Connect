@@ -52,7 +52,7 @@ import { TooltipModule } from 'primeng/tooltip';
         TooltipModule
     ],
     templateUrl: './roles-master.component.html',
-    providers: [ConfirmationService]
+    providers: [ConfirmationService, OrgService]
 })
 export class OrgRolesMasterComponent implements OnInit, OnDestroy {
     private authService = inject(AuthService);

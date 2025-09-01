@@ -2,13 +2,13 @@ import { Observable, from } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
 import { Injectable, inject } from '@angular/core';
-import { addDoc, collection, deleteDoc, doc, docData, getDocs, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
+import { addDoc, deleteDoc, docData, getDocs, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 
-import { PhoneNumber, phoneNumberConverter } from '../models/entity/phone-number';
+import { PhoneNumber } from '../models/entity/phone-number';
 import { Shift } from '../models/entity/shift';
 import { FirestoreCollectionsService } from './firestore-collections';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class PhoneService {
     private firestoreCollections = inject(FirestoreCollectionsService);
 

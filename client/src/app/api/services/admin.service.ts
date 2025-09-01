@@ -11,9 +11,7 @@ import { OrgMembership } from '../models/entity/org-membership';
 import { InviteStatus } from '../models/enums/invite-status';
 import { OrgRole } from '../models/enums/org-role';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class AdminService {
     private firestoreCollections = inject(FirestoreCollectionsService);
 

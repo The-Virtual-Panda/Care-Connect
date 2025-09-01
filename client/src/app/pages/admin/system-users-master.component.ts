@@ -37,7 +37,8 @@ import { OrgsMembershipListComponent } from './components/org-membership-list.co
         IconFieldModule,
         OrgsMembershipListComponent,
         AppAvatarComponent
-    ]
+    ],
+    providers: [AdminService]
 })
 export class SystemUsersComponent implements OnInit, OnDestroy {
     private adminService = inject(AdminService);

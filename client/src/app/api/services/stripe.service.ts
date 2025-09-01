@@ -7,9 +7,7 @@ import { Functions, httpsCallable } from '@angular/fire/functions';
 
 import { StripeBillingPortalRequestDto } from '../models/dto/stripe-billing-portal-request';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class StripeService {
     private functions = inject(Functions);
     private orgContextService = inject(OrgContextService);

@@ -77,7 +77,7 @@ import { ToolbarModule } from 'primeng/toolbar';
     ],
     templateUrl: './recipients-master.component.html',
     standalone: true,
-    providers: [DialogService, ConfirmationService]
+    providers: [DialogService, ConfirmationService, TeamService]
 })
 export class OrgRecipientsMasterComponent implements OnInit, OnDestroy {
     teamService = inject(TeamService);

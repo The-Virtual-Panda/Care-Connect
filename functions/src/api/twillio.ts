@@ -1,8 +1,11 @@
-import { onRequest } from 'firebase-functions/v2/https';
+import { HttpsError, onCall, onRequest } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
 
 import { FirestoreService } from '../services/firestore-service';
 import { TwilioService } from '../services/twilio-service';
+import { TwilioCallSearchOptions } from '../models/dto/twilio/twilio-calls';
+
+const publicAppUrl = process.env.PUBLIC_APP_URL || '';
 
 export const handleCall = onRequest(async (request, response) => {
     try {
@@ -65,3 +68,92 @@ export const handleCall = onRequest(async (request, response) => {
         response.status(500).send('Server error.');
     }
 });
+
+export const searchTwilioCalls = onCall(
+    {
+        invoker: 'public',
+        cors: [/firebase\.com$/, publicAppUrl],
+    },
+    async (request: any) => {
+        logger.info('Received request for searchTwilioCalls', {
+            searchOptions: request.data,
+        });
+
+        try {
+            if (!request.auth || !request.auth.uid) {
+                logger.warn('Unauthorized request', { request });
+                return new HttpsError(
+                    'unauthenticated',
+                    'The function must be called while authenticated.'
+                );
+            }
+
+            // Validate search options
+            const searchOptions: TwilioCallSearchOptions = request.data || {};
+
+            // Set defaults if not provided
+            const options: TwilioCallSearchOptions = {
+                pageSize: searchOptions.pageSize || 50,
+                pageNumber: searchOptions.pageNumber || 0,
+                startDate: searchOptions.startDate,
+                endDate: searchOptions.endDate,
+                from: searchOptions.from,
+                to: searchOptions.to,
+                status: searchOptions.status,
+            };
+
+            // Verify the request
+            if (!options.orgId) {
+                logger.warn(
+                    'Missing organizationId in request to searchTwilioCalls'
+                );
+                return new HttpsError(
+                    'invalid-argument',
+                    'Missing orgId in request to searchTwilioCalls.'
+                );
+            }
+
+            // TODO: Check for permission - do once roles & permissions implemented
+
+            // Fetch the organization document to get the Stripe customer ID
+            const firestoreService = new FirestoreService();
+            const org = await firestoreService.getOrganizationById(
+                options.orgId
+            );
+
+            if (!org || !org.twilioAccountSid) {
+                logger.error(`Organization ${options.orgId} not found`);
+                return new HttpsError(
+                    'not-found',
+                    'The organization was not found or is not connected to Twilio.'
+                );
+            }
+
+            logger.debug('Processing call search with options', { options });
+
+            // Fetch calls from Twilio
+            const twilioService = new TwilioService(firestoreService);
+            const result = await twilioService.searchCalls(
+                org.twilioAccountSid,
+                options
+            );
+
+            logger.info('Successfully retrieved Twilio calls', {
+                callCount: result.calls.length,
+            });
+
+            return result;
+        } catch (error: any) {
+            logger.error('Error searching Twilio calls', {
+                error: error.message,
+                stack: error.stack,
+            });
+
+            throw new HttpsError(
+                'internal',
+                'An error occurred while searching Twilio calls.',
+                { message: error.message }
+            );
+        }
+    }
+);

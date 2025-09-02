@@ -1,49 +1,83 @@
-<p class="mb-4">View and manage your organization's call history.</p>
+<!-- Retention / Policy Banner -->
+<p class="mb-4 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+    Call history is retained for up to <span class="font-medium">13 months.</span> For older records, please contact support.
+</p>
 
 <app-alert />
-
-<div class="mb-4">
-    <p-toolbar>
-        <ng-template #end>
-            <p-button
-                label="Refresh"
-                icon="pi pi-refresh"
-                (onClick)="reload()" />
-        </ng-template>
-    </p-toolbar>
-</div>
 
 <p-table
     #dt
     [value]="calls"
     sortField="startTime"
-    [sortOrder]="1"
+    [sortOrder]="-1"
     dataKey="sid"
     [rows]="10"
     [loading]="isLoading"
     showLoader="false"
     [rowHover]="true"
     [paginator]="true"
-    [globalFilterFields]="['sid', 'startTime', 'status', 'direction', 'from', 'to', 'cost']"
+    [globalFilterFields]="['sid']"
     stripedRows
     responsiveLayout="scroll">
     <ng-template #caption>
-        <div class="flex items-center justify-between">
-            <span class="text-xl font-semibold">Call History</span>
-            <div class="mt-2 flex items-center sm:mt-0">
-                <span class="p-input-icon-left mr-2">
-                    <i class="pi pi-search"></i>
+        <div class="flex flex-col items-center justify-between sm:flex-row">
+            <div class="flex flex-wrap items-start gap-2">
+                <p-iconfield iconPosition="left">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
                     <input
                         pInputText
                         type="text"
-                        placeholder="Search calls..."
-                        (input)="onGlobalFilter(dt, $event)" />
-                </span>
+                        (input)="onGlobalFilter(dt, $event)"
+                        placeholder="Look up by call ID" />
+                </p-iconfield>
+                <p-select
+                    [options]="dateRangeOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    [(ngModel)]="selectedDateRangeOption"
+                    [showClear]="true"
+                    (onChange)="selectedDateRangeOption !== undefined ? reload() : null"
+                    [style]="{ 'min-width': '150px' }"
+                    placeholder="Timeframe" />
+                @if (selectedDateRangeOption === undefined) {
+                    <p-datepicker
+                        selectionMode="range"
+                        placeholder="Filter by date range"
+                        [(ngModel)]="customDateRange"
+                        (ngModelChange)="reload()"
+                        [showClear]="true"
+                        dateFormat="mm/dd/yy" />
+                }
+                <p-select
+                    [options]="statusOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    [(ngModel)]="selectedStatus"
+                    [showClear]="true"
+                    (onChange)="reload()"
+                    [style]="{ 'min-width': '150px' }"
+                    placeholder="Select Status" />
+                <input
+                    pInputText
+                    type="text"
+                    [(ngModel)]="fromFilter"
+                    (ngModelChange)="onChangeDebounce()"
+                    placeholder="From" />
+                <input
+                    pInputText
+                    type="text"
+                    [(ngModel)]="toFilter"
+                    (ngModelChange)="onChangeDebounce()"
+                    placeholder="To" />
+            </div>
+            <div class="mt-2 flex items-center sm:mt-0">
                 <p-button
                     variant="outlined"
                     icon="pi pi-filter-slash"
                     label="Clear Filters"
-                    class="mr-2"
+                    class="ml-auto mr-2"
                     (click)="clearFilters(dt)" />
                 <p-button
                     type="button"

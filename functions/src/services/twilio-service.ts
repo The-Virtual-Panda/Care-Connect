@@ -171,9 +171,9 @@ export class TwilioService {
         const queryParams: CallListInstancePageOptions = {
             pageSize: options.pageSize,
             pageNumber: options.pageNumber,
-            to: options.to,
-            status: options.status,
-            from: options.from,
+            to: options.to ?? undefined,
+            status: options.status ?? undefined,
+            from: options.from ?? undefined,
             ...(options.startDate && {
                 startTimeAfter: new Date(options.startDate),
             }),
@@ -190,8 +190,8 @@ export class TwilioService {
             calls: callsPage.instances.map(
                 (call): CallResource => ({
                     sid: call.sid,
-                    dateCreated: call.dateCreated.toUTCString(),
-                    dateUpdated: call.dateUpdated.toUTCString(),
+                    dateCreated: call.dateCreated.toISOString(),
+                    dateUpdated: call.dateUpdated.toISOString(),
                     parentCallSid: call.parentCallSid,
                     accountSid: call.accountSid,
                     to: call.to,
@@ -200,8 +200,8 @@ export class TwilioService {
                     fromFormatted: call.fromFormatted,
                     phoneNumberSid: call.phoneNumberSid,
                     status: call.status,
-                    startTime: call.startTime.toUTCString(),
-                    endTime: call.endTime.toUTCString(),
+                    startTime: call.startTime.toISOString(),
+                    endTime: call.endTime?.toISOString(),
                     duration: call.duration,
                     price: call.price,
                     priceUnit: call.priceUnit,

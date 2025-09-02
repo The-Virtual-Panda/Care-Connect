@@ -5,11 +5,9 @@ import { Observable, catchError, from, map, throwError } from 'rxjs';
 import { Injectable, inject } from '@angular/core';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 
-import { TwilioCallListResponse, TwilioCallSearchOptions } from '../models/dto/twilio-calls';
+import { TwilioCallListResponse, TwilioCallSearchOptions } from '@models/dto/twilio-calls';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class TwilioService {
     private functions = inject(Functions);
     private orgContextService = inject(OrgContextService);

@@ -14,8 +14,8 @@ export interface TwilioCall {
     toFormatted?: string;
 
     // Timing information
-    startTime: string; // ISO date string
-    endTime?: string; // ISO date string
+    startTime: string;
+    endTime?: string;
     dateCreated: string;
     dateUpdated: string;
     duration?: number; // in seconds

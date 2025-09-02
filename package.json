@@ -6,6 +6,7 @@
         "deploy:storage-rules": "firebase deploy --only storage --project",
         "deploy:functions": "firebase deploy --only functions --project",
         "deploy:function": "firebase deploy --only functions:$1 --project $2",
+        "deploy:preview": "npm --prefix client run build && firebase hosting:channel:deploy prod-walkthrough --only client --project prod",
         "deploy:hosting:client": "npm --prefix client run build && firebase deploy --only hosting:client --project",
         "deploy:hosting:marketing": "npm --prefix marketing run build && firebase deploy --only hosting:marketing --project"
     }

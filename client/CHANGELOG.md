@@ -20,6 +20,12 @@ Types of changes:
 
 - Added Roles and permisssion page
 
+## [v1.6.0] - 2025-09-02
+
+### Added
+
+- Added call history page
+
 ## [v1.5.1] - 2025-08-14
 
 ### Fixed

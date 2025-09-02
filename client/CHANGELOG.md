@@ -20,6 +20,12 @@ Types of changes:
 
 - Added Roles and permisssion page
 
+## [v1.6.1] - 2025-09-02
+
+### Changed
+
+- Show 20 records per page on call history and query the last 100
+
 ## [v1.6.0] - 2025-09-02
 
 ### Added

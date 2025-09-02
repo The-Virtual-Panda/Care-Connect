@@ -110,6 +110,7 @@ export class CallHistoryComponent implements OnInit, OnDestroy {
 
         const searchOptions: TwilioCallSearchOptions = {
             orgId: orgId,
+            pageSize: 100,
             status: this.selectedStatus || undefined,
             from: this.fromFilter || undefined,
             to: this.toFilter || undefined,

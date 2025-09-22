@@ -1,6 +1,6 @@
 import { Logger } from '@/utils/logger';
 import { KeyOfType, getPresetExt, presets } from '@/utils/theme';
-import { $t } from '@primeng/themes';
+import { $t } from '@primeuix/themes';
 import { Subject } from 'rxjs';
 
 import { Injectable, computed, effect, signal } from '@angular/core';

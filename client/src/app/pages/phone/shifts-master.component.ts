@@ -17,7 +17,6 @@ import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { DatePicker } from 'primeng/datepicker';
-import { DropdownModule } from 'primeng/dropdown';
 import { DialogService } from 'primeng/dynamicdialog';
 import { Fluid } from 'primeng/fluid';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -26,7 +25,6 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputMaskModule } from 'primeng/inputmask';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -40,6 +38,7 @@ import { SliderModule } from 'primeng/slider';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -76,8 +75,8 @@ import { TooltipModule } from 'primeng/tooltip';
         MessageModule,
         ConfirmDialog,
         DatePicker,
-        DropdownModule,
-        InputSwitchModule,
+        SelectModule,
+        ToggleSwitchModule,
         TooltipModule
     ],
     providers: [DialogService, ConfirmationService, PhoneService, TeamService]

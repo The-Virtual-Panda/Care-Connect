@@ -1,9 +1,8 @@
 import { LayoutService } from '@/services/layout.service';
 import { KeyOfType, SurfacesType, getPresetExt, getPrimaryColors, presets } from '@/utils/theme';
-import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
+import { $t, updatePreset, updateSurfacePalette } from '@primeuix/themes';
 
-import { isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, PLATFORM_ID, computed, inject, model } from '@angular/core';
+import { Component, PLATFORM_ID, computed, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 

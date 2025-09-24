@@ -14,7 +14,7 @@ import { AvatarModule } from 'primeng/avatar';
 export class AppAvatarComponent implements OnInit {
     @Input() userId: string | null = null;
     @Input() size: 'normal' | 'large' | 'xlarge' = 'normal';
-    @Input() styleClass: string | undefined;
+    @Input() class: string | undefined;
 
     userService = inject(UserService);
 

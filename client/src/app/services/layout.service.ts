@@ -37,26 +37,6 @@ export class LayoutService {
     static readonly CONFIG_KEY = 'app-visual-config';
     static readonly STATE_KEY = 'app-visual-state';
 
-    _config: layoutConfig = {
-        preset: 'Aura',
-        primary: 'blue',
-        surface: null,
-        darkTheme: false,
-        menuMode: 'horizontal'
-    };
-
-    _state: LayoutState = {
-        staticMenuDesktopInactive: false,
-        overlayMenuActive: false,
-        rightMenuVisible: false,
-        staticMenuMobileActive: false,
-        menuHoverActive: false,
-        searchBarActive: false,
-        sidebarActive: false,
-        anchored: false,
-        overlaySubmenuActive: false
-    };
-
     bodyBackgroundPalette = {
         light: {
             noir: 'linear-gradient(180deg, #F4F4F5 0%, rgba(212, 212, 216, 0.12) 100%)',
@@ -100,8 +80,25 @@ export class LayoutService {
         }
     };
 
-    layoutConfig = signal<layoutConfig>(this._config);
-    layoutState = signal<LayoutState>(this._state);
+    layoutConfig = signal<layoutConfig>({
+        preset: 'Aura',
+        primary: 'blue',
+        surface: null,
+        darkTheme: false,
+        menuMode: 'horizontal'
+    });
+
+    layoutState = signal<LayoutState>({
+        staticMenuDesktopInactive: false,
+        overlayMenuActive: false,
+        rightMenuVisible: false,
+        staticMenuMobileActive: false,
+        menuHoverActive: false,
+        searchBarActive: false,
+        sidebarActive: false,
+        anchored: false,
+        overlaySubmenuActive: false
+    });
 
     private configUpdate = new Subject<layoutConfig>();
     private overlayOpen = new Subject<any>();
@@ -113,11 +110,9 @@ export class LayoutService {
     configUpdate$ = this.configUpdate.asObservable();
     overlayOpen$ = this.overlayOpen.asObservable();
 
-    isDarkTheme = computed(() => this.layoutConfig().darkTheme);
+    transitionComplete = signal<boolean>(false);
 
-    isSidebarActive = computed(
-        () => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive || this.layoutState().overlaySubmenuActive
-    );
+    isDarkTheme = computed(() => this.layoutConfig().darkTheme);
     isSlim = computed(() => this.layoutConfig().menuMode === 'slim');
     isHorizontal = computed(() => this.layoutConfig().menuMode === 'horizontal');
     isOverlay = computed(() => this.layoutConfig().menuMode === 'overlay');
@@ -125,7 +120,10 @@ export class LayoutService {
     isStatic = computed(() => this.layoutConfig().menuMode === 'static');
     isReveal = computed(() => this.layoutConfig().menuMode === 'reveal');
     isDrawer = computed(() => this.layoutConfig().menuMode === 'drawer');
-    transitionComplete = signal<boolean>(false);
+
+    isSidebarActive = computed(
+        () => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive || this.layoutState().overlaySubmenuActive
+    );
 
     isSidebarStateChanged = computed(() => {
         const layoutConfig = this.layoutConfig();
@@ -172,14 +170,14 @@ export class LayoutService {
         if (supportsViewTransition) {
             this.startViewTransition(config);
         } else {
-            this.handleDarkMode(config);
+            this.toggleDarkMode(config);
             this.onTransitionEnd();
         }
     }
 
     private startViewTransition(config: layoutConfig): void {
         const transition = (document as any).startViewTransition(() => {
-            this.handleDarkMode(config);
+            this.toggleDarkMode(config);
         });
 
         transition.ready
@@ -189,7 +187,7 @@ export class LayoutService {
             .catch(() => {});
     }
 
-    handleDarkMode(config?: layoutConfig): void {
+    toggleDarkMode(config?: layoutConfig): void {
         const _config = config || this.layoutConfig();
         if (_config.darkTheme) {
             document.documentElement.classList.add('app-dark');
@@ -239,7 +237,6 @@ export class LayoutService {
     }
 
     onConfigUpdate() {
-        this._config = { ...this.layoutConfig() };
         this.configUpdate.next(this.layoutConfig());
     }
 
@@ -285,10 +282,10 @@ export class LayoutService {
     loadFromStorage() {
         try {
             const cfgStr = localStorage.getItem(LayoutService.CONFIG_KEY);
-            if (cfgStr) this.layoutConfig.set({ ...this._config, ...JSON.parse(cfgStr) });
+            if (cfgStr) this.layoutConfig.set({ ...this.layoutConfig(), ...JSON.parse(cfgStr) });
 
             const stateStr = localStorage.getItem(LayoutService.STATE_KEY);
-            if (stateStr) this.layoutState.set({ ...this._state, ...JSON.parse(stateStr) });
+            if (stateStr) this.layoutState.set({ ...this.layoutState(), ...JSON.parse(stateStr) });
 
             const preset = presets[this.layoutConfig().preset as KeyOfType<typeof presets>];
             $t()
@@ -296,7 +293,7 @@ export class LayoutService {
                 .preset(getPresetExt(this.layoutConfig().preset as KeyOfType<typeof presets>, this.layoutConfig().primary))
                 .use({ useDefaultOptions: true });
             this.updateBodyBackground(this.layoutConfig().primary);
-            this.handleDarkMode();
+            this.toggleDarkMode();
         } catch (e) {
             Logger.error('load storage', e);
         }

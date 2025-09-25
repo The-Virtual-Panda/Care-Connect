@@ -15,8 +15,8 @@ import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import { DialogService } from 'primeng/dynamicdialog';
 
-import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
+import { environment } from './environments/environment';
 
 export const appConfig: ApplicationConfig = {
     providers: [

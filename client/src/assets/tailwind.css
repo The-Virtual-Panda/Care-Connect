@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+@plugin 'tailwindcss-primeui';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.app-dark, .app-dark *));
+
+@theme {
+    --shadow-v1: var(--shadow-v1);
+    --shadow-v2: var(--shadow-v2);
+    --shadow-custom-shadow: 0px 10px 10px -8px rgba(18, 18, 23, 0.02), 0px 2px 2px -1.5px rgba(18, 18, 23, 0.02), 0px 1px 1px -0.5px rgba(18, 18, 23, 0.02);
+
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --breakpoint-2xl: 1920px;
+
+    --animate-infinite-scroll: infinite-scroll 25s linear infinite;
+    --animate-float: float 3.5s ease-in-out infinite;
+    --animate-wiggle: wiggle 3.5s ease-in-out infinite;
+
+    @keyframes infinite-scroll {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(-100%);
+        }
+    }
+
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-6px) scale(1.005);
+        }
+    }
+
+    @keyframes wiggle {
+        0%,
+        30%,
+        100% {
+            transform: rotate(0deg);
+        }
+        10%,
+        20% {
+            transform: rotate(-1deg);
+        }
+        15%,
+        25% {
+            transform: rotate(1deg);
+        }
+    }
+}
+
+@layer utilities {
+    :root {
+        --custom-shadow: 0px 10px 10px -8px rgba(18, 18, 23, 0.02), 0px 2px 2px -1.5px rgba(18, 18, 23, 0.02), 0px 1px 1px -0.5px rgba(18, 18, 23, 0.02);
+    }
+}
+
+@utility card {
+    @apply rounded-2xl bg-(--surface-card) p-4 shadow-[0px_10px_10px_-8px_rgba(18,18,23,0.02),0px_2px_2px_-1.5px_rgba(18,18,23,0.02),0px_1px_1px_-0.5px_rgba(18,18,23,0.02),0px_0px_0px_1px_rgba(18,18,23,0.02)] lg:rounded-3xl lg:p-6;
+}
+@utility landing-container {
+    @apply mx-auto w-full max-w-248 px-6 md:max-w-280 xl:max-w-340;
+}
+@utility badge {
+    @apply rounded-full border border-surface bg-surface-0 px-3.5 py-1 font-medium text-surface-950 shadow-[0px_1px_2px_0px_rgba(18,18,23,0.05)] dark:border-white/10 dark:bg-white/12 dark:text-surface-0;
+    @apply rounded-full border border-surface bg-surface-0 px-3.5 py-1 font-medium text-surface-950 shadow-[0px_1px_2px_0px_rgba(18,18,23,0.05)] dark:border-white/10 dark:bg-white/12 dark:text-surface-0;
+}
+@utility button-primary {
+    @apply flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3 font-medium text-primary-contrast shadow-custom-shadow transition-all hover:bg-primary-emphasis;
+}
+@utility button {
+    @apply flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3 font-medium text-surface-700 shadow-custom-shadow transition-all hover:bg-surface-50 dark:bg-white/10 dark:text-white dark:hover:bg-white/20;
+}
+
+.pattern {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.42) -1.85%, rgba(255, 255, 255, 0) 72.51%);
+    box-shadow:
+        -72px -298px 86px 0px rgba(120, 149, 206, 0),
+        -46px -191px 79px 0px rgba(120, 149, 206, 0.01),
+        -26px -107px 66px 0px rgba(120, 149, 206, 0.02),
+        -12px -48px 49px 0px rgba(120, 149, 206, 0.03),
+        -3px -12px 27px 0px rgba(120, 149, 206, 0.04);
+    backdrop-filter: blur(90px);
+}
+
+.app-dark .pattern {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08) -1.85%, rgba(255, 255, 255, 0) 72.51%);
+    box-shadow:
+        -72px -298px 86px 0px rgba(9, 9, 11, 0),
+        -46px -191px 79px 0px rgba(9, 9, 11, 0.01),
+        -26px -107px 66px 0px rgba(9, 9, 11, 0.02),
+        -12px -48px 49px 0px rgba(9, 9, 11, 0.03),
+        -3px -12px 27px 0px rgba(9, 9, 11, 0.04);
+}

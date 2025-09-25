@@ -1,15 +1,15 @@
 import { AuthLayout } from '@/layouts/app.authlayout';
 import { AppLayout } from '@/layouts/app.layout';
 import { Access } from '@/pages/auth/access';
+import { ChangeBlogComponent } from '@/pages/change-blog/change-blog.component';
 import { Notfound } from '@/pages/global/notfound';
+import { OrgContextService } from '@/services/org-context.service';
 
 import { Injectable, inject } from '@angular/core';
 import { canActivate, hasCustomClaim, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
 import { CanActivate, Router, Routes, UrlTree } from '@angular/router';
 
-import { ChangeBlogComponent } from './pages/change-blog/change-blog.component';
-import { OrgContextService } from './services/org-context.service';
-import { Logger } from './utils/logger';
+import { Logger } from '@app/utils/logger';
 
 const adminOnly = () => hasCustomClaim('systemAdmin');
 

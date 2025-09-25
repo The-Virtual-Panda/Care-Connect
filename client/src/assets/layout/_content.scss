@@ -1,33 +1,24 @@
 .layout-wrapper {
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     transition: all 0.2s ease;
 }
-
 .layout-content-wrapper {
     flex: 1;
-    display: flex;
-    flex-direction: column;
+    height: 100%;
+    overflow: auto;
     z-index: 9;
     transition: all 0.2s ease;
 }
-
 .layout-content-wrapper-inside {
-    width: 100%;
     max-width: 1540px;
+    height: 100%;
     margin: 0 auto;
     display: flex;
-    flex: 1;
     flex-direction: column;
 }
-
 .layout-content {
     padding: 2rem 2rem 2rem 2rem;
     flex: 1 1 auto;
     position: relative;
-}
-
-/* push footer to the bottom */
-.layout-content-wrapper-inside app-footer {
-    margin-top: auto;
 }
